@@ -1,80 +1,108 @@
+// // index.js (server entry)
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
 const db = require("./config/db");
-  
-// Routes
-const articleRoutes = require("./routes/articleRoutes");
-const bookRoutes = require("./routes/bookRoutes");
-const feedbackRoutes = require("./routes/feedbackRoutes");
-const questionRoutes = require("./routes/questionRoutes");
-const topicRoutes = require("./routes/topicRoutes");
-const translatorRoutes = require("./routes/translatorRoutes");
-const adminRoutes = require("./routes/adminRoutes");
-const writerRoutes = require("./routes/writerRoutes");
-const eventRoutes = require("./routes/eventRoutes");
-const languageRoutes = require("./routes/languageRoutes");
-const aboutContentRoutes = require("./routes/aboutContentRoutes");
-const bookSliderRoutes = require("./routes/bookSliderRoutes");
-const homeBookRoutes = require("./routes/homeBookSliderRoutes");
-const TagRoutes = require("./routes/tagRoutes");
-const printedBookRoutes = require("./routes/printedBookRoutes");
-const bookRequestRoutes = require("./routes/bookRequestRoutes");
-const shareRoutes = require("./routes/shareRoutes");
-const galleryRoutes = require("./routes/galleryRoutes");
 
+// ---- Create app & config ----
 const app = express();
+const PORT = process.env.PORT || 5000;
 
-// Middleware
+
+
+// View engine: EJS
+app.set("views", path.join(__dirname, "views"));
+app.set("view engine", "ejs");
+
+// ---- Middleware ----
 app.use(cors());
-app.use(express.json({ limit: '200mb' }));
-app.use(express.urlencoded({ limit: '200mb', extended: true }));
+app.use(express.json({ limit: "200mb" }));
+app.use(express.urlencoded({ limit: "200mb", extended: true }));
+
+// ---- Static files ----
+// Serve everything under /public at the web root (/, /images, /assets, etc.)
+app.use(express.static(path.join(__dirname, "public")));
 
 
-// Static files
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-app.use("/article", express.static("public/article"));
 
+// ---- API Routes ----
+app.use("/api/articles", require("./routes/articleRoutes"));
+app.use("/api/books", require("./routes/bookRoutes"));
+app.use("/api/feedback", require("./routes/feedbackRoutes"));
+app.use("/api/questions", require("./routes/questionRoutes"));
+app.use("/api/topics", require("./routes/topicRoutes"));
+app.use("/api/translators", require("./routes/translatorRoutes"));
+app.use("/api/admin", require("./routes/adminRoutes"));
+app.use("/api/writers", require("./routes/writerRoutes"));
+app.use("/api/tags", require("./routes/tagRoutes"));
+app.use("/api/events", require("./routes/eventRoutes"));
+app.use("/api/languages", require("./routes/languageRoutes"));
+app.use("/api/about", require("./routes/aboutContentRoutes"));
+app.use("/api/bookslider", require("./routes/bookSliderRoutes"));
+app.use("/api/homebookslider", require("./routes/homeBookSliderRoutes"));
+app.use("/api/printedBooks", require("./routes/printedBookRoutes"));
+app.use("/api/requestBook", require("./routes/bookRequestRoutes"));
+app.use("/api/share", require("./routes/shareRoutes"));
+app.use("/api/galleries", require("./routes/galleryRoutes"));
 
-
-// Routes
-app.use("/api/articles", articleRoutes);
-app.use("/api/books", bookRoutes);
-app.use("/api/feedback", feedbackRoutes);
-app.use("/api/questions", questionRoutes);
-app.use("/api/topics", topicRoutes);
-app.use("/api/translators", translatorRoutes);
-app.use("/api/admin", adminRoutes);
-app.use("/api/writers", writerRoutes);
-app.use("/api/tags", TagRoutes);
-app.use("/api/events", eventRoutes);
-app.use("/api/languages", languageRoutes);
-app.use("/api/about", aboutContentRoutes);
-app.use("/api/bookslider", bookSliderRoutes);
-app.use("/api/homebookslider", homeBookRoutes);
-app.use("/api/printedBooks", printedBookRoutes);
-app.use("/api/requestBook", bookRequestRoutes);
-app.use("/api/share", shareRoutes);
-app.use("/api/galleries", galleryRoutes);
-
-// Health check / root route
+// ---- SSR Pages (EJS) ----
+// Home page: Views/index.ejs
 app.get("/", (req, res) => {
-  res.send(`✅ Server is live on port ${PORT}`);
+  res.render("index"); // no extension needed
 });
 
-// Server start
-const PORT = process.env.PORT || 5000;
+// Articles listing page (your converted EJS):
+// place the file at Views/pages/article.ejs
+app.get("/article", (req, res) => {
+  res.render("pages/article");
+});
+
+app.get("/book", (req, res) => {
+  res.render("pages/book");
+});
+
+app.get("/qa", (req, res) => {
+  res.render("pages/qa");
+});
+
+// Optional: simple health check endpoints for infra
+app.get("/healthz", (req, res) => res.status(200).send("ok"));
+app.get("/readyz", (req, res) => res.status(200).send("ready"));
+
+// ---- 404 handler (for unknown routes) ----
+app.use((req, res, next) => {
+  if (req.path.startsWith("/api/")) {
+    return res.status(404).json({ error: "API route not found" });
+  }
+  // For non-API, show a friendly 404 page or text
+  res.status(404).send("Page not found");
+});
+
+// ---- Error handler ----
+/* eslint-disable no-unused-vars */
+app.use((err, req, res, next) => {
+  console.error("Unhandled error:", err);
+  const status = err.status || 500;
+  const message = err.message || "Internal Server Error";
+  if (req.path.startsWith("/api/")) {
+    return res.status(status).json({ error: message });
+  }
+  res.status(status).send(message);
+});
+/* eslint-enable no-unused-vars */
+
+// ---- Start server ----
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 
-  // Test DB connection
+  // Test DB connection once at boot
   db.getConnection((err, connection) => {
     if (err) {
       console.error("❌ Database connection failed:", err.message);
     } else {
       console.log("✅ MySQL database connected successfully.");
-      connection.release(); // always release the connection
+      connection.release();
     }
   });
 });
