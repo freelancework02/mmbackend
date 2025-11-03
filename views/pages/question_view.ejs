@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1, user-scalable=no, shrink-to-fit=no" />
+  <title><%= metaTitle %></title>
+
+  <!-- Canonical / robots -->
+  <link rel="canonical" href="<%= pageUrl %>">
+  <meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1" />
+  <meta name="description" content="<%= metaDesc %>" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Maula Ali Research Center" />
+  <meta property="og:locale" content="ur_PK" />
+  <meta property="og:title" content="<%= metaTitle %>" />
+  <meta property="og:description" content="<%= metaDesc %>" />
+  <meta property="og:url" content="<%= pageUrl %>" />
+  <meta property="og:image" content="<%= metaImage %>" />
+  <meta property="og:image:alt" content="Maula Ali Research Center" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="<%= metaTitle %>" />
+  <meta name="twitter:description" content="<%= metaDesc %>" />
+  <meta name="twitter:image" content="<%= metaImage %>" />
+
+  <!-- JSON-LD Article -->
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"Article",
+    "headline": "<%- metaTitle.replace(/\"/g, '\\\"') %>",
+    "inLanguage":"ur",
+    "mainEntityOfPage":"<%- pageUrl %>",
+    "url":"<%- pageUrl %>",
+    "author":[{"@type":"Person","name":"<%- (question?.writer || 'نامعلوم').replace(/\"/g, '\\\"') %>"}],
+    "publisher":{"@type":"Organization","name":"Maula Ali Research Center","logo":{"@type":"ImageObject","url":"<%- metaImage %>"}},
+    "about":"سوال و جواب",
+    "description":"<%- metaDesc.replace(/\"/g, '\\\"') %>"
+  }
+  </script>
+
+  <!-- Tailwind theme -->
+  <script>
+    tailwind = {
+      theme: {
+        extend: {
+          colors: {
+            'rich_black': { DEFAULT: '#01161e', 500: '#01161e' },
+            'midnight_green': { DEFAULT: '#124559', 600: '#20799c' },
+            'air_force_blue': { DEFAULT: '#598392', 700: '#99b6c0' },
+            'ash_gray': { DEFAULT: '#aec3b0' },
+            'beige': { DEFAULT: '#eff6e0' }
+          },
+          boxShadow: {
+            'fatwa': '0 10px 30px rgba(17, 68, 30, 0.10)',
+            'soft': '0 6px 18px rgba(0,0,0,.07)'
+          },
+          borderRadius: { '4xl': '2rem' }
+        }
+      }
+    }
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <style>
+    /* Urdu font + fallbacks */
+    @font-face {
+      font-family: 'NaatFont';
+      src: url('https://res.cloudinary.com/awescreative/raw/upload/v1749150996/Awes/naatfont.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+    body{
+      font-family: 'NaatFont','Noto Nastaliq Urdu','Scheherazade New','Mehr-Nastaliq',serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      background:#f0f2e6;
+      padding-bottom:72px;
+    }
+    .line-clamp-2{ display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+    .fatwa-label{ letter-spacing:.02em }
+    .prose-ur p{ margin-bottom:1.15rem }
+    .prose-ur ul{ padding-inline-start:1.25rem; list-style:disc }
+    .prose-ur ol{ padding-inline-start:1.25rem; list-style:decimal }
+
+    /* Force Urdu Nastaliq in the answer */
+    #answer-rich{ font-family:'NaatFont','Noto Nastaliq Urdu','Scheherazade New','Mehr-Nastaliq',serif !important; }
+
+    /* Writer strip inside the answer */
+    .author-strip{
+      display:grid; grid-template-columns:auto 1fr auto; gap:12px; align-items:center;
+    }
+
+    /* Related cards: equal height */
+    .related-card{ display:flex; flex-direction:column; justify-content:flex-start; min-height:148px; }
+
+    @media print{
+      header, footer, .no-print, .sidebar-wrap, .related-wrap { display:none !important; }
+      body{ background:#fff; }
+      .fatwa-card{ box-shadow:none !important; border:0 !important; }
+      .fatwa-container{ padding:0 !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="bg-[#718e56] sticky top-0 z-50 shadow-md border-b border-green-100 no-print">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center py-4 relative">
+        <nav class="hidden md:flex gap-6 text-md font-semibold text-white tracking-wide">
+          <a href="/" class="hover:text-yellow-200">Home</a>
+          <a href="/about" class="hover:text-yellow-200">About</a>
+          <a href="/events" class="hover:text-yellow-200">News & Event</a>
+          <a href="/book" class="hover:text-yellow-200">Books</a>
+        </nav>
+
+        <div class="absolute left-1/2 transform -translate-x-1/2 -bottom-7 bg-white rounded-full p-1 shadow-lg border border-green-100 z-10">
+          <img src="/images/marc.png" alt="Logo" class="w-16 h-16 rounded-full object-contain" />
+        </div>
+
+        <nav class="hidden md:flex gap-6 text-md font-semibold text-white tracking-wide">
+          <a href="/article" class="hover:text-yellow-200">Articles</a>
+          <a href="/question" class="hover:text-yellow-200">Question Answer</a>
+          <a href="/requestbook" class="hover:text-yellow-200">Request a Book</a>
+          <a href="/contact" class="hover:text-yellow-200">Contact</a>
+        </nav>
+
+        <div class="md:hidden">
+          <button class="text-white" aria-label="menu">
+            <i class="bi bi-list text-2xl"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="relative z-40 bg-cover bg-center rounded-b-[3rem] no-print" style="background-image:url('/images/newbg.png')">
+    <div class="flex flex-col items-center justify-center py-10 px-6 w-full bg-[#C0D7AA]/80">
+      <h1 class="text-3xl md:text-4xl font-bold text-[#4a7031] text-center mb-3">
+        دار الإفتاء ریسرچ سینٹر سوال و جوابات تحقیقات
+      </h1>
+      <p class="text-[18.5px] md:text-lg text-[#4a7031] text-center leading-relaxed">
+        یہ ایک ایسا اسلامی تحقیقی مرکز ہے جو اسلام کے بنیادی اصولوں اور جدید دور کے چیلنجوں کے درمیان ہم آہنگی پیدا کرنے پر توجہ مرکوز کرتا ہے۔
+      </p>
+    </div>
+  </section>
+
+  <!-- Container (GRID on md+ for perfect alignment) -->
+  <main class="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 mt-8 fatwa-container">
+    <div class="grid grid-cols-1 md:grid-cols-[20rem_1fr] gap-6">
+
+      <!-- Sidebar -->
+      <aside class="sidebar-wrap no-print md:col-start-1">
+        <div class="bg-white rounded-3xl border border-green-100 shadow-soft overflow-hidden">
+          <div class="bg-[#eaf3df] px-5 py-4">
+            <h2 class="text-2xl font-bold text-[#1f1f1f] text-center">دیگر سوالات</h2>
+          </div>
+
+          <div class="p-5 space-y-5">
+            <% sidebar.forEach(function(q, idx){ %>
+              <div class="border-b border-green-200 pb-4 last:border-b-0">
+                <div class="flex justify-end mb-2">
+                  <a href="/question/<%= q.id %>/<%= slugify(q.slug || (q.questionEnglish || q.questionUrdu || ('question-' + (q.id || idx+1)))) %>"
+                     class="bg-[#5a8c3c] text-white rounded-full px-3 py-1 text-sm">
+                    سوال نمبر <%= q.number || q.id || (idx+1) %>
+                  </a>
+                </div>
+                <a href="/question/<%= q.id %>/<%= slugify(q.slug || (q.questionEnglish || q.questionUrdu || ('question-' + (q.id || idx+1)))) %>"
+                   class="block text-gray-800 leading-relaxed text-base line-clamp-2"
+                   dir="<%= detectDirection(stripTags(q.questionUrdu || q.questionEnglish || '')) %>">
+                  <%= stripTags(q.questionUrdu || q.questionEnglish || '' ) %>
+                </a>
+              </div>
+            <% }); %>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main card -->
+      <article class="md:col-start-2">
+        <div class="bg-white rounded-4xl shadow-fatwa border border-green-100 fatwa-card">
+          <!-- Title -->
+          <div class="px-6 md:px-10 pt-8 text-center">
+            <h1 class="text-[22px] md:text-[26px] font-extrabold text-[#1f1f1f] leading-relaxed">
+              <%= stripTags(question.titleUrdu || question.titleEnglish || question.questionUrdu || question.questionEnglish || metaTitle) %>
+            </h1>
+
+            <!-- Tool row -->
+            <div class="mt-4 mb-2 flex items-center justify-center gap-4 text-[#6a6a6a] text-[15px] no-print">
+              <button onclick="window.print()" class="hover:text-[#4a7031]" title="پرنٹ"><i class="bi bi-printer"></i></button>
+              <a class="hover:text-[#4a7031]" title="شئیر" href="https://wa.me/?text=<%= encodeURIComponent(pageUrl) %>" target="_blank" rel="noopener"><i class="bi bi-share"></i></a>
+              <button id="incFont" class="hover:text-[#4a7031]" title="فونٹ بڑا کریں"><i class="bi bi-zoom-in"></i></button>
+              <button id="decFont" class="hover:text-[#4a7031]" title="فونٹ چھوٹا کریں"><i class="bi bi-zoom-out"></i></button>
+            </div>
+          </div>
+
+          <!-- Divider -->
+          <div class="h-px bg-green-100 mx-6 md:mx-10 my-4"></div>
+
+          <!-- Question -->
+          <section class="px-6 md:px-10 pb-4">
+            <div class="flex items-center justify-end gap-3 mb-3">
+              <span class="inline-flex items-center justify-center bg-[#eaf3df] text-[#4a7031] font-bold px-4 py-1.5 rounded-full fatwa-label">سوال:</span>
+              <span class="bg-[#C0D7AA] text-[#4a7031] font-bold rounded-full px-3 py-1 text-xs">سوال نمبر <%= question.id %></span>
+            </div>
+            <div id="question-rich" class="prose-ur leading-[2.15] text-[18px] text-[#1f1f1f]"
+                 dir="<%= detectDirection(stripTags(question.questionEnglish || question.questionUrdu || '')) %>">
+              <%- questionHTML %>
+            </div>
+          </section>
+
+          <!-- Divider dots -->
+          <div class="flex items-center justify-center gap-1 text-[#C0D7AA] my-3"><span>•</span><span>•</span><span>•</span></div>
+
+          <!-- Answer -->
+          <section class="px-6 md:px-10 pb-8">
+            <div class="flex items-center justify-start gap-3 mb-3">
+              <span
+                class="inline-flex items-center justify-center bg-[#5a8c3c] text-white font-bold px-4 py-1.5 rounded-full fatwa-label">
+                الجواب:
+              </span>
+              <div class="text-right">
+                <p class="text-sm text-gray-600">اسلامک اسکالر</p>
+                <h2 class="font-extrabold text-lg text-[#4a7031]">
+                  <%= question.writer || 'نامعلوم' %>
+                </h2>
+              </div>
+              <img src="/images/user.png" alt="Scholar" class="w-12 h-12 rounded-full border-2 border-[#6a8a4f]" />
+            </div>
+
+            <div id="answer-rich" class="prose-ur leading-[2.15] text-[18px] text-[#1f1f1f]">
+              <%- answerHTML %>
+            </div>
+
+            <!-- Signature area -->
+            <% if (question.mufti || question.madrasa || question.city || question.dateHijri || question.dateG || question.sealImage){ %>
+              <div class="mt-8 pt-5 border-t border-dashed border-green-200">
+                <div class="grid gap-2 justify-items-end text-right text-[15px] text-[#2b2b2b]">
+                  <% if (question.mufti) { %><div><strong>المفتی:</strong> <%= question.mufti %></div><% } %>
+                  <% if (question.madrasa) { %><div><strong>دارالافتاء:</strong> <%= question.madrasa %></div><% } %>
+                  <% if (question.city) { %><div><strong>شہر:</strong> <%= question.city %></div><% } %>
+                  <% if (question.dateHijri || question.dateG) { %>
+                    <div>
+                      <% if (question.dateHijri) { %><strong>تاریخ (ہجری):</strong> <%= question.dateHijri %><% } %>
+                      <% if (question.dateG) { %><span class="mx-2">/</span><strong>تاریخ (عیسوی):</strong> <%= question.dateG %><% } %>
+                    </div>
+                  <% } %>
+                  <% if (question.sealImage) { %>
+                    <div class="mt-2"><img src="<%= question.sealImage %>" alt="مہر" class="inline-block max-h-24 object-contain"/></div>
+                  <% } %>
+                </div>
+              </div>
+            <% } %>
+          </section>
+        </div>
+      </article>
+
+      <!-- Writer box aligned with article column -->
+    <section class="mt-6 md:col-start-2">
+  <div class="bg-white rounded-3xl p-6 shadow-soft">
+    <!-- Avatar left, text right (stacks on mobile) -->
+    <div class="flex flex-col sm:flex-row items-center sm:items-center text-right">
+      <!-- Avatar -->
+      <div class="w-28 h-28 md:w-32 md:h-32 rounded-full bg-green-100 border-4 border-green-200 overflow-hidden flex items-center justify-center shrink-0 sm:mr-4">
+        <img
+          src="/images/user.png"
+          alt="Scholar Icon"
+          class="w-full h-full object-cover"
+          width="128" height="128"
+        />
+      </div>
+
+      <!-- Text -->
+      <div class="mt-4 sm:mt-0">
+        <h3 class="text-2xl md:text-3xl font-bold text-green-700">اسلامک اسکالر</h3>
+        <h4 class="text-xl md:text-2xl font-semibold text-gray-800">
+          <%= question.writer || 'نامعلوم' %>
+        </h4>
+        <p class="text-sm md:text-base text-gray-700 leading-relaxed">
+          ایک معروف اسلامی عالم، مدرس اور مصنف ہیں…
+          <a href="/writer" class="underline decoration-green-700/30 hover:decoration-green-700">مزید معلومات</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+      <!-- Related Questions -->
+      <section class="bg-[#eaf3df] py-10 rounded-3xl related-wrap no-print mt-10 md:col-start-1 md:col-span-2">
+        <div class="px-4">
+          <h2 class="text-right font-bold text-2xl text-[#1f1f1f] mb-6">متعلق سوالات</h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
+            <% related.forEach(function(q, idx){ %>
+              <a href="/question/<%= q.id %>/<%= slugify(q.slug || (q.questionEnglish || q.questionUrdu || ('question-' + (q.id || idx+1)))) %>"
+                 class="related-card bg-[#f3f8ea] border border-green-200 rounded-2xl p-4 hover:shadow-soft transition group">
+                <div class="flex justify-end mb-2">
+                  <span class="bg-[#5a8c3c] text-white rounded-full px-3 py-0.5 text-xs">سوال نمبر <%= q.id || (idx+1) %></span>
+                </div>
+                <p class="text-[15px] leading-relaxed text-[#1f1f1f] line-clamp-2 group-hover:line-clamp-none"
+                   dir="<%= detectDirection(stripTags(q.questionUrdu || q.questionEnglish || '')) %>">
+                  <%= stripTags(q.questionUrdu || q.questionEnglish || '' ) %>
+                </p>
+              </a>
+            <% }); %>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Tiny behavior: font size controls -->
+  <script>
+    (function(){
+      const q = document.getElementById('question-rich');
+      const a = document.getElementById('answer-rich');
+      const inc = document.getElementById('incFont');
+      const dec = document.getElementById('decFont');
+      let size = 18;
+      function apply(){
+        [q,a].forEach(el=>{
+          if(!el) return;
+          el.style.fontSize = size + 'px';
+          el.style.lineHeight = '2.15';
+        });
+      }
+      inc && inc.addEventListener('click', ()=>{ size = Math.min(size+1, 26); apply(); });
+      dec && dec.addEventListener('click', ()=>{ size = Math.max(size-1, 14); apply(); });
+      apply();
+    })();
+  </script>
+
+</body>
+</html>

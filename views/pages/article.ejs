@@ -57,8 +57,8 @@
         <nav class="hidden md:flex gap-6 text-md font-semibold text-gray-700 tracking-wide">
           <a href="/" class="hover:text-green-800">Home</a>
           <a href="/about" class="hover:text-green-800">About</a>
-          <a href="/newsandevent" class="hover:text-green-800">News & Event</a>
-          <a href="/books" class="hover:text-green-800">Books</a>
+          <a href="/events" class="hover:text-green-800">News & Event</a>
+          <a href="/book" class="hover:text-green-800">Books</a>
         </nav>
 
         <div class="absolute left-1/2 transform -translate-x-1/2 -bottom-7 bg-white rounded-full p-1 shadow-lg border border-green-100 z-10">
@@ -87,8 +87,8 @@
         <div class="flex flex-col gap-3 py-4 px-2 text-white bg-[#5a7544] rounded-b-xl">
           <a href="/" class="hover:bg-[#4f6639] px-4 py-2 rounded">Home</a>
           <a href="/about" class="hover:bg-[#4f6639] px-4 py-2 rounded">About</a>
-          <a href="/books" class="hover:bg-[#4f6639] px-4 py-2 rounded">Books</a>
-          <a href="/newsandevent" class="hover:bg-[#4f6639] px-4 py-2 rounded">News & Event</a>
+          <a href="/book" class="hover:bg-[#4f6639] px-4 py-2 rounded">Books</a>
+          <a href="/events" class="hover:bg-[#4f6639] px-4 py-2 rounded">News & Event</a>
           <a href="/article" class="hover:bg-[#4f6639] px-4 py-2 rounded">Articles</a>
           <a href="/question" class="hover:bg-[#4f6639] px-4 py-2 rounded">Question Answer</a>
           <a href="/requestbook" class="hover:bg-[#4f6639] px-4 py-2 rounded">Request a Book</a>
@@ -386,7 +386,7 @@
 
       // click -> navigate
       card.addEventListener("click", () => {
-        const url = `/detailarticle/${article.id}/${slugify(article.title)}`;
+        const url = `/article/${article.id}/${slugify(article.title)}`;
         window.location.href = url;
       });
 

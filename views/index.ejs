@@ -82,20 +82,20 @@
     <div class="container mx-auto px-4 py-4 flex items-center justify-between">
       <nav>
         <ul class="flex space-x-10 text-lg font-medium">
-          <li><a href="#home" class="text-gray-600 hover:text-[var(--secondary-brown)] transition-colors duration-200">Home</a></li>
-          <li><a href="#about" class="text-gray-600 hover:text-[var(--secondary-brown)] transition-colors duration-200">About</a></li>
+          <li><a href="/" class="text-gray-600 hover:text-[var(--secondary-brown)] transition-colors duration-200">Home</a></li>
+          <li><a href="/about" class="text-gray-600 hover:text-[var(--secondary-brown)] transition-colors duration-200">About</a></li>
           <li><a href="/book" class="text-gray-600 hover:text-[var(--secondary-brown)] transition-colors duration-200">Books</a></li>
         </ul>
       </nav>
-      <a href="#" class="flex-shrink-0 mx-auto">
+      <a href="/" class="flex-shrink-0 mx-auto">
         <img src="https://minaramasjid.com/assets/image/logo/minara-masjid.png" alt="Minara Masjid Logo"
              class="h-16 rounded-full shadow-lg transition-transform duration-300 hover:scale-105">
       </a>
       <nav>
         <ul class="flex space-x-10 text-lg font-medium">
           <li><a href="/article" class="text-gray-600 hover:text-[var(--secondary-brown)] transition-colors duration-200">Articles</a></li>
-          <li><a href="#scholars" class="text-gray-600 hover:text-[var(--secondary-brown)] transition-colors duration-200">Scholars</a></li>
-          <li><a href="qa.html" class="text-gray-600 hover:text-[var(--secondary-brown)] transition-colors duration-200">Q & A</a></li>
+          <li><a href="/writer" class="text-gray-600 hover:text-[var(--secondary-brown)] transition-colors duration-200">Scholars</a></li>
+          <li><a href="/qa" class="text-gray-600 hover:text-[var(--secondary-brown)] transition-colors duration-200">Q & A</a></li>
         </ul>
       </nav>
     </div>
@@ -114,7 +114,7 @@
       <p class="text-lg md:text-2xl font-medium max-w-2xl mx-auto drop-shadow-lg fade-in fade-in-1">
         Reviving rare Islamic manuscripts and publications to serve scholars and the Muslim Ummah.
       </p>
-      <a href="#about"
+      <a href="/about"
          class="inline-block px-8 py-3 mt-4 font-semibold rounded-full shadow-lg transition-all duration-300 transform bg-[var(--primary-dark)] text-white hover:scale-105 hover:bg-[var(--secondary-brown)]">
         Read More
         <i class="fa-solid fa-angle-right ml-1 transition-transform duration-300"></i>
@@ -140,7 +140,7 @@
           <p class="text-gray-600 leading-relaxed text-justify mb-8">
             Maula Ali Research Centre aims to acquire old Islamic manuscripts (Interpretations, Commentaries, Exegesis, etc.) of our ancestors from libraries across the world which have not been published; if published, they are no longer accessible, etc. and work upon its publication according to modern standards by carrying out research on the Arabic and Persian scripts, referencing, easy translation into multiple languages, mainly English, Hindi and Urdu, and lastly, printing and distributing it amongst the scholars, research experts, intellectuals and the entire Muslim Ummah.
           </p>
-          <a href="#articles"
+          <a href="/about"
              class="inline-block px-8 py-3 mt-4 font-semibold rounded-full shadow-lg transition-all duration-300 transform bg-[var(--primary-dark)] text-white hover:scale-105 hover:bg-[var(--secondary-brown)]">
             Read More
             <i class="fa-solid fa-angle-right ml-1 transition-transform duration-300"></i>
@@ -162,7 +162,7 @@
 
       <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
         <% if (events && events.length) { events.forEach(function(ev, idx){ %>
-          <a href="#articles"
+          <a href="/events"
              class="group bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 ease-in-out flex flex-col <%= idx<3 ? 'fade-in fade-in-'+(3+idx) : '' %>">
             <div class="relative h-48 w-full overflow-hidden">
               <img src="<%= ev.imageSrc %>" alt="<%= ev.title %>"
@@ -192,7 +192,7 @@
       </div>
 
       <div class="text-center mt-12 fade-in fade-in-5">
-        <a href="#articles"
+        <a href="/events"
            class="inline-block px-8 py-3 font-semibold rounded-full shadow-lg transition-all duration-300 transform bg-[var(--primary-dark)] text-white hover:scale-105 hover:bg-[var(--secondary-brown)]">
           View All Events
           <i class="fas fa-calendar-alt ml-2 transition-transform duration-300"></i>
@@ -273,7 +273,7 @@
       <div id="articlesContainer"
            class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
         <% if (articles && articles.length) { articles.forEach(function(a, idx){ %>
-          <a href="#"
+          <a href="/article"
              class="article-card group bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 ease-in-out flex flex-col cursor-pointer <%= idx<3 ? 'fade-in fade-in-'+(3+idx) : '' %>">
             <div class="card-image-container relative h-[160px] w-full flex-shrink-0 overflow-hidden">
               <img src="<%= a.imageSrc %>" alt="<%= a.title %>"
@@ -329,7 +329,7 @@
       <div class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         <!-- (same four static QA cards as your original markup) -->
         <!-- Card 1 -->
-        <a href="qa.html"
+        <a href="/qa"
            class="group  relative bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 ease-in-out ring-1 ring-slate-100 hover:-translate-y-0.5">
           <div class="flex flex-row md:flex-col items-stretch">
             <div class="order-2 md:order-none md:absolute md:top-4 md:right-4 m-4 md:m-0">
@@ -351,7 +351,7 @@
         </a>
 
         <!-- Card 2 -->
-        <a href="qa.html"
+        <a href="/qa"
            class="group relative bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 ease-in-out ring-1 ring-slate-100 hover:-translate-y-0.5">
           <div class="flex flex-row md:flex-col items-stretch">
             <div class="order-2 md:order-none md:absolute md:top-4 md:right-4 m-4 md:m-0">
@@ -373,7 +373,7 @@
         </a>
 
         <!-- Card 3 -->
-        <a href="qa.html"
+        <a href="/qa"
            class="group relative bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 ease-in-out ring-1 ring-slate-100 hover:-translate-y-0.5">
           <div class="flex flex-row md:flex-col items-stretch">
             <div class="order-2 md:order-none md:absolute md:top-4 md:right-4 m-4 md:m-0">
@@ -395,7 +395,7 @@
         </a>
 
         <!-- Card 4 -->
-        <a href="qa.html"
+        <a href="/qa"
            class="group relative bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 ease-in-out ring-1 ring-slate-100 hover:-translate-y-0.5">
           <div class="flex flex-row md:flex-col items-stretch">
             <div class="order-2 md:order-none md:absolute md:top-4 md:right-4 m-4 md:m-0">

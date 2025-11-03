@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, user-scalable=no, shrink-to-fit=no"
+  />
+
+  <title><%= title %></title>
+  <meta name="description" content="<%= description %>" />
+
+  <!-- Favicon -->
+  <link rel="icon" href="<%= faviconUrl %>" type="image/x-icon" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="<%= pageUrl %>" />
+  <meta property="og:title" content="<%= title %>" />
+  <meta property="og:description" content="<%= description %>" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:url" content="<%= pageUrl %>" />
+  <meta name="twitter:title" content="<%= title %>" />
+  <meta name="twitter:description" content="<%= description %>" />
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-[#e4f0d0] relative">
+  <!-- Background -->
+  <div
+    class="absolute inset-0 opacity-36 pointer-events-none"
+    style="background-image: url('<%= bgUrl %>');"
+  ></div>
+
+  <!-- Header -->
+  <header class="bg-[#718e56] sticky top-0 z-50 shadow-md border-b border-green-100">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center py-4 relative">
+        <!-- Left nav -->
+        <nav class="hidden md:flex gap-6 text-md font-semibold text-white tracking-wide">
+          <a href="/">Home</a>
+          <a href="/about">About</a>
+          <a href="/eventss" class="font-bold">News & Event</a>
+          <a href="/book">Books</a>
+        </nav>
+
+        <!-- Center logo -->
+        <div class="absolute left-1/2 transform -translate-x-1/2 -bottom-7 bg-white rounded-full p-1 shadow-lg border border-green-100 z-10">
+          <img
+            src="<%= centerLogo %>"
+            alt="Logo"
+            class="w-16 h-16 rounded-full object-contain"
+          />
+        </div>
+
+        <!-- Right nav -->
+        <nav class="hidden md:flex gap-6 text-md font-semibold text-white tracking-wide">
+          <a href="/article">Articles</a>
+          <a href="/question">Question Answer</a>
+          <a href="/requestBook">Request a Book</a>
+          <a href="/contact">Contact</a>
+        </nav>
+
+        <!-- Mobile button -->
+        <div class="md:hidden">
+          <button
+            id="mm-btn"
+            class="text-gray-100 focus:outline-none"
+            aria-label="Toggle menu"
+          >
+            <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile menu -->
+      <div id="mm" class="md:hidden transition-all overflow-hidden max-h-0 opacity-0">
+        <div class="flex flex-col gap-3 py-4 px-2 text-white bg-[#5a7544] rounded-b-xl">
+          <a href="/" class="hover:bg-[#4f6639] px-4 py-2 rounded">Home</a>
+          <a href="/about" class="hover:bg-[#4f6639] px-4 py-2 rounded">About</a>
+          <a href="/book" class="hover:bg-[#4f6639] px-4 py-2 rounded">Books</a>
+          <a href="/events" class="bg-[#4f6639] px-4 py-2 rounded">News & Event</a>
+          <a href="/article" class="hover:bg-[#4f6639] px-4 py-2 rounded">Articles</a>
+          <a href="/question" class="hover:bg-[#4f6639] px-4 py-2 rounded">Question Answer</a>
+          <a href="/requestBook" class="hover:bg-[#4f6639] px-4 py-2 rounded">Request a Book</a>
+          <a href="/contact" class="hover:bg-[#4f6639] px-4 py-2 rounded">Contact</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Page title band -->
+  <div class="flex items-center justify-center h-[200px] w-full bg-[#C0D7AA]/80 rounded-b-4xl">
+    <h1 class="gulzartext text-3xl md:text-4xl font-bold text-[#4a7031] text-center rtl px-4">
+      News and Events
+    </h1>
+  </div>
+
+  <!-- List section -->
+  <section class="w-full py-10 px-4">
+    <div class="max-w-7xl mx-auto bg-gradient-to-b from-white rounded-3xl shadow-md px-6 py-8 relative">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl md:text-3xl font-bold text-green-800">News & Events</h2>
+      </div>
+
+      <!-- Arrows -->
+      <div class="absolute left-4 top-[50%] -translate-y-1/2 z-10">
+        <button
+          id="arrow-left"
+          class="bg-[#e2f0d0] rounded-full p-2 hover:bg-[#d2e3bc] transition"
+          aria-label="Scroll left"
+        >
+          <!-- same look as ChevronRight rotated -->
+          <svg class="h-5 w-5 text-green-700 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
+      <div class="absolute right-4 top-[50%] -translate-y-1/2 z-10">
+        <button
+          id="arrow-right"
+          class="bg-[#e2f0d0] rounded-full p-2 hover:bg-[#d2e3bc] transition"
+          aria-label="Scroll right"
+        >
+          <svg class="h-5 w-5 text-green-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Scrollable row -->
+      <div
+        id="scroll-row"
+        class="flex overflow-x-auto gap-6 scroll-smooth cursor-pointer"
+        style="scrollbar-width: none; -ms-overflow-style: none;"
+      >
+        <% events.forEach(function(ev){ %>
+          <div
+            class="w-[90%] sm:w-[47%] md:w-[47%] lg:w-[23%] mb-2 flex-shrink-0 bg-gradient-to-b from-[#f6fbf1] rounded-2xl p-4 shadow-md"
+          >
+            <a href="/events/<%= ev.id %>/<%= slugify(ev.title || ('event-' + ev.id)) %>">
+              <div class="overflow-hidden rounded-xl mb-4">
+                <img
+                  src="/api/events/image/<%= ev.id %>"
+                  alt="<%= ev.title || '' %>"
+                  class="w-full h-[160px] object-cover rounded-xl"
+                />
+              </div>
+            </a>
+
+            <h3 class="gulzartext text-green-800 text-lg font-bold mb-1">
+              <%= ev.title || '' %>
+            </h3>
+            <p class="text-gray-700 text-sm mb-4 gulzartext line-clamp-1">
+              <%= (ev.content || '').replace(/<[^>]*>/g, '') %>
+            </p>
+
+            <div class="flex justify-between items-center">
+              <a
+                href="/events/<%= ev.id %>/<%= slugify(ev.title || ('event-' + ev.id)) %>"
+                class="flex items-center text-sm text-yellow-700 bg-yellow-50 px-3 py-1.5 rounded-full hover:bg-yellow-100 transition"
+              >
+                Read More
+                <svg class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 5l7 7-7 7" />
+                </svg>
+              </a>
+              <span class="text-sm text-gray-500">View <%= ev.views || 0 %></span>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    </div>
+  </section>
+
+  <!-- Scripts -->
+  <script>
+    // mobile menu
+    const mmBtn = document.getElementById('mm-btn');
+    const mm = document.getElementById('mm');
+    if (mmBtn && mm) {
+      mmBtn.addEventListener('click', () => {
+        const open = mm.classList.contains('max-h-screen');
+        mm.classList.toggle('max-h-screen', !open);
+        mm.classList.toggle('opacity-100', !open);
+        mm.classList.toggle('max-h-0', open);
+        mm.classList.toggle('opacity-0', open);
+      });
+    }
+
+    const row = document.getElementById('scroll-row');
+    const leftBtn = document.getElementById('arrow-left');
+    const rightBtn = document.getElementById('arrow-right');
+
+    function scrollByDir(dir) {
+      if (!row) return;
+      const amt = row.offsetWidth;
+      row.scrollBy({ left: dir === 'left' ? -amt : amt, behavior: 'smooth' });
+    }
+
+    if (leftBtn) leftBtn.addEventListener('click', () => scrollByDir('left'));
+    if (rightBtn) rightBtn.addEventListener('click', () => scrollByDir('right'));
+
+    // auto-scroll every 2s
+    let autoTimer = null;
+    function startAuto() {
+      stopAuto();
+      autoTimer = setInterval(() => {
+        if (!row) return;
+        const maxLeft = row.scrollWidth - row.clientWidth;
+        if (row.scrollLeft >= maxLeft - 2) {
+          row.scrollTo({ left: 0, behavior: 'smooth' });
+        } else {
+          row.scrollBy({ left: row.offsetWidth, behavior: 'smooth' });
+        }
+      }, 2000);
+    }
+    function stopAuto() {
+      if (autoTimer) clearInterval(autoTimer);
+      autoTimer = null;
+    }
+    startAuto();
+
+    // pause on hover (optional UX nicety)
+    if (row) {
+      row.addEventListener('mouseenter', stopAuto);
+      row.addEventListener('mouseleave', startAuto);
+    }
+  </script>
+</body>
+</html>

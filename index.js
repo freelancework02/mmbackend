@@ -109,10 +109,7 @@
 
 
 
-
-
-
-// // index.js (server entry)
+// server.js
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
@@ -120,17 +117,20 @@ const path = require("path");
 const axios = require("axios");
 const db = require("./config/db");
 
-// ---- Create app & config ----
 const app = express();
 const PORT = process.env.PORT || 5000;
- 
-// If you want to point to a different upstream later, put it in .env
-// e.g. API_UPSTREAM=https://api.minaramasjid.com/api
-const API_UPSTREAM =
-  (process.env.API_UPSTREAM && process.env.API_UPSTREAM.replace(/\/+$/, "")) ||
-  "https://minaramasjid-backend.onrender.com/api";
 
-// View engine: EJS
+/**
+ * Internal base for SSR to call THIS server's API.
+ * Ends with /api so you can do `${API_BASE}/books` etc.
+ * Using 127.0.0.1 works locally; on platforms like Render this still hits the same container.
+ */
+const API_BASE =
+  (process.env.INTERNAL_API_BASE &&
+    process.env.INTERNAL_API_BASE.replace(/\/+$/, "")) ||
+  `https://minaramasjid-backend.onrender.com/api`;
+
+// ---- View engine ----
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 
@@ -142,7 +142,7 @@ app.use(express.urlencoded({ limit: "200mb", extended: true }));
 // ---- Static files ----
 app.use(express.static(path.join(__dirname, "public")));
 
-// ============ Helpers (used by SSR home) ============
+// ================= Helpers =================
 const slugify = (text = "") =>
   String(text)
     .toLowerCase()
@@ -152,6 +152,9 @@ const slugify = (text = "") =>
     .replace(/-+/g, "-");
 
 const stripTags = (html = "") => String(html).replace(/<[^>]*>/g, "");
+const stripHTML = (html = "") =>
+  String(html).replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+
 const clamp = (str = "", n = 160) =>
   str.length <= n ? str : str.slice(0, n).trim() + "…";
 
@@ -166,19 +169,36 @@ const formatDate = (raw) => {
   });
 };
 
+// Light, dependency-free sanitizer good enough for CMS HTML blocks
+function sanitizeHtml(unsafeHtml = "") {
+  return String(unsafeHtml)
+    // kill script/style blocks
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
+    .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, "")
+    // remove on* handlers (onload, onclick, …)
+    .replace(/\son\w+\s*=\s*"[^"]*"/gi, "")
+    .replace(/\son\w+\s*=\s*'[^']*'/gi, "")
+    .replace(/\son\w+\s*=\s*[^\s>]+/gi, "")
+    // neutralize javascript: urls
+    .replace(/javascript:/gi, "");
+}
+
+const detectDirection = (s = "") =>
+  /[\u0600-\u06FF]/.test(String(s)) ? "rtl" : "ltr";
+
 async function fetchJSON(url) {
   const res = await axios.get(url, { timeout: 15000 });
   return res.data;
 }
 
-// Pull home-page data server-side so the client never sees upstream API calls
+// Pull home-page data server-side so the client never sees external API calls
 async function getHomeData() {
   try {
     const [articles, writers, books, events] = await Promise.all([
-      fetchJSON(`${API_UPSTREAM}/articles`),
-      fetchJSON(`${API_UPSTREAM}/writers`),
-      fetchJSON(`${API_UPSTREAM}/books`),
-      fetchJSON(`${API_UPSTREAM}/events`),
+      fetchJSON(`${API_BASE}/articles`),
+      fetchJSON(`${API_BASE}/writers`),
+      fetchJSON(`${API_BASE}/books`),
+      fetchJSON(`${API_BASE}/events`),
     ]);
 
     const normArticles = (Array.isArray(articles) ? articles : []).map((a) => ({
@@ -192,7 +212,7 @@ async function getHomeData() {
       writers: a.writers || a.writer || "",
       translator: a.translator || "",
       slug: slugify(a.title || `article-${a.id}`),
-      imageSrc: `/api/articles/image/${a.id}`, // proxied below
+      imageSrc: `/api/articles/image/${a.id}`,
       safeText: clamp(stripTags(a.urduDescription || a.englishDescription || "")),
     }));
 
@@ -203,7 +223,7 @@ async function getHomeData() {
       views: e.views ?? 0,
       date: formatDate(e.date || e.createdOn || e.modifiedOn),
       slug: slugify(e.title || `event-${e.id}`),
-      imageSrc: `/api/events/image/${e.id}`, // proxied
+      imageSrc: `/api/events/image/${e.id}`,
       safeText: clamp(stripTags(e.content || "")),
     }));
 
@@ -215,7 +235,7 @@ async function getHomeData() {
       views: b.views ?? 0,
       downloads: b.downloads ?? 0,
       slug: slugify(b.title || `book-${b.id}`),
-      imageSrc: `/api/books/cover/${b.id}`, // proxied
+      imageSrc: `/api/books/cover/${b.id}`,
       subTitle: b.subTitle || b.description || "",
     }));
 
@@ -223,80 +243,22 @@ async function getHomeData() {
       id: w.id,
       name: w.name || "",
       designation: w.designation || "Islamic Scholar",
-      imageSrc: `/api/writers/image/${w.id}`, // proxied
+      imageSrc: `/api/writers/image/${w.id}`,
     }));
 
-    return { articles: normArticles, events: normEvents, books: normBooks, writers: normWriters };
+    return {
+      articles: normArticles,
+      events: normEvents,
+      books: normBooks,
+      writers: normWriters,
+    };
   } catch (err) {
     console.error("Home data fetch failed:", err?.message || err);
     return { articles: [], events: [], books: [], writers: [] };
   }
 }
 
-// ============ Image Proxy Routes (hide upstream) ============
-// Order matters: put these BEFORE your routers in case those routers don’t define these paths.
-
-async function proxyImage(res, url, fallbackPath = "/assets/image/default/articles.jpeg") {
-  try {
-    const upstream = await axios.get(url, { responseType: "stream", timeout: 15000 });
-    if (upstream.headers["content-type"]) {
-      res.set("Content-Type", upstream.headers["content-type"]);
-    }
-    res.set("Cache-Control", "public, max-age=600");
-    upstream.data.pipe(res);
-  } catch (e) {
-    // fallback to local placeholder inside /public if you have it;
-    // else this will 302 to a remote placeholder below.
-    if (fallbackPath.startsWith("http")) {
-      res.redirect(fallbackPath);
-    } else {
-      // try local public file, otherwise remote hardcoded placeholder
-      res.redirect(fallbackPath || "https://minaramasjid.com/assets/image/default/articles.jpeg");
-    }
-  }
-}
-
-// Books cover: /api/books/cover/:id
-app.get("/api/books/cover/:id", async (req, res) => {
-  const { id } = req.params;
-  await proxyImage(
-    res,
-    `${API_UPSTREAM}/books/cover/${id}`,
-    "/assets/image/default/articles.jpeg"
-  );
-});
-
-// Articles image: /api/articles/image/:id
-app.get("/api/articles/image/:id", async (req, res) => {
-  const { id } = req.params;
-  await proxyImage(
-    res,
-    `${API_UPSTREAM}/articles/image/${id}`,
-    "/assets/image/default/articles.jpeg"
-  );
-});
-
-// Events image: /api/events/image/:id
-app.get("/api/events/image/:id", async (req, res) => {
-  const { id } = req.params;
-  await proxyImage(
-    res,
-    `${API_UPSTREAM}/events/image/${id}`,
-    "/assets/image/default/articles.jpeg"
-  );
-});
-
-// Writers image: /api/writers/image/:id
-app.get("/api/writers/image/:id", async (req, res) => {
-  const { id } = req.params;
-  await proxyImage(
-    res,
-    `${API_UPSTREAM}/writers/image/${id}`,
-    "/assets/image/default/writer.jpeg"
-  );
-});
-
-// ---- API Routes (your existing JSON APIs) ----
+// ---- API Routes (existing JSON + image endpoints) ----
 app.use("/api/articles", require("./routes/articleRoutes"));
 app.use("/api/books", require("./routes/bookRoutes"));
 app.use("/api/feedback", require("./routes/feedbackRoutes"));
@@ -317,12 +279,8 @@ app.use("/api/share", require("./routes/shareRoutes"));
 app.use("/api/galleries", require("./routes/galleryRoutes"));
 
 // ---- SSR Pages (EJS) ----
-// Home page: Views/index.ejs
 app.get("/", async (req, res) => {
-  // Get data server-side (client sees no upstream calls)
   const data = await getHomeData();
-
-  // Limit counts if your index.ejs expects specific grid sizes
   res.render("index", {
     events: data.events.slice(0, 4),
     books: data.books.slice(0, 4),
@@ -331,25 +289,302 @@ app.get("/", async (req, res) => {
   });
 });
 
-// Articles listing page (your converted EJS):
-app.get("/article", (req, res) => {
-  res.render("pages/article");
+app.get("/article", (req, res) => res.render("pages/article"));
+app.get("/book", (req, res) => res.render("pages/book"));
+app.get("/qa", (req, res) => res.render("pages/qa"));
+app.get("/about", (req, res) => res.render("pages/about"));
+app.get("/contact", (req, res) => res.render("pages/contact"));
+ 
+
+/** ----------------- BOOK DETAIL (SSR) /bookdetail/:id/:slug ----------------- */
+app.get("/bookdetail/:id/:slug", async (req, res) => {
+  const { id, slug } = req.params;
+
+  try {
+    // use INTERNAL API base
+    const bookRes = await axios.get(`${API_BASE}/books/${id}`);
+    const book = bookRes.data;
+
+    if (!book || !book.title) return res.status(404).send("Book not found");
+
+    const actualSlug = slugify(book.title);
+    if (slug !== actualSlug) {
+      return res.redirect(301, `/bookdetail/${book.id}/${actualSlug}`);
+    }
+
+    const [allBooksRes, writersRes] = await Promise.all([
+      axios.get(`${API_BASE}/books`),
+      axios.get(`${API_BASE}/writers`),
+    ]);
+
+    const allBooks = Array.isArray(allBooksRes.data) ? allBooksRes.data : [];
+    const writers = Array.isArray(writersRes.data) ? writersRes.data : [];
+
+    const wanted = (book.author || "").toLowerCase().trim();
+    const matchedWriter =
+      writers.find((w) => (w.name || "").toLowerCase().trim() === wanted) ||
+      null;
+
+    const suggestions = allBooks
+      .filter(
+        (b) =>
+          b.id !== book.id &&
+          (b.author || "").toLowerCase().trim() === wanted
+      )
+      .slice(0, 8);
+
+    const metaTitle = "Book Detail | Maula Ali Research Center";
+    const metaDesc =
+      stripHTML(book.description || "") ||
+      "Read details about this book on Maula Ali Research Centre.";
+    // Use current host (works locally and in prod)
+    const metaImage = `${req.protocol}://${req.get("host")}/api/books/cover/${book.id}`;
+    const pageUrl = `${req.protocol}://${req.get("host")}${req.originalUrl}`;
+    const baseHref =
+      process.env.PUBLIC_BASE_HREF ||
+      `${req.protocol}://${req.get("host")}/`;
+
+    return res.render("pages/book_view", {
+      baseHref,
+      pageUrl,
+      metaTitle,
+      metaDesc: metaDesc.slice(0, 300),
+      metaImage,
+      book,
+      writer: matchedWriter,
+      suggestions,
+      slugify,
+      stripHTML,
+    });
+  } catch (err) {
+    console.error("Book detail error:", err?.response?.status, err?.message);
+    return res.status(500).send("Something went wrong");
+  }
 });
 
-app.get("/book", (req, res) => {
-  res.render("pages/book");
+/** ----------------- ARTICLE DETAIL (SSR) /article/:id/:slug ----------------- */
+app.get("/article/:id/:slug", async (req, res) => {
+  const { id, slug } = req.params;
+
+  try {
+    const article = await fetchJSON(`${API_BASE}/articles/${id}`);
+    if (!article || !article.title) {
+      return res.status(404).send("Article not found");
+    }
+
+    const actualSlug = slugify(article.title);
+    if (slug !== actualSlug) {
+      // FIX: redirect to the SAME route shape (not /articledetail)
+      return res.redirect(301, `/article/${article.id}/${actualSlug}`);
+    }
+
+    const allArticles = await fetchJSON(`${API_BASE}/articles`);
+
+    const related = (Array.isArray(allArticles) ? allArticles : [])
+      .filter((a) => a.id !== article.id)
+      .sort((a, b) => (b?.views ?? 0) - (a?.views ?? 0))
+      .slice(0, 3);
+
+    const wantedWriter = (article.writers || article.writer || "")
+      .toLowerCase()
+      .trim();
+
+    let writerHighlights = (Array.isArray(allArticles) ? allArticles : [])
+      .filter(
+        (a) =>
+          a.id !== article.id &&
+          (a.writers || a.writer || "").toLowerCase().trim() === wantedWriter
+      )
+      .slice(0, 3);
+
+    if (!writerHighlights.length) {
+      writerHighlights = (Array.isArray(allArticles) ? allArticles : [])
+        .filter((a) => a.id !== article.id)
+        .sort((a, b) => (b?.views ?? 0) - (a?.views ?? 0))
+        .slice(0, 3);
+    }
+
+    const metaTitle = `Article Detail | ${article.title} | Maula Ali Research Center`;
+    const metaDesc =
+      stripHTML(article.englishDescription || article.urduDescription || "") ||
+      "Read the full article on Maula Ali Research Centre.";
+    const metaImage = `${req.protocol}://${req.get("host")}/api/articles/image/${article.id}`;
+    const pageUrl = `${req.protocol}://${req.get("host")}${req.originalUrl}`;
+    const baseHref =
+      process.env.PUBLIC_BASE_HREF || `${req.protocol}://${req.get("host")}/`;
+
+    res.render("pages/article_view", {
+      baseHref,
+      pageUrl,
+      metaTitle,
+      metaDesc: clamp(metaDesc, 300),
+      metaImage,
+      article,
+      related,
+      writerHighlights,
+      slugify,
+      stripHTML,
+    });
+  } catch (err) {
+    console.error("Article detail error:", err?.response?.status, err?.message);
+    res.status(500).send("Something went wrong");
+  }
 });
 
-app.get("/qa", (req, res) => {
-  res.render("pages/qa");
+/** ----------------- QUESTION DETAIL (SSR) /question/:id/:slug ----------------- */
+app.get("/question/:id/:slug", async (req, res) => {
+  const { id, slug } = req.params;
+
+  // Use the current request host so it works in prod too
+  const LOCAL_API_BASE = `${req.protocol}://${req.get("host")}/api`;
+
+  try {
+    // 1) Single question
+    const qRes = await axios.get(`${LOCAL_API_BASE}/questions/${encodeURIComponent(id)}`);
+    const question = qRes.data || {};
+
+    if (!question || !question.id) {
+      return res.status(404).send("Question not found");
+    }
+
+    // canonical slug
+    const canonicalBase =
+      (question.slug && String(question.slug).trim()) ||
+      question.questionEnglish ||
+      question.questionUrdu ||
+      `question-${question.id}`;
+
+    const actualSlug = slugify(canonicalBase);
+    if (slug !== actualSlug) {
+      return res.redirect(301, `/question/${question.id}/${actualSlug}`);
+    }
+
+    // 2) Fetch all for "related/other questions"
+    const allRes = await axios.get(`${LOCAL_API_BASE}/questions`);
+    const all = Array.isArray(allRes.data) ? allRes.data : [];
+
+    const others = all.filter((x) => x.id !== question.id);
+    const sidebar = others.slice(0, 5);
+    const related = others.slice(0, 13);
+
+    // 3) Meta / SEO
+    const pageUrl = `${req.protocol}://${req.get("host")}${req.originalUrl}`;
+    const titleText =
+      stripTags(question.questionEnglish || question.questionUrdu || "").trim();
+    const metaTitle = titleText
+      ? `${titleText} — Maula Ali Research Center`
+      : "Question — Maula Ali Research Center";
+
+    const rawDesc =
+      stripTags(
+        (question.answerEnglish || question.answerUrdu || "").toString()
+      ) || titleText || "Question & Answer";
+    const metaDesc = clamp(rawDesc, 300);
+
+    // A generic image (replace if you have per-question images)
+    const metaImage = `${req.protocol}://${req.get("host")}/assets/og-default.png`;
+
+    // 4) Prepare HTML blocks (sanitized)
+    const questionHTML = sanitizeHtml(
+      String(question.questionEnglish || question.questionUrdu || "")
+    );
+    const answerHTML = sanitizeHtml(
+      String(question.answerUrdu || question.answerEnglish || "")
+    );
+ 
+    res.render("pages/question_view", {
+      // SEO/meta
+      metaTitle,
+      metaDesc,
+      metaImage,
+      pageUrl,
+
+      // core data
+      question,
+      sidebar,
+      related,
+
+      // prepared HTML to render with <%- %>
+      questionHTML,
+      answerHTML,
+
+      // helpers
+      slugify,
+      detectDirection,
+      stripTags,
+    });
+  } catch (err) {
+    console.error("Question detail error:", err?.message || err);
+    res.status(500).send("Something went wrong");
+  }
 });
 
-// Optional: simple health check endpoints for infra
+
+/** ----------------- NEWS & EVENTS (SSR LIST) /newsandevent ----------------- */
+app.get("/events", async (req, res) => {
+  try {
+    const events = await fetchJSON(`${API_BASE}/events`);
+    const pageUrl = `${req.protocol}://${req.get("host")}${req.originalUrl}`;
+
+    res.render("pages/news_and_event", {
+      title: "Events | Maula Ali Research Center",
+      description: "minaramasjid.com",
+      pageUrl,
+      bgUrl: "/images/newbg.png",
+      centerLogo: "/images/marclogo.png",
+      faviconUrl: "/images/marc.png",
+      events: Array.isArray(events) ? events : [],
+      slugify,
+    });
+  } catch (err) {
+    console.error("Events list error:", err?.message || err);
+    res.status(500).send("Something went wrong");
+  }
+});
+
+/** ----------------- EVENT DETAIL (SSR) /newsandevent/:id/:slug ------------- */
+app.get("/events/:id/:slug", async (req, res) => {
+  const { id, slug } = req.params;
+  try {
+    const ev = await fetchJSON(`${API_BASE}/events/${encodeURIComponent(id)}`);
+    if (!ev || !ev.id) return res.status(404).send("Event not found");
+
+    const actual = slugify(ev.title || `event-${ev.id}`);
+    if (slug !== actual) {
+      return res.redirect(301, `/events/${ev.id}/${actual}`);
+    }
+
+    // Pull some more for "related"
+    const all = await fetchJSON(`${API_BASE}/events`);
+    const related = (Array.isArray(all) ? all : [])
+      .filter((x) => x.id !== ev.id)
+      .slice(0, 8);
+
+    const pageUrl = `${req.protocol}://${req.get("host")}${req.originalUrl}`;
+    res.render("pages/event_view", {
+      // minimal detail page to avoid 404 from list links
+      title: ev.title || "Event",
+      description: stripHTML(ev.content || ""),
+      pageUrl,
+      faviconUrl: "/images/marc.png",
+      bgUrl: "/images/newbg.png",
+      eventItem: ev,
+      related,
+      slugify,
+    });
+  } catch (err) {
+    console.error("Event detail error:", err?.message || err);
+    res.status(500).send("Something went wrong");
+  }
+});
+
+
+// Health checks
 app.get("/healthz", (req, res) => res.status(200).send("ok"));
 app.get("/readyz", (req, res) => res.status(200).send("ready"));
 
-// ---- 404 handler (for unknown routes) ----
-app.use((req, res, next) => {
+// ---- 404 for unknown ----
+app.use((req, res) => {
   if (req.path.startsWith("/api/")) {
     return res.status(404).json({ error: "API route not found" });
   }
@@ -371,7 +606,7 @@ app.use((err, req, res, next) => {
 
 // ---- Start server ----
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`🚀 Server running on http://127.0.0.1:${PORT}`);
 
   // Test DB connection once at boot
   db.getConnection((err, connection) => {
@@ -383,4 +618,3 @@ app.listen(PORT, () => {
     }
   });
 });
- 

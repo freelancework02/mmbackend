@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Original Meta Tags (Preserved) -->
+    <title>About Us | Maula Ali Research Center</title>
+    <meta name="keywords" content="Maula Ali Research Centre, About Maula Ali Research Centre, Islamic Manuscripts, Islamic Books, Quranic Commentary, Islamic Research, Islamic Heritage, Arabic and Persian Manuscripts, Muslim Intellectuals, Islamic Scholars">
+    <meta name="description" content="Learn about Maula Ali Research Centre's mission to preserve, research, and publish rare Islamic manuscripts, including Quranic commentaries and exegesis. We aim to make Islamic knowledge accessible through translations into multiple languages.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://minaramasjid.com/about">
+    <meta property="og:title" content="About Maula Ali Research Centre - Islamic Manuscript Preservation">
+    <meta property="og:description" content="Discover the mission of Maula Ali Research Centre, dedicated to preserving and publishing rare Islamic manuscripts. We focus on translating and distributing important Islamic texts to scholars and the Muslim Ummah.">
+    <meta property="og:image" content="https://minaramasjid.com/assets/image/logo/marc.png">
+    <meta property="og:url" content="https://minaramasjid.com/about">
+    <meta property="og:type" content="website">
+    <meta name="twitter:title" content="About Maula Ali Research Centre - Islamic Manuscript Preservation">
+    <meta name="twitter:description" content="Learn more about Maula Ali Research Centre, dedicated to researching, preserving, and publishing rare Islamic manuscripts for the benefit of scholars and the Muslim Ummah.">
+    <meta name="twitter:image" content="https://minaramasjid.com/assets/image/logo/marc.png">
+    <meta name="twitter:card" content="summary_large_image">
+    
+    <!-- Schema.org (Preserved) -->
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "AboutPage",
+            "mainEntityOfPage": {
+                "@type": "WebPage",
+                "@id": "https://minaramasjid.com/about"
+            },
+            "name": "About Us | Maula Ali Research Center",
+            "url": "https://minaramasjid.com/about",
+            "description": "Learn more about Maula Ali Research Center and our Islamic manuscript research and publications.",
+            "publisher": {
+                "@type": "Organization",
+                "name": "Maula Ali Research Center",
+                "logo": {
+                    "@type": "ImageObject",
+                    "url": "https://minaramasjid.com/assets/image/logo/marc.png"
+                }
+            }
+        }
+    </script>
+    
+    <!-- Base Href (Preserved) -->
+    <base href="https://minaramasjid.com/">
+    <link rel="icon" href="https://minaramasjid.com/assets/image/logo/favicon.ico" type="image/x-icon">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Fonts (Roboto Flex) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,400;8..144,500;8..144,700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
+
+    <!-- Custom Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Roboto Flex"', 'sans-serif'],
+                    },
+                    colors: {
+                        // Using a teal color palette as the primary "one" color
+                        primary: {
+                            light: '#0d9488', // teal-600
+                            DEFAULT: '#0f766e', // teal-700
+                            dark: '#115e59', // teal-800
+                        }
+                    },
+                    keyframes: {
+                        fadeInDown: {
+                            '0%': { opacity: '0', transform: 'translateY(-20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    },
+                    animation: {
+                        'fade-in-down': 'fadeInDown 0.6s ease-out forwards',
+                        'fade-in-up': 'fadeInUp 0.6s ease-out forwards',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom style for the new language toggle buttons */
+        .lang-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #4b5563; /* gray-600 */
+            transition: all 0.2s ease-in-out;
+        }
+        .active-lang-btn {
+            background-color: white;
+            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+            color: #0f766e; /* primary-DEFAULT */
+        }
+
+        /* Helper class for animation delay */
+        .animation-delay-300 {
+            animation-delay: 300ms;
+        }
+    </style>
+</head>
+<body class="font-sans bg-white text-gray-800 antialiased">
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="relative flex items-center justify-between h-20">
+                
+                <!-- Mobile Menu Button (lg:hidden) -->
+                <div class="absolute inset-y-0 left-0 flex items-center lg:hidden">
+                    <button id="mobile-menu-button" type="button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-500 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary" aria-controls="mobile-menu" aria-expanded="false">
+                        <span class="sr-only">Open main menu</span>
+                        <i class="fas fa-bars fa-fw"></i>
+                    </button>
+                </div>
+
+                <!-- Mobile Logo (lg:hidden) -->
+                <div class="flex-1 flex items-center justify-center lg:hidden">
+                    <a href="/" class="flex-shrink-0">
+                        <img class="h-12 w-auto" src="https://minaramasjid.com/assets/image/logo/marc.png" alt="Maula Ali Research Center Logo">
+                    </a>
+                </div>
+
+                <!-- Desktop Menu (hidden lg:flex) -->
+                <div class="hidden lg:flex lg:items-center lg:space-x-4">
+                    <a href="/" class="text-gray-700 hover:text-primary-light px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Home</a>
+                    <a href="/about" class="text-primary-light font-bold px-3 py-2 rounded-md text-sm" aria-current="page">About</a>
+                    <a href="/events" class="text-gray-700 hover:text-primary-light px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">News & Events</a>
+                    <a href="/book" class="text-gray-700 hover:text-primary-light px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Books</a>
+                </div>
+
+                <!-- Desktop Logo (hidden lg:flex) -->
+                <div class="hidden lg:flex lg:flex-shrink-0 mx-6">
+                    <a href="/">
+                        <img class="h-16 w-auto" src="https://minaramasjid.com/assets/image/logo/marc.png" alt="Maula Ali Research Center Logo">
+                    </a>
+                </div>
+
+                <!-- Desktop Menu Right (hidden lg:flex) -->
+                <div class="hidden lg:flex lg:items-center lg:space-x-4">
+                    <a href="/article" class="text-gray-700 hover:text-primary-light px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Articles</a>
+                    <a href="/qa" class="text-gray-700 hover:text-primary-light px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Question Answer</a>
+                    <a href="/book-request" class="text-gray-700 hover:text-primary-light px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Request a Book</a>
+                    <a href="/contact" class="text-gray-700 hover:text-primary-light px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Contact</a>
+                </div>
+
+                <!-- Mobile Search (Placeholder) -->
+                <div class="absolute inset-y-0 right-0 flex items-center pr-2 lg:hidden">
+                    <button class="p-2 rounded-full text-gray-500 hover:text-gray-900">
+                        <i class="fas fa-search fa-fw"></i>
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Mobile Menu, show/hide based on menu state. -->
+        <div class="lg:hidden hidden" id="mobile-menu">
+            <div class="px-2 pt-2 pb-3 space-y-1">
+                <a href="/" class="text-gray-700 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">Home</a>
+                <a href="/about" class="text-primary-light bg-gray-100 block px-3 py-2 rounded-md text-base font-medium" aria-current="page">About</a>
+                <a href="/events" class="text-gray-700 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">News & Events</a>
+                <a href="/book" class="text-gray-700 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">Books</a>
+                <a href="/article" class="text-gray-700 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">Articles</a>
+                <a href="/qa" class="text-gray-700 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">Question Answer</a>
+                <a href="/book-request" class="text-gray-700 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">Request a Book</a>
+                <a href="/contact" class="text-gray-700 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">Contact</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Hero Section -->
+        <section class="bg-white pt-20 pb-24 sm:pt-28 sm:pb-32 overflow-hidden">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-primary-dark font-sans animate-fade-in-down">
+                        Maula Ali Research Center
+                    </h1>
+                    <p class="mt-6 text-lg md:text-xl text-gray-600 max-w-3xl mx-auto animate-fade-in-up animation-delay-300">
+                        Discover a wealth of Islamic knowledge, from insightful articles to in-depth research.
+                        Explore the rich heritage of Islam and gain a deeper understanding of its teachings and practices.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Cards Section -->
+        <section class="py-16 sm:py-24 bg-gray-50 overflow-hidden">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 space-y-16 lg:space-y-24">
+
+                <!-- Card 1: Minara Masjid -->
+                <div class="group lg:grid lg:grid-cols-2 lg:gap-16 xl:gap-24 items-center">
+                    <!-- Image -->
+                    <div class="transition-all duration-500 ease-in-out group-hover:scale-105">
+                        <img loading="lazy" src="https://minaramasjid.com/assets/storage/about_contents/about-content-image-1736963002.webp" class="h-auto w-full object-cover rounded-3xl shadow-2xl" alt="Minara Masjid">
+                    </div>
+                    
+                    <!-- Content -->
+                    <div class="mt-12 lg:mt-0">
+                        <!-- Language Switch -->
+                        <div class="flex justify-start mb-6">
+                            <div class="flex rounded-lg bg-gray-200/60 p-1">
+                                <button data-lang="en" data-section-id="1" class="lang-btn active-lang-btn">EN</button>
+                                <button data-lang="ur" data-section-id="1" class="lang-btn">UR</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Text Content -->
+                        <div class="card-content-wrapper" data-section-id="1" dir="ltr">
+                            <p class="text-sm font-medium text-primary lang-content" data-lang="en" data-section-id="1">About</p>
+                            <p class="text-sm font-medium text-primary lang-content hidden" data-lang="ur" data-section-id="1">تعارف</p>
+                            
+                            <h2 class="mt-2 text-3xl md:text-4xl font-bold text-gray-900 font-sans lang-content" data-lang="en" data-section-id="1">
+                                Minara Masjid
+                            </h2>
+                            <h2 class="mt-2 text-3xl md:text-4xl font-bold text-gray-900 font-sans lang-content hidden" data-lang="ur" data-section-id="1">
+                                منارہ مسجد
+                            </h2>
+                            
+                            <div class="mt-6 text-gray-700 font-sans text-xl leading-relaxed space-y-4 lang-content" data-lang="en" data-section-id="1">
+                                <p>Maula Ali Research Centre aims to acquire old Islamic manuscripts (Interpretations, Commentaries, Exegesis, etc.) of our ancestors from libraries across the world which have not been published; if published, they are no longer accessible, etc. and work upon its publication according to modern standards by carrying out research on the Arabic and Persian scripts, referencing, easy translation into multiple languages, mainly English, Hindi and Urdu, and lastly, printing and distributing it amongst the scholars, research experts, intellectuals and the entire Muslim Ummah.</p>
+                                </div>
+                            <div class="mt-6 text-gray-700 font-sans text-xl leading-relaxed space-y-4 lang-content hidden" data-lang="ur" data-section-id="1">
+                                <p><strong>مولا علی ریسرچ سینٹر &nbsp;کے مقاصد:</strong><br />&nbsp;بزرگانِ دین کی جو کتابیں ہند و بیرونِ ہند کی مختلف لائبریریوں میں محفوظ ہیں، اُنھیں حاصل کرنا۔<br />&nbsp;&nbsp;اُن پر از سرِنو،جدید انداز میں کام کرنا۔<br />&nbsp;&nbsp;اگر وہ کتابیں عربی یا فارسی زبان میں ہوں، تو اُن کا آسان انداز میں،اردو ،ہندی اور انگلش تینوں زبان میں ترجمہ کرنا۔ &nbsp;<br />&nbsp;&nbsp;عربی اور فارسی متن کی تحقیق کرنا۔<br />&nbsp;&nbsp;مشکل کتابوں کو آسان کرنا۔<br />پھر اُن کی اشاعت کروا کے قوم کے حوالے کرنا۔</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2: Maula Ali Research Centre -->
+                <div class="group lg:grid lg:grid-cols-2 lg:gap-16 xl:gap-24 items-center">
+                    <!-- Content -->
+                    <div class="mt-12 lg:mt-0 lg:order-2">
+                        <!-- Language Switch -->
+                        <div class="flex justify-start mb-6">
+                            <div class="flex rounded-lg bg-gray-200/60 p-1">
+                                <button data-lang="en" data-section-id="2" class="lang-btn active-lang-btn">EN</button>
+                                <button data-lang="ur" data-section-id="2" class="lang-btn">UR</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Text Content -->
+                        <div class="card-content-wrapper" data-section-id="2" dir="ltr">
+                            <p class="text-sm font-medium text-primary lang-content" data-lang="en" data-section-id="2">About</p>
+                            <p class="text-sm font-medium text-primary lang-content hidden" data-lang="ur" data-section-id="2">تعارف</p>
+                            
+                            <h2 class="mt-2 text-3xl md:text-4xl font-bold text-gray-900 font-sans lang-content" data-lang="en" data-section-id="2">
+                                Maula Ali Research Centre
+                            </h2>
+                            <h2 class="mt-2 text-3xl md:text-4xl font-bold text-gray-900 font-sans lang-content hidden" data-lang="ur" data-section-id="2">
+                                مولا علی ریسرچ سینٹر
+                            </h2>
+                            
+                            <div class="mt-6 text-gray-700 font-sans text-xl leading-relaxed space-y-4 lang-content" data-lang="en" data-section-id="2">
+                                <p>Maula Ali Research Centre aims to acquire old Islamic manuscripts (Interpretations, Commentaries, Exegesis, etc.) of our ancestors from libraries across the world which have not been published; if published, they are no longer accessible, etc. and work upon its publication according to modern standards by carrying out research on the Arabic and Persian scripts, referencing, easy translation into multiple languages, mainly English, Hindi and Urdu, and lastly, printing and distributing it amongst the scholars, research experts, intellectuals and the entire Muslim Ummah.</p>
+                            </div>
+                            <div class="mt-6 text-gray-700 font-sans text-xl leading-relaxed space-y-4 lang-content hidden" data-lang="ur" data-section-id="2">
+                                <p>مولا علی ریسرچ سینٹر &nbsp;کے مقاصد:<br />&nbsp;<br />بزرگانِ دین کی جو کتابیں ہند و بیرونِ ہند کی مختلف لائبریریوں میں محفوظ ہیں، اُنھیں حاصل کرنا۔<br />&nbsp;&nbsp;<br />اُن پر از سرِنو،جدید انداز میں کام کرنا۔<br />&nbsp;&nbsp;</p>
+                                <p>اگر وہ کتابیں عربی یا فارسی زبان میں ہوں، تو اُن کا آسان انداز میں،اردو ،ہندی اور انگلش تینوں زبان میں ترجمہ کرنا۔ &nbsp;<br />&nbsp;&nbsp;</p>
+                                <p>عربی اور فارسی متن کی تحقیق کرنا۔<br />&nbsp;&nbsp;</p>
+                                <p>مشکل کتابوں کو آسان کرنا۔<br />&nbsp;&nbsp;</p>
+                                <p>پھر اُن کی اشاعت کروا کے قوم کے حوالے کرنا۔</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Image -->
+                    <div class="lg:order-1 transition-all duration-500 ease-in-out group-hover:scale-105">
+                        <img loading="lazy" src="https://minaramasjid.com/assets/storage/about_contents/about-content-image-1736963120.webp" class="h-auto w-full object-cover rounded-3xl shadow-2xl" alt="Maula Ali Research Centre">
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Our Team Section -->
+        <section class="py-16 sm:py-24 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900">
+                        Our Team
+                    </h2>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8 mt-12">
+                    
+                    <!-- Team Member Card -->
+                    <div class="bg-gray-50 rounded-2xl shadow-lg text-center p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-2 overflow-hidden">
+                        <img loading="lazy" src="https://minaramasjid.com/assets/storage/writers/writer-profilePic-1736585983.webp" alt="Mazhar Husain Aleemi" class="w-36 h-36 rounded-full mx-auto object-cover border-4 border-white shadow-md" onerror="this.onerror=null;this.src='https://minaramasjid.com/assets/image/default/writer.jpeg'">
+                        <div class="mt-5">
+                            <p class="text-lg font-bold text-gray-900">
+                                Mazhar Husain Aleemi
+                            </p>
+                            <p class="text-sm font-medium text-primary-dark">
+                                Islamic Scholars
+                            </p>
+                            <a href="https://minaramasjid.com/scholar-detail/" class="mt-5 inline-block rounded-full bg-white px-5 py-2 text-sm font-semibold text-primary shadow-sm hover:bg-primary-light hover:text-white transition-all duration-300 transform hover:scale-105">
+                                View Profile
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Team Member Card -->
+                    <div class="bg-gray-50 rounded-2xl shadow-lg text-center p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-2 overflow-hidden">
+                        <img loading="lazy" src="https://minaramasjid.com/assets/storage/writers/" alt="Faiz ashrafi" class="w-36 h-36 rounded-full mx-auto object-cover border-4 border-white shadow-md" onerror="this.onerror=null;this.src='https://minaramasjid.com/assets/image/default/writer.jpeg'">
+                        <div class="mt-5">
+                            <p class="text-lg font-bold text-gray-900">
+                                Faiz ashrafi
+                            </p>
+                            <p class="text-sm font-medium text-primary-dark">
+                                Islamic Scholars
+                            </p>
+                            <a href="https://minaramasjid.com/scholar-detail/" class="mt-5 inline-block rounded-full bg-white px-5 py-2 text-sm font-semibold text-primary shadow-sm hover:bg-primary-light hover:text-white transition-all duration-300 transform hover:scale-105">
+                                View Profile
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Team Member Card -->
+                    <div class="bg-gray-50 rounded-2xl shadow-lg text-center p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-2 overflow-hidden">
+                        <img loading="lazy" src="https://minaramasjid.com/assets/storage/writers/" alt="Hammad Ashrafi" class="w-36 h-36 rounded-full mx-auto object-cover border-4 border-white shadow-md" onerror="this.onerror=null;this.src='https://minaramasjid.com/assets/image/default/writer.jpeg'">
+                        <div class="mt-5">
+                            <p class="text-lg font-bold text-gray-900">
+                                Hammad Ashrafi
+                            </p>
+                            <p class="text-sm font-medium text-primary-dark">
+                                Islamic Scholars
+                            </p>
+                            <a href="https://minaramasjid.com/scholar-detail/hammad-ashrafi-translator-521" class="mt-5 inline-block rounded-full bg-white px-5 py-2 text-sm font-semibold text-primary shadow-sm hover:bg-primary-light hover:text-white transition-all duration-300 transform hover:scale-105">
+                                View Profile
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Team Member Card -->
+                    <div class="bg-gray-50 rounded-2xl shadow-lg text-center p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-2 overflow-hidden">
+                        <img loading="lazy" src="https://minaramasjid.com/assets/storage/writers/writer-profilePic-1735986114.webp" alt="Tauhid Ahmad Tarablusi" class="w-36 h-36 rounded-full mx-auto object-cover border-4 border-white shadow-md" onerror="this.onerror=null;this.src='https://minaramasjid.com/assets/image/default/writer.jpeg'">
+                        <div class="mt-5">
+                            <p class="text-lg font-bold text-gray-900">
+                                Tauhid Ahmad Tarablusi
+                            </p>
+                            <p class="text-sm font-medium text-primary-dark">
+                                Islamic Scholars
+                            </p>
+                            <a href="https://minaramasjid.com/scholar-detail/tauhid-ahmad-tarablusi-research-scholar-974" class="mt-5 inline-block rounded-full bg-white px-5 py-2 text-sm font-semibold text-primary shadow-sm hover:bg-primary-light hover:text-white transition-all duration-300 transform hover:scale-105">
+                                View Profile
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Team Member Card -->
+                    <div class="bg-gray-50 rounded-2xl shadow-lg text-center p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-2 overflow-hidden">
+                        <img loading="lazy" src="https://minaramasjid.com/assets/storage/writers/writer-profilePic-1735642248.webp" alt="Farooque Mahaimi" class="w-36 h-36 rounded-full mx-auto object-cover border-4 border-white shadow-md" onerror="this.onerror=null;this.src='https://minaramasjid.com/assets/image/default/writer.jpeg'">
+                        <div class="mt-5">
+                            <p class="text-lg font-bold text-gray-900">
+                                Farooque Mahaimi
+                            </p>
+                            <p class="text-sm font-medium text-primary-dark">
+                                Islamic Scholars
+                            </p>
+                            <a href="https://minaramasjid.com/scholar-detail/farooque-mahaimi-research-scholar-670" class="mt-5 inline-block rounded-full bg-white px-5 py-2 text-sm font-semibold text-primary shadow-sm hover:bg-primary-light hover:text-white transition-all duration-300 transform hover:scale-105">
+                                View Profile
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-300 mt-20 sm:mt-28">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8 py-10">
+            
+            <!-- Logo and Socials (Horizontal/Centered) -->
+            <div class="flex flex-col items-center">
+                <!-- Logo -->
+                <a href="index" class="flex items-center space-x-3 mb-6">
+                    <img class="h-14 w-auto bg-white rounded-full p-1" src="https://minaramasjid.com/assets/image/logo/marc.png" alt="Maula Ali Research Center Logo">
+                    <span class="text-xl font-bold text-white">Maula Ali Research Center</span>
+                </a>
+                
+                <!-- Social Media Icons -->
+                <div class="flex space-x-6">
+                    <a href="#" class="text-gray-500 hover:text-primary-light transition-colors" aria-label="Facebook">
+                        <i class="fab fa-facebook-f fa-lg"></i>
+                    </a>
+                    <a href="#" class="text-gray-500 hover:text-primary-light transition-colors" aria-label="Twitter">
+                        <i class="fab fa-twitter fa-lg"></i>
+                    </a>
+                    <a href="#" class="text-gray-500 hover:text-primary-light transition-colors" aria-label="Instagram">
+                        <i class="fab fa-instagram fa-lg"></i>
+                    </a>
+                    <a href="#" class="text-gray-500 hover:text-primary-light transition-colors" aria-label="LinkedIn">
+                        <i class="fab fa-linkedin-in fa-lg"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Copyright Bottom Line -->
+            <div class="mt-10 pt-6 border-t border-gray-700/50 text-center">
+                 <p class="text-sm text-gray-500">
+                    &copy; 2024 - 2025 Design and Develop by
+                    <a href='https://www.AlQalamArts.com/' target="_blank" rel="noopener noreferrer" class="font-medium text-primary-light hover:text-primary-light/80">
+                        www.AlQalamArts.com
+                    </a>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+
+    <!-- Back To Top Button -->
+    <button id="backToTopBtn" class="fixed bottom-6 right-6 bg-primary hover:bg-primary-dark text-white w-12 h-12 rounded-full shadow-lg hidden justify-center items-center transition-all duration-300 opacity-0 z-40">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- Inline JavaScript -->
+    <script type="module">
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- Mobile Menu Toggle ---
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (mobileMenuButton && mobileMenu) {
+                mobileMenuButton.addEventListener('click', () => {
+                    const isExpanded = mobileMenuButton.getAttribute('aria-expanded') === 'true';
+                    mobileMenuButton.setAttribute('aria-expanded', !isExpanded);
+                    mobileMenu.classList.toggle('hidden');
+                });
+            }
+
+            // --- Back To Top Button ---
+            const backToTopBtn = document.getElementById('backToTopBtn');
+            if (backToTopBtn) {
+                window.addEventListener('scroll', () => {
+                    if (window.scrollY > 300) {
+                        backToTopBtn.classList.remove('hidden');
+                        backToTopBtn.classList.add('flex');
+                        backToTopBtn.classList.remove('opacity-0');
+                    } else {
+                        backToTopBtn.classList.add('opacity-0');
+                        // Use setTimeout to hide after transition
+                        setTimeout(() => {
+                           if (window.scrollY <= 300) { // Double check in case user scrolled back up
+                                backToTopBtn.classList.add('hidden');
+                                backToTopBtn.classList.remove('flex');
+                           }
+                        }, 300); // Match transition duration
+                    }
+                });
+
+                backToTopBtn.addEventListener('click', () => {
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                });
+            }
+
+            // --- New Language Toggle Logic ---
+            const langButtons = document.querySelectorAll('.lang-btn');
+            
+            langButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const clickedButton = e.currentTarget;
+                    const sectionId = clickedButton.dataset.sectionId;
+                    const lang = clickedButton.dataset.lang;
+                    const isUrdu = (lang === 'ur');
+
+                    // 1. Update button styles
+                    const sectionButtons = document.querySelectorAll(`.lang-btn[data-section-id="${sectionId}"]`);
+                    sectionButtons.forEach(btn => {
+                        btn.classList.remove('active-lang-btn');
+                    });
+                    clickedButton.classList.add('active-lang-btn');
+
+                    // 2. Find all content elements for this section
+                    const contentElements = document.querySelectorAll(`.lang-content[data-section-id="${sectionId}"]`);
+                    
+                    contentElements.forEach(el => {
+                        if (isUrdu && el.dataset.lang === 'ur') {
+                            el.classList.remove('hidden');
+                        } else if (!isUrdu && el.dataset.lang === 'en') {
+                            el.classList.remove('hidden');
+                        } else {
+                            el.classList.add('hidden');
+                        }
+                    });
+
+                    // 3. Set text direction for the wrapper
+                    const contentWrapper = document.querySelector(`.card-content-wrapper[data-section-id="${sectionId}"]`);
+                    if (contentWrapper) {
+                        contentWrapper.dir = isUrdu ? 'rtl' : 'ltr';
+                    }
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>

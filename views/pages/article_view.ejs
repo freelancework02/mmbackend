@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Meta Tags for Article Detail Page -->
+  <title><%= metaTitle %></title>
+  <meta name="keywords" content="نوری راہ, Maula Ali Research Centre, Islamic Articles, Islamic Research, Muslim Scholars, Read Islamic Articles, Urdu Articles">
+  <meta name="description" content="<%= metaDesc %>">
+  <meta name="robots" content="index, follow">
+  <!-- <link rel="canonical" href="<%= pageUrl %>"> -->
+
+  <meta property="og:title" content="<%= metaTitle %>">
+  <meta property="og:description" content="<%= metaDesc %>">
+  <meta property="og:image" content="<%= metaImage %>">
+  <meta property="og:url" content="<%= pageUrl %>">
+  <meta property="og:type" content="article">
+
+  <meta name="twitter:title" content="<%= metaTitle %>">
+  <meta name="twitter:description" content="<%= metaDesc %>">
+  <meta name="twitter:image" content="<%= metaImage %>">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- Base Href -->
+  <base href="<%= baseHref %>">
+  <link rel="icon" href="https://minaramasjid.com/assets/image/logo/favicon.ico" type="image/x-icon">
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,400;8..144,500;8..144,700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Gulzar&display=swap" rel="stylesheet">
+
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
+
+  <style>
+    body{font-family:"Roboto Flex",sans-serif}
+    .rtl{direction:rtl}
+    .rounded-4xl{border-radius:2rem}
+    .mobile-menu-hidden{max-height:0;opacity:0;transition:max-height .3s ease-out,opacity .2s ease-out;overflow:hidden}
+    .mobile-menu-visible{max-height:500px;opacity:1;transition:max-height .4s ease-in,opacity .3s ease-in}
+    .gulzartext{font-family:'Gulzar',serif}
+    .heading{font-family:'Gulzar',serif}
+    .prose p{margin-bottom:1.25em;font-size:1.125rem;line-height:1.8}
+    .prose{color:#333}
+    @keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+    .animate-fade-in-up{animation:fadeInUp .6s ease-out forwards;opacity:0}
+  </style>
+</head>
+<body class="font-sans bg-[#f0f5e9] text-gray-800 antialiased">
+  <div class="min-h-screen z-10">
+    <div class="absolute inset-0 bg-cover bg-no-repeat opacity-70" style="background-image:url('/assets/bg-DgzunbF9.png');background-position:center;z-index:-1"></div>
+
+    <!-- Header -->
+    <header class="bg-[#718e56] sticky top-0 z-50 shadow-md border-b border-green-100">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center py-4 relative">
+          <nav class="hidden md:flex gap-6 text-md font-semibold text-white tracking-wide">
+            <a href="/" class="hover:text-green-100 transition-colors">Home</a>
+            <a href="/about" class="hover:text-green-100 transition-colors">About</a>
+            <a href="/events" class="hover:text-green-100 transition-colors">News & Event</a>
+            <a href="/book" class="hover:text-green-100 transition-colors">Books</a>
+          </nav>
+
+          <div class="absolute left-1/2 transform -translate-x-1/2 -bottom-7 bg-white rounded-full p-1 shadow-lg border border-green-100 z-10">
+            <a href="/"><img src="https://minaramasjid.com/assets/image/logo/marc.png" alt="Logo" class="w-16 h-16 rounded-full object-contain"></a>
+          </div>
+
+          <nav class="hidden md:flex gap-6 text-md font-semibold text-white tracking-wide">
+            <a href="/article" class="text-white font-bold" aria-current="page">Articles</a>
+            <a href="/qa" class="hover:text-green-100 transition-colors">Question Answer</a>
+            <a href="/book" class="hover:text-green-100 transition-colors">Request a Book</a>
+            <a href="/contact" class="hover:text-green-100 transition-colors">Contact</a>
+          </nav>
+
+          <div class="md:hidden flex-1"></div>
+          <div class="md:hidden flex-1 flex justify-center">
+            <a href="/"><img src="https://minaramasjid.com/assets/image/logo/marc.png" alt="Logo" class="w-12 h-12 rounded-full object-contain"></a>
+          </div>
+          <div class="md:hidden flex-1 flex justify-end">
+            <button id="mobile-menu-toggle" class="text-white focus:outline-none"><i class="fas fa-bars w-7 h-7"></i></button>
+          </div>
+        </div>
+
+        <div id="mobile-menu" class="md:hidden mobile-menu-hidden">
+          <div class="flex flex-col gap-3 py-4 px-2 text-white bg-[#5a7544] rounded-b-xl">
+            <a href="/" class="hover:bg-[#4f6639] px-4 py-2 rounded">Home</a>
+            <a href="/about" class="hover:bg-[#4f6639] px-4 py-2 rounded">About</a>
+            <a href="/events" class="hover:bg-[#4f6639] px-4 py-2 rounded">News & Event</a>
+            <a href="/book" class="hover:bg-[#4f6639] px-4 py-2 rounded">Books</a>
+            <a href="/article" class="bg-[#4f6639] px-4 py-2 rounded" aria-current="page">Articles</a>
+            <a href="/qa" class="hover:bg-[#4f6639] px-4 py-2 rounded">Question Answer</a>
+            <a href="/book-request" class="hover:bg-[#4f6639] px-4 py-2 rounded">Request a Book</a>
+            <a href="/contact" class="hover:bg-[#4f6639] px-4 py-2 rounded">Contact</a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main -->
+    <main class="relative z-10">
+      <!-- Hero -->
+      <div class="relative w-full h-[400px] md:h-[500px] -mt-8 overflow-hidden rounded-b-4xl">
+        <!-- Featured Image: article image -->
+        <img src="/api/articles/image/<%= article.id %>" alt="<%= article.title %>" class="absolute inset-0 w-full h-full object-cover z-0" onerror="this.onerror=null;this.src='https://img.freepik.com/free-photo/fantastic-mosque-architecture-islamic-new-year-celebration_23-2151457420.jpg';">
+        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent z-10"></div>
+
+        <div class="relative z-20 max-w-7xl mx-auto h-full flex flex-col justify-end px-6 sm:px-8 lg:px-12 py-10 md:py-16">
+          <div class="max-w-4xl rtl text-right">
+            <h1 class="heading text-4xl md:text-6xl font-bold text-white text-shadow-lg"><%= article.title %></h1>
+            <div class="flex items-center justify-end gap-4 mt-6">
+              <div class="text-right">
+                <h2 class="font-bold text-2xl text-white gulzartext"><%= (article.writers || article.writer || "—") %></h2>
+                <p class="text-sm text-green-200 gulzartext mt-1">استاد اسکالر</p>
+              </div>
+              <img src="/assets/user-CIrRdymX.png" alt="Author" class="w-16 h-16 rounded-full border-2 border-white/50 shadow-lg">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Body & Sidebar -->
+      <div class="relative z-10 container mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 mb-10 mt-12 md:mt-16">
+        <!-- Main Article Card -->
+        <div class="md:col-span-2 bg-white/90 backdrop-blur-md border border-white/50 rounded-2xl shadow-xl p-6 sm:p-8 md:p-10 space-y-6 order-1 md:order-2 animate-fade-in-up">
+          <!-- Tabs -->
+          <div class="flex border-b border-gray-200">
+            <button id="lang-ur" class="lang-btn gulzartext rtl flex-1 sm:flex-auto text-center py-3 px-4 sm:px-6 text-lg font-semibold text-[#4a7031] border-b-2 border-[#4a7031] -mb-px transition-colors duration-300">اردو</button>
+            <button id="lang-ro" class="lang-btn flex-1 sm:flex-auto text-center py-3 px-4 sm:px-6 text-lg font-medium text-gray-500 border-b-2 border-transparent hover:text-[#4a7031] hover:border-gray-400 -mb-px transition-colors duration-300">Roman</button>
+            <button id="lang-en" class="lang-btn flex-1 sm:flex-auto text-center py-3 px-4 sm:px-6 text-lg font-medium text-gray-500 border-b-2 border-transparent hover:text-[#4a7031] hover:border-gray-400 -mb-px transition-colors duration-300">English</button>
+          </div>
+
+          <!-- Panels -->
+          <div class="pt-4">
+            <!-- Urdu -->
+            <div id="content-ur" class="lang-content leading-relaxed space-y-8 rtl text-right">
+              <div class="prose max-w-none paragraph gulzartext">
+                <% if (article.urduDescription) { %>
+                  <%- article.urduDescription %>
+                <% } else { %>
+                  <p>اردو مواد دستیاب نہیں ہے۔</p>
+                <% } %>
+              </div>
+            </div>
+
+            <!-- Roman -->
+            <div id="content-ro" class="lang-content leading-relaxed space-y-8 text-left hidden">
+              <div class="prose max-w-none paragraph">
+                <% if (article.romanUrduDescription) { %>
+                  <%- article.romanUrduDescription %>
+                <% } else if (article.englishDescription) { %>
+                  <%- article.englishDescription %>
+                <% } else { %>
+                  <p>(Roman Urdu content not available.)</p>
+                <% } %>
+              </div>
+            </div>
+
+            <!-- English -->
+            <div id="content-en" class="lang-content leading-relaxed space-y-8 text-left hidden">
+              <div class="prose max-w-none paragraph">
+                <% if (article.englishDescription) { %>
+                  <%- article.englishDescription %>
+                <% } else { %>
+                  <p>(English content not available.)</p>
+                <% } %>
+              </div>
+            </div>
+          </div>
+
+          <!-- Buttons -->
+          <div class="flex flex-col sm:flex-row sm:justify-between items-center gap-4 mt-8 pt-6 border-t border-gray-200">
+            <button class="gulzartext bg-[#e8f0e0] text-[#4a7031] px-6 py-2.5 rounded-full font-semibold hover:bg-[#d6e5c4] hover:shadow-md transition-all duration-300 w-full sm:w-auto">آگے پڑھیں</button>
+            <button class="gulzartext bg-[#e8f0e0] text-[#4a7031] px-6 py-2.5 rounded-full font-semibold hover:bg-[#d6e5c4] hover:shadow-md transition-all duration-300 w-full sm:w-auto">قرآنی آیات</button>
+          </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="md:col-span-1 space-y-6 order-2 md:order-1 md:sticky md:top-28 h-fit animate-fade-in-up" style="animation-delay:100ms">
+          <h3 class="font-bold text-3xl text-[#4a7031] text-right rtl heading">متعلقہ مضامین</h3>
+
+          <% (related || []).forEach(function(r, idx){ %>
+            <div class="rounded-xl overflow-hidden shadow-lg border border-gray-200 bg-[#ecf1e1] hover:shadow-xl transition-shadow animate-fade-in-up" style="animation-delay:<%= 200 + idx*100 %>ms">
+              <a href="/article/<%= r.id %>/<%= slugify(r.title || '') %>" class="block">
+                <div class="relative h-40">
+                  <img src="/api/articles/image/<%= r.id %>" alt="<%= r.title %>" class="object-cover h-full w-full" onerror="this.onerror=null;this.src='https://img.freepik.com/free-photo/islamic-ramadan-celebration-lantern-fantasy-style_23-2151241596.jpg';">
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent"></div>
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex flex-col justify-end p-4">
+                    <h4 class="heading text-white rtl mb-1 text-lg leading-snug line-clamp-2"><%= r.title %></h4>
+                  </div>
+                </div>
+                <div class="p-4 rtl">
+                  <div class="flex justify-end items-center w-fit ml-auto bg-[#d6e5c4] rounded-full px-3 py-1 text-xs mt-1">
+                    <i class="fas fa-eye w-4 h-4 text-[#6a8a4f] ml-2"></i>
+                    <span class="text-[#6a8a4f] font-medium"><%= (r.views ?? 0).toLocaleString() %></span>
+                  </div>
+                </div>
+              </a>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+
+      <!-- Author Bio Box -->
+      <div class="container mx-auto px-4 py-8">
+        <div class="bg-white/70 backdrop-blur-lg border border-white/40 rounded-xl p-6 md:p-8 shadow-2xl mb-12 animate-fade-in-up" style="animation-delay:200ms">
+          <div class="flex flex-col md:flex-row items-center md:items-start justify-between gap-6">
+            <div class="flex-1 text-right order-2 md:order-1 rtl">
+              <h3 class="text-2xl md:text-3xl font-bold text-green-700 mb-2 gulzartext">اسلامک اسکالر</h3>
+              <h4 class="text-xl md:text-2xl font-semibold text-gray-800 mb-4 gulzartext"><%= (article.writers || article.writer || "—") %></h4>
+              <p class="text-sm md:text-base text-gray-700 leading-relaxed gulzartext">
+                <%= (article.writers || "—") %> ایک معروف اسلامی عالم، مدرس اور مصنف ہیں۔ آپ کی دیگر تحریریں بھی ملاحظہ کریں۔
+              </p>
+            </div>
+            <div class="order-1 md:order-2">
+              <div class="w-28 h-28 md:w-32 md:h-32 rounded-full bg-green-100 border-4 border-green-200 flex items-center justify-center shadow-md">
+                <img src="/assets/user-CIrRdymX.png" alt="Scholar Icon" width="80" height="80" class="text-green-700">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Writer's Articles Highlights -->
+      <div class="relative z-10 container mx-auto px-4 mb-16">
+        <div class="flex flex-col items-center mb-8 animate-fade-in-up" style="animation-delay:300ms">
+          <h2 class="font-bold text-3xl text-[#1f1f1f] heading rtl text-center">مصنف کے دیگر مضامین</h2>
+          <a href="/article" class="bg-white border border-[#4a7031] text-[#4a7031] rounded-full px-5 py-2 text-sm font-medium hover:bg-[#eaf3df] transition gulzartext rtl mt-4">سب دیکھیں</a>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 cursor-pointer">
+          <% (writerHighlights || []).forEach(function(w, idx){ %>
+            <div class="rounded-xl overflow-hidden shadow-sm border border-gray-200 bg-white hover:shadow-lg transition-shadow animate-fade-in-up" style="animation-delay:<%= 400 + idx*100 %>ms">
+              <a href="/article/<%= w.id %>/<%= slugify(w.title || '') %>" class="block">
+                <div class="relative h-48">
+                  <img src="/api/articles/image/<%= w.id %>" alt="<%= w.title %>" class="object-cover h-full w-full" onerror="this.onerror=null;this.src='https://img.freepik.com/premium-photo/holy-quran-book-with-illuminated-lanterns-ramadan-islam_324689-2694.jpg';">
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent"></div>
+                  <div class="absolute top-2 right-2 flex space-x-2 rtl:space-x-reverse">
+                    <div class="bg-white rounded-full px-2 py-0.5 text-xs">Roman</div>
+                    <div class="bg-white rounded-full px-2 py-0.5 text-xs">Urdu</div>
+                  </div>
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex flex-col justify-end p-4">
+                    <h3 class="heading text-white rtl mb-1 text-lg leading-snug line-clamp-1"><%= w.title %></h3>
+                  </div>
+                </div>
+                <div class="p-4">
+                  <p class="gulzartext text-xs text-right rtl text-gray-600 mb-1 line-clamp-1">
+                    <span class="font-semibold">مصنف :</span> <%= (w.writers || w.writer || "—") %>
+                  </p>
+                </div>
+              </a>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Share FAB -->
+  <button id="shareBtn" class="fixed bottom-6 right-6 z-50 bg-green-600 hover:bg-green-700 text-white p-4 rounded-full shadow-lg cursor-pointer transition duration-300 ease-in-out flex items-center justify-center" title="Share article">
+    <i class="fas fa-share-alt w-5 h-5"></i>
+  </button>
+
+  <!-- Toast -->
+  <div id="toast" class="fixed bottom-24 right-6 bg-gray-800 text-white px-5 py-3 rounded-lg shadow-lg opacity-0 transition-opacity duration-300 z-50">
+    Link copied to clipboard!
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-[#718e56] text-white mt-20 sm:mt-28 relative z-20">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8 py-10">
+      <div class="flex flex-col items-center">
+        <a href="index" class="flex items-center space-x-3 mb-6">
+          <img class="h-14 w-auto bg-white rounded-full p-1" src="https://minaramasjid.com/assets/image/logo/marc.png" alt="Maula Ali Research Center Logo">
+          <span class="text-xl font-bold text-white">Maula Ali Research Center</span>
+        </a>
+        <div class="flex space-x-6">
+          <a href="#" class="text-green-200 hover:text-white transition-colors" aria-label="Facebook"><i class="fab fa-facebook-f fa-lg"></i></a>
+          <a href="#" class="text-green-200 hover:text-white transition-colors" aria-label="Twitter"><i class="fab fa-twitter fa-lg"></i></a>
+          <a href="#" class="text-green-200 hover:text-white transition-colors" aria-label="Instagram"><i class="fab fa-instagram fa-lg"></i></a>
+          <a href="#" class="text-green-200 hover:text-white transition-colors" aria-label="LinkedIn"><i class="fab fa-linkedin-in fa-lg"></i></a>
+        </div>
+      </div>
+      <div class="mt-10 pt-6 border-t border-green-400/50 text-center">
+        <p class="text-sm text-green-200">
+          &copy; 2024 - 2025 Design and Develop by
+          <a href="https://www.AlQalamArts.com/" target="_blank" rel="noopener noreferrer" class="font-medium text-white hover:text-green-100">www.AlQalamArts.com</a>
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Back To Top -->
+  <button id="backToTopBtn" class="fixed bottom-24 right-6 bg-[#4a7031] hover:bg-[#3b5a28] text-white w-12 h-12 rounded-full shadow-lg hidden justify-center items-center transition-all duration-300 opacity-0 z-40">
+    <i class="fas fa-arrow-up"></i>
+  </button>
+
+  <script type="module">
+    document.addEventListener('DOMContentLoaded', () => {
+      // Mobile menu
+      const mobileMenuButton = document.getElementById('mobile-menu-toggle');
+      const mobileMenu = document.getElementById('mobile-menu');
+      if (mobileMenuButton && mobileMenu) {
+        mobileMenuButton.addEventListener('click', () => {
+          mobileMenu.classList.toggle('mobile-menu-hidden');
+          mobileMenu.classList.toggle('mobile-menu-visible');
+        });
+      }
+
+      // Back to top
+      const backToTopBtn = document.getElementById('backToTopBtn');
+      if (backToTopBtn) {
+        window.addEventListener('scroll', () => {
+          if (window.scrollY > 300) {
+            backToTopBtn.classList.remove('hidden');
+            backToTopBtn.classList.add('flex');
+            backToTopBtn.classList.remove('opacity-0');
+          } else {
+            backToTopBtn.classList.add('opacity-0');
+            setTimeout(() => {
+              if (window.scrollY <= 300) {
+                backToTopBtn.classList.add('hidden');
+                backToTopBtn.classList.remove('flex');
+              }
+            }, 300);
+          }
+        });
+        backToTopBtn.addEventListener('click', () =>
+          window.scrollTo({ top: 0, behavior: 'smooth' })
+        );
+      }
+
+      // Language tabs
+      const langButtons = document.querySelectorAll('.lang-btn');
+      const langContents = document.querySelectorAll('.lang-content');
+      langButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          const lang = button.id.split('-')[1]; // ur | ro | en
+          // buttons state
+          langButtons.forEach(btn => {
+            btn.classList.remove('text-[#4a7031]', 'border-[#4a7031]', 'font-semibold');
+            btn.classList.add('text-gray-500', 'border-transparent', 'font-medium', 'hover:text-[#4a7031]', 'hover:border-gray-400');
+            btn.classList.remove('bg-[#c1d9a3]', 'bg-[#e8f0e0]', 'text-gray-700');
+          });
+          button.classList.add('text-[#4a7031]', 'border-[#4a7031]', 'font-semibold');
+          button.classList.remove('text-gray-500', 'border-transparent', 'font-medium', 'hover:text-[#4a7031]', 'hover:border-gray-400');
+          // contents
+          langContents.forEach(content => {
+            content.classList.toggle('hidden', content.id !== `content-${lang}`);
+          });
+        });
+      });
+
+      // Share
+      const shareBtn = document.getElementById('shareBtn');
+      const toast = document.getElementById('toast');
+      if (shareBtn && toast) {
+        shareBtn.addEventListener('click', async () => {
+          const shareData = {
+            title: document.title,
+            text: (document.querySelector('meta[name="description"]')?.content) || "",
+            url: window.location.href
+          };
+          try {
+            if (navigator.share) {
+              await navigator.share(shareData);
+            } else {
+              const textArea = document.createElement('textarea');
+              textArea.value = window.location.href;
+              textArea.style.position = 'fixed';
+              textArea.style.left = '-9999px';
+              document.body.appendChild(textArea);
+              textArea.focus();
+              textArea.select();
+              let success = false;
+              try { success = document.execCommand('copy'); } catch (err) {}
+              document.body.removeChild(textArea);
+              if (success) {
+                toast.classList.remove('opacity-0');
+                setTimeout(() => { toast.classList.add('opacity-0'); }, 2000);
+              }
+            }
+          } catch (err) {
+            console.error('Error sharing:', err);
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>
