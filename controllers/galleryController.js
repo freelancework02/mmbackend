@@ -1,17 +1,18 @@
-// controllers/galleryController.js
-const db = require("../config/db"); // Your existing DB connection
+const db = require("../config/db");
 const util = require("util");
+const query = util.promisify(db.query).bind(db);
 
-const query = util.promisify(db.query).bind(db); // promisify MySQL queries
-
-// -------------------------------
-// CREATE: Insert one row per image (BLOB storage)
-// -------------------------------
+/* -----------------------------
+   CREATE GALLERY (multiple images)
+   POST /api/galleries
+   Body: title, description, date; Files: images[]
+------------------------------ */
 exports.createGallery = async (req, res) => {
-  try {
-    const { title, description = "", date } = req.body;
-    const files = req.files || [];
+  const conn = db; // same pool/connection you already use
+  const { title, description = "", date } = req.body;
+  const files = req.files || [];
 
+  try {
     if (!title || !date) {
       return res.status(400).json({ message: "Missing title or date." });
     }
@@ -19,121 +20,140 @@ exports.createGallery = async (req, res) => {
       return res.status(400).json({ message: "Please upload at least one image." });
     }
 
-    const insertSql = `
-      INSERT INTO \`Gallery\`
-      (title, description, eventDate, image, imageName, imageType)
-      VALUES (?, ?, ?, ?, ?, ?)
+    // 1) create parent
+    const insertGallerySql = `
+      INSERT INTO galleries (title, description, eventDate) VALUES (?, ?, ?)
     `;
+    const result = await query(insertGallerySql, [title.trim(), description, date]);
+    const galleryId = result.insertId;
 
+    // 2) insert all images
+    const insertImgSql = `
+      INSERT INTO gallery_images (gallery_id, image, imageName, imageType, sort_order)
+      VALUES (?, ?, ?, ?, ?)
+    `;
+    let order = 0;
     for (const file of files) {
-      // file.buffer contains the binary data (since we use multer.memoryStorage)
-      await query(insertSql, [
-        title,
-        description,
-        date,
-        file.buffer, // ✅ Directly use memory buffer
+      await query(insertImgSql, [
+        galleryId,
+        file.buffer,
         file.originalname,
         file.mimetype,
+        order++,
       ]);
     }
 
-    return res.json({ success: true, message: "Gallery created successfully." });
+    return res.json({ success: true, id: galleryId, message: "Gallery created." });
   } catch (err) {
     console.error("createGallery error:", err);
     return res.status(500).json({ message: "Server error." });
   }
 };
 
-// -------------------------------
-// UPDATE: Update metadata or replace image
-// -------------------------------
-exports.updateGallery = async (req, res) => {
+/* -----------------------------
+   UPDATE GALLERY META
+   PUT /api/galleries/:id
+   Body: title?, description?, date?
+------------------------------ */
+exports.updateGalleryMeta = async (req, res) => {
+  const { id } = req.params;
+  const { title, description, date } = req.body;
   try {
-    const { id } = req.params;
-    const { title, description, date } = req.body;
-    const files = req.files || [];
-
-    if (!id) {
-      return res.status(400).json({ message: "Missing gallery id." });
-    }
-
-    // If new image uploaded → replace image
-    if (files.length > 0) {
-      const file = files[0];
-      const sql = `
-        UPDATE \`Gallery\`
-        SET title = ?, description = ?, eventDate = ?, image = ?, imageName = ?, imageType = ?, updated_at = CURRENT_TIMESTAMP
-        WHERE id = ?
-      `;
-      await query(sql, [
-        title,
-        description,
-        date,
-        file.buffer, // ✅ Use buffer instead of reading file
-        file.originalname,
-        file.mimetype,
-        id,
-      ]);
-
-      return res.json({
-        success: true,
-        message: "Gallery updated successfully (image replaced).",
-      });
-    }
-
-    // Otherwise, update only metadata
-    const sqlMeta = `
-      UPDATE \`Gallery\`
-      SET title = ?, description = ?, eventDate = ?, updated_at = CURRENT_TIMESTAMP
+    const sql = `
+      UPDATE galleries
+      SET title = COALESCE(?, title),
+          description = COALESCE(?, description),
+          eventDate = COALESCE(?, eventDate),
+          updated_at = CURRENT_TIMESTAMP
       WHERE id = ?
     `;
-    await query(sqlMeta, [title, description, date, id]);
-
-    return res.json({
-      success: true,
-      message: "Gallery metadata updated successfully.",
-    });
+    await query(sql, [title, description, date, id]);
+    return res.json({ success: true, message: "Gallery updated." });
   } catch (err) {
-    console.error("updateGallery error:", err);
+    console.error("updateGalleryMeta error:", err);
     return res.status(500).json({ message: "Server error." });
   }
 };
 
-// -------------------------------
-// DELETE: Remove one gallery row by ID
-// -------------------------------
-exports.deleteGallery = async (req, res) => {
+/* -----------------------------
+   ADD IMAGES TO EXISTING GALLERY
+   POST /api/galleries/:id/images
+   Files: images[]
+------------------------------ */
+exports.addImages = async (req, res) => {
+  const { id } = req.params;
+  const files = req.files || [];
   try {
-    const { id } = req.params;
-    if (!id) return res.status(400).json({ message: "Missing id." });
+    if (!files.length) {
+      return res.status(400).json({ message: "No images uploaded." });
+    }
 
-    await query("DELETE FROM `Gallery` WHERE id = ?", [id]);
-    return res.json({ success: true, message: "Gallery row deleted." });
+    // Get current max sort_order
+    const [row] = await query(
+      "SELECT COALESCE(MAX(sort_order), -1) AS maxOrder FROM gallery_images WHERE gallery_id = ?",
+      [id]
+    );
+    let order = (row?.maxOrder ?? -1) + 1;
+
+    const sql = `
+      INSERT INTO gallery_images (gallery_id, image, imageName, imageType, sort_order)
+      VALUES (?, ?, ?, ?, ?)
+    `;
+    for (const file of files) {
+      await query(sql, [id, file.buffer, file.originalname, file.mimetype, order++]);
+    }
+
+    return res.json({ success: true, message: "Images added." });
+  } catch (err) {
+    console.error("addImages error:", err);
+    return res.status(500).json({ message: "Server error." });
+  }
+};
+
+/* -----------------------------
+   REMOVE ONE IMAGE
+   DELETE /api/galleries/image/:imageId
+------------------------------ */
+exports.deleteImage = async (req, res) => {
+  const { imageId } = req.params;
+  try {
+    await query("DELETE FROM gallery_images WHERE id = ?", [imageId]);
+    return res.json({ success: true, message: "Image deleted." });
+  } catch (err) {
+    console.error("deleteImage error:", err);
+    return res.status(500).json({ message: "Server error." });
+  }
+};
+
+/* -----------------------------
+   DELETE ENTIRE GALLERY (cascades images)
+   DELETE /api/galleries/:id
+------------------------------ */
+exports.deleteGallery = async (req, res) => {
+  const { id } = req.params;
+  try {
+    await query("DELETE FROM galleries WHERE id = ?", [id]); // images deleted via FK CASCADE
+    return res.json({ success: true, message: "Gallery deleted." });
   } catch (err) {
     console.error("deleteGallery error:", err);
     return res.status(500).json({ message: "Server error." });
   }
 };
 
-// -------------------------------
-// GET IMAGE BY ID: return raw image data
-// -------------------------------
+/* -----------------------------
+   GET IMAGE BINARY BY IMAGE ID
+   GET /api/galleries/image/:imageId
+------------------------------ */
 exports.getImageById = async (req, res) => {
+  const { imageId } = req.params;
   try {
-    const { id } = req.params;
-    if (!id) return res.status(400).json({ message: "Missing id." });
-
     const rows = await query(
-      "SELECT image, imageType, imageName FROM `Gallery` WHERE id = ? LIMIT 1",
-      [id]
+      "SELECT image, imageType, imageName FROM gallery_images WHERE id = ? LIMIT 1",
+      [imageId]
     );
-
-    if (!rows || rows.length === 0)
-      return res.status(404).json({ message: "Not found." });
-
+    if (!rows.length) return res.status(404).json({ message: "Not found." });
     const row = rows[0];
     res.setHeader("Content-Type", row.imageType || "application/octet-stream");
-    // Optional: Show inline in browser instead of forcing download
     res.setHeader("Content-Disposition", `inline; filename="${row.imageName}"`);
     return res.send(row.image);
   } catch (err) {
@@ -142,87 +162,51 @@ exports.getImageById = async (req, res) => {
   }
 };
 
-// -------------------------------
-// GET BY DETAIL: filter by title or date (no image blob)
-// -------------------------------
-exports.getByDetail = async (req, res) => {
+/* -----------------------------
+   GET GALLERY BY ID (meta + image list, no blobs)
+   GET /api/galleries/:id
+------------------------------ */
+exports.getGalleryById = async (req, res) => {
+  const { id } = req.params;
   try {
-    const { title, date } = req.query;
-    let sql = `
-      SELECT id, title, description, eventDate, imageName, created_at
-      FROM \`Gallery\`
-      WHERE 1=1
-    `;
-    const params = [];
+    const [meta] = await query(
+      "SELECT id, title, description, eventDate, created_at, updated_at FROM galleries WHERE id = ? LIMIT 1",
+      [id]
+    );
+    if (!meta) return res.status(404).json({ message: "Not found." });
 
-    if (title) {
-      sql += " AND title LIKE ?";
-      params.push(`%${title}%`);
-    }
-    if (date) {
-      sql += " AND eventDate = ?";
-      params.push(date);
-    }
+    const images = await query(
+      "SELECT id, imageName, imageType, sort_order, created_at FROM gallery_images WHERE gallery_id = ? ORDER BY sort_order ASC, id ASC",
+      [id]
+    );
 
-    const rows = await query(sql, params);
-    return res.json(rows);
+    return res.json({ ...meta, images });
   } catch (err) {
-    console.error("getByDetail error:", err);
+    console.error("getGalleryById error:", err);
     return res.status(500).json({ message: "Server error." });
   }
 };
 
-// -------------------------------
-// GET ALL: Paginated list (no image blob)
-// -------------------------------
+/* -----------------------------
+   LIST (paginated) – meta only
+   GET /api/galleries?limit=&offset=
+------------------------------ */
 exports.getAllGalleries = async (req, res) => {
   try {
     const limit = Math.min(parseInt(req.query.limit, 10) || 10, 100);
     const offset = parseInt(req.query.offset, 10) || 0;
 
     const rows = await query(
-      `
-      SELECT id, title, description, eventDate, imageName, created_at
-      FROM \`Gallery\`
-      ORDER BY created_at DESC
-      LIMIT ? OFFSET ?
-      `,
+      `SELECT id, title, description, eventDate, created_at
+       FROM galleries
+       ORDER BY created_at DESC
+       LIMIT ? OFFSET ?`,
       [limit, offset]
     );
 
     return res.json(rows);
   } catch (err) {
     console.error("getAllGalleries error:", err);
-    return res.status(500).json({ message: "Server error." });
-  }
-};
-
-
-// ✅ NEW: GET GALLERY BY ID (for edit prefill)
-exports.getGalleryById = async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    const [meta] = await query(
-      "SELECT title, description, eventDate FROM `Gallery` WHERE id=? LIMIT 1",
-      [id]
-    );
-    if (!meta) return res.status(404).json({ message: "Not found" });
-
-    const images = await query(
-      "SELECT id, imageName, imageType FROM `Gallery` WHERE title=? AND eventDate=?",
-      [meta.title, meta.eventDate]
-    );
-
-    return res.json({
-      id,
-      title: meta.title,
-      description: meta.description,
-      eventDate: meta.eventDate,
-      images,
-    });
-  } catch (err) {
-    console.error("getGalleryById error:", err);
     return res.status(500).json({ message: "Server error." });
   }
 };
