@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Meta Tags for All Questions Page -->
+    <title>All Questions | Maula Ali Research Center</title>
+    <meta name="keywords" content="Maula Ali Research Centre, Islamic Questions, Fatwa, Islamic Rulings, Ask Scholars, Urdu Fatwa, All Questions">
+    <meta name="description" content="Browse all Islamic questions and fatwas on Maula Ali Research Centre. Search, filter, and explore Islamic knowledge.">
+    <meta name="robots" content="index, follow">
+    <!-- <link rel="canonical" href="https://minaramasjid.com/all-faq"> -->
+    
+    <meta property="og:title" content="All Questions | Maula Ali Research Center">
+    <meta property="og:description" content="Browse all Islamic questions and fatwas on Maula Ali Research Centre.">
+    <meta property="og:image" content="https://placehold.co/1200x630/6a8a4f/white?text=All+Questions&font=roboto">
+    <!-- <meta property="og:url" content="https://minaramasjid.com/all-faq"> -->
+    <meta property="og:type" content="website">
+    <meta name="twitter:title" content="All Questions | Maula Ali Research Center">
+    <meta name="twitter:description" content="Browse all Islamic questions and fatwas on Maula Ali Research Centre.">
+    <meta name="twitter:image" content="https://placehold.co/1200x630/6a8a4f/white?text=All+Questions&font=roboto">
+    <meta name="twitter:card" content="summary_large_image">
+    
+    
+    <!-- Base Href (Preserved) -->
+    <base href="https://minaramasjid.com/">
+    <link rel="icon" href="https://minaramasjid.com/assets/image/logo/favicon.ico" type="image/x-icon">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Fonts (Roboto Flex and Gulzar) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,400;8..144,500;8..144,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Gulzar&display=swap" rel="stylesheet">
+
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
+    
+    <!-- Bootstrap Icons (for new controls) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" />
+
+    <style>
+        /* Set default font */
+        body {
+            font-family: "Roboto Flex", sans-serif;
+            background-color: #f0f5e9;
+        }
+        /* Custom styles from original page */
+        .rtl {
+            direction: rtl;
+        }
+        .rounded-4xl {
+            border-radius: 2rem; /* 32px */
+        }
+        .mobile-menu-hidden {
+            max-height: 0;
+            opacity: 0;
+            transition: max-height 0.3s ease-out, opacity 0.2s ease-out;
+            overflow: hidden;
+        }
+        .mobile-menu-visible {
+            max-height: 500px;
+            opacity: 1;
+            transition: max-height 0.4s ease-in, opacity 0.3s ease-in;
+        }
+        .gulzartext {
+            font-family: 'Gulzar', serif;
+        }
+        .heading {
+             font-family: 'Gulzar', serif;
+        }
+
+        /* Re-scoped container class for this page */
+        .page-container {
+             max-width: 65rem; /* Tighter container for the list itself */
+             margin-left: auto;
+             margin-right: auto;
+        }
+
+        /* NEW STYLES for all-questions page */
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            padding: 1.5rem;
+            background-color: white;
+            border-radius: 1.5rem; /* rounded-3xl */
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05), 0 8px 10px -6px rgba(0,0,0,0.05);
+        }
+        @media (min-width: 768px) {
+            .controls {
+                flex-direction: row;
+                flex-wrap: wrap;
+                align-items: center;
+            }
+        }
+        
+        .control {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-grow: 1;
+        }
+
+        .control-sort {
+             flex-grow: 0; /* Don't grow the sort */
+             flex-basis: 200px; /* Give it a base width */
+        }
+
+        .control.search-control {
+            position: relative;
+            flex-basis: 300px; /* Give search more space */
+        }
+
+        .control label, .control span {
+            font-family: 'Gulzar', serif;
+            font-size: 1.125rem;
+            color: #333;
+            flex-shrink: 0;
+            display: none; /* Hide labels for a cleaner look */
+        }
+        
+        #searchInput {
+            border: 1px solid #d1d5db; /* border-gray-300 */
+            border-radius: 9999px; /* rounded-full */
+            padding-right: 2.75rem; /* Space for icon */
+            padding-left: 1rem;
+            padding-top: 0.6rem;
+            padding-bottom: 0.6rem;
+            font-size: 1rem; /* text-base */
+            font-family: 'Gulzar', serif;
+            width: 100%;
+            outline: none;
+            transition: all 0.2s ease-in-out;
+            background-color: #f9fafb;
+        }
+        .search-icon {
+            position: absolute;
+            right: 0.85rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af; /* text-gray-400 */
+        }
+        #searchInput:focus {
+             box-shadow: 0 0 0 2px #4a7031; /* ring-2 focus:ring-[#4a7031] */
+             border-color: #4a7031;
+             background-color: white;
+        }
+        
+        .pill, select.pill {
+            background-color: #f9fafb; /* bg-gray-50 */
+            color: #374151; /* text-gray-700 */
+            border-radius: 9999px;
+            padding-left: 1rem;
+            padding-right: 2.5rem; /* Space for arrow */
+            padding-top: 0.6rem;
+            padding-bottom: 0.6rem;
+            font-family: 'Gulzar', serif;
+            font-size: 1rem;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            outline: none;
+            border: 1px solid #d1d5db;
+            width: 100%;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='M7 7l3-3 3 3m0 6l-3 3-3-3'/%3e%3c/svg%3e");
+            background-position: left 0.75rem center;
+            background-repeat: no-repeat;
+            background-size: 1.25em 1.25em;
+        }
+        select.pill:focus {
+             box-shadow: 0 0 0 2px #4a7031;
+             border-color: #4a7031;
+             background-color: white;
+        }
+
+        .tag-combobox {
+            position: relative;
+            flex-grow: 0;
+            flex-basis: 200px;
+        }
+        .tag-button {
+            background-color: #f9fafb;
+            border: 1px solid #d1d5db;
+            border-radius: 9999px;
+            padding: 0.6rem 1rem 0.6rem 2.5rem;
+            font-size: 1rem;
+            font-family: 'Gulzar', serif;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            width: 100%;
+            justify-content: space-between;
+            position: relative;
+        }
+        .tag-button:hover {
+            background-color: #f3f4f6; /* hover:bg-gray-100 */
+        }
+        .tag-button .bi-tags {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+        }
+        .tag-button .bi-chevron-down {
+             position: absolute;
+             right: 1rem;
+             top: 50%;
+             transform: translateY(-50%);
+             color: #9ca3af;
+        }
+        .tag-button:focus {
+             box-shadow: 0 0 0 2px #4a7031;
+             border-color: #4a7031;
+        }
+        .tag-panel {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 0.25rem;
+            background-color: white;
+            border: 1px solid #e5e7eb; /* border-gray-200 */
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-lg */
+            z-index: 20;
+            width: 16rem; /* w-64 */
+            font-family: 'Gulzar', serif;
+            overflow: hidden;
+        }
+        .tag-panel .inner {
+            max-height: 18rem; /* max-h-72 */
+            overflow-y: auto;
+        }
+        .tag-search {
+            width: 100%;
+            border: none;
+            border-bottom: 1px solid #e5e7eb;
+            position: sticky;
+            top: 0;
+            padding: 0.75rem 1rem;
+            border-radius: 0;
+            font-family: 'Gulzar', serif;
+            font-size: 1rem;
+        }
+        .tag-search:focus {
+            box-shadow: none;
+            border-color: #4a7031;
+        }
+        .tag-option {
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            text-align: right;
+            font-size: 1.125rem;
+        }
+        .tag-option:hover {
+            background-color: #e8f0e0;
+        }
+        .tag-option[aria-selected="true"] {
+            font-weight: 700;
+            background-color: #eaf3df;
+            color: #4a7031;
+        }
+
+        .list {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem; /* gap-4 */
+        }
+        
+        .card-link {
+            display: block;
+            background-color: white;
+            padding: 1.5rem; /* p-6 */
+            border-radius: 1.5rem; /* rounded-3xl */
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            transition: all 0.3s ease-in-out;
+            border: 1px solid #e5e7eb; /* border-gray-200 */
+        }
+        .card-link:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.07), 0 8px 10px -6px rgba(0,0,0,0.07);
+            border-color: #c1d9a3;
+        }
+        .card-link h3 {
+             transition: color 0.3s;
+             font-size: 1.3rem; /* Larger title */
+             color: #1f2937; /* text-gray-800 */
+        }
+        .card-link:hover h3 {
+             color: #4a7031;
+        }
+        .card-excerpt {
+            font-size: 1.125rem; /* text-lg */
+            color: #4b5563; /* text-gray-600 */
+        }
+
+        /* Card number colors */
+        .bg-midnight_green {
+            background-color: #4a7031;
+        }
+        .bg-air_force_blue {
+            background-color: #718e56;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 2.5rem;
+            font-family: 'Gulzar', serif;
+        }
+        .page-btn {
+            padding: 0.4rem 1rem;
+            border-radius: 9999px; /* rounded-full */
+            font-size: 1.125rem;
+            font-weight: 600;
+            border: 1px solid #d1d5db;
+            transition: all 0.2s;
+            background-color: white;
+            color: #374151;
+        }
+        .page-btn:hover:not(:disabled) {
+            background-color: #e8f0e0;
+            border-color: #c1d9a3;
+        }
+        .page-btn.active {
+            background-color: #4a7031;
+            color: white;
+            border-color: #4a7031;
+        }
+        .page-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background-color: #f3f4f6;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-[#f0f5e9] text-gray-800 antialiased">
+
+    <!-- Main Wrapper -->
+    <div class="min-h-screen z-10">
+        <!-- Background Image Overlay -->
+        <div class="absolute inset-0 bg-cover bg-no-repeat opacity-70" style="background-image: url('/assets/bg-DgzunbF9.png'); background-position: center center; z-index: -1;"></div>
+
+        <!-- Header -->
+        <header class="bg-[#718e56] sticky top-0 z-50 shadow-md border-b border-green-100">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center py-3 relative"> <!-- Compacted header -->
+                    <!-- Desktop Nav Left -->
+                    <nav class="hidden md:flex gap-5 text-md font-semibold text-white tracking-wide"> <!-- Compacted gap -->
+                        <a href="index.html" class="hover:text-green-100 transition-colors">Home</a>
+                        <a href="about.html" class="hover:text-green-100 transition-colors">About</a>
+                        <a href="events.html" class="hover:text-green-100 transition-colors">News & Event</a>
+                        <a href="books.html" class="hover:text-green-100 transition-colors">Books</a>
+                    </nav>
+
+                    <!-- Center Logo -->
+                    <div class="absolute left-1/2 transform -translate-x-1/2 -bottom-7 bg-white rounded-full p-1 shadow-lg border border-green-100 z-10">
+                        <a href="index.html">
+                            <img src="https://minaramasjid.com/assets/image/logo/marc.png" alt="Logo" class="w-16 h-16 rounded-full object-contain">
+                        </a>
+                    </div>
+
+                    <!-- Desktop Nav Right -->
+                    <nav class="hidden md:flex gap-5 text-md font-semibold text-white tracking-wide"> <!-- Compacted gap -->
+                        <a href="articles.html" class="hover:text-green-100 transition-colors">Articles</a>
+                        <a href="all-questions.html" class="text-white font-bold" aria-current="page">Question Answer</a>
+                        <a href="book-request.html" class="hover:text-green-100 transition-colors">Request a Book</a>
+                        <a href="contact.html" class="hover:text-green-100 transition-colors">Contact</a>
+                    </nav>
+
+                    <!-- Mobile Logo (hidden) -->
+                    <div class="md:hidden flex-1">
+                        <!-- This space is taken by the mobile menu button -->
+                    </div>
+                     <div class="md:hidden flex-1 flex justify-center">
+                         <a href="index.html">
+                             <img src="https://minaramasjid.com/assets/image/logo/marc.png" alt="Logo" class="w-12 h-12 rounded-full object-contain">
+                         </a>
+                     </div>
+
+                    <!-- Mobile Menu Button -->
+                    <div class="md:hidden flex-1 flex justify-end">
+                        <button id="mobile-menu-toggle" class="text-white focus:outline-none">
+                            <i class="fas fa-bars w-7 h-7"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Mobile Menu Dropdown -->
+                <div id="mobile-menu" class="md:hidden mobile-menu-hidden">
+                    <div class="flex flex-col gap-2 py-3 px-2 text-white bg-[#5a7544] rounded-b-xl"> <!-- Compacted -->
+                        <a href="index.html" class="hover:bg-[#4f6639] px-4 py-2 rounded">Home</a>
+                        <a href="about.html" class="hover:bg-[#4f6639] px-4 py-2 rounded">About</a>
+                        <a href="events.html" class="hover:bg-[#4f6639] px-4 py-2 rounded">News & Event</a>
+                        <a href="books.html" class="hover:bg-[#4f6639] px-4 py-2 rounded">Books</a>
+                        <a href="articles.html" class="hover:bg-[#4f6639] px-4 py-2 rounded">Articles</a>
+                        <a href="all-questions.html" class="bg-[#4f6639] px-4 py-2 rounded" aria-current="page">Question Answer</a>
+                        <a href="book-request.html" class="hover:bg-[#4f6639] px-4 py-2 rounded">Request a Book</a>
+                        <a href="contact.html" class="hover:bg-[#4f6639] px-4 py-2 rounded">Contact</a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="relative z-10 pt-12 sm:pt-16"> <!-- Compacted pt -->
+            
+            <!-- === ALL QUESTIONS CONTENT === -->
+            <section class="relative max-w-7xl mx-auto px-4 py-8" dir="rtl">
+                
+                <div class="page-container gulzartext">
+                    <h1 class="heading text-3xl lg:text-4xl font-bold text-[#4a7031] mb-6 text-center">تمام فتاویٰ</h1>
+                
+                    <div class="controls">
+                        <div class="control search-control">
+                            <label for="searchInput" class="sr-only">تلاش:</label>
+                            <input id="searchInput" type="text" placeholder="عنوان یا سوال لکھیں…" spellcheck="false">
+                            <i class="bi bi-search search-icon"></i>
+                        </div>
+                
+                        <div class="control control-sort">
+                            <label for="sortMode" class="sr-only">ترتیب:</label>
+                            <select id="sortMode" class="pill">
+                                <option value="default">معیاری</option>
+                                <option value="tag">ٹیگز کے لحاظ سے</option>
+                            </select>
+                        </div>
+                
+                        <!-- Tag combo -->
+                        <div class="control tag-combobox" id="tagBox">
+                            <button type="button" id="tagButton" class="btn tag-button">
+                                <i class="bi bi-tags"></i> 
+                                <span id="tagButtonLabel">تمام ٹیگز</span>
+                                <i class="bi bi-chevron-down text-xs"></i>
+                            </button>
+                            <div id="tagPanel" class="tag-panel hidden" role="listbox" aria-labelledby="tagButton">
+                                <input id="tagSearchInput" class="tag-search" type="text" placeholder="ٹیگز تلاش کریں…" spellcheck="false">
+                                <div class="inner">
+                                    <div class="tag-option" data-value="" aria-selected="true">تمام ٹیگز</div>
+                                    <!-- options injected -->
+                                    <div id="tagOptions"><div class="tag-option" data-value="اصلاح-معاشرہ">اصلاح معاشرہ</div><div class="tag-option" data-value="اعتراضات-مع-جوابات">اعتراضات مع جوابات</div><div class="tag-option" data-value="ترجمہ-و-تفسیر">ترجمہ و تفسیر</div><div class="tag-option" data-value="تفسیر-قرآن">تفسیر قرآن</div><div class="tag-option" data-value="حج-و-عمرہ">حج و عمرہ</div><div class="tag-option" data-value="حدیث">حدیث</div><div class="tag-option" data-value="خرید-و-فروخت">خرید و فروخت</div><div class="tag-option" data-value="رسم-و-رواج">رسم و رواج</div><div class="tag-option" data-value="روزہ-کے-مسائل">روزہ کے مسائل</div><div class="tag-option" data-value="زکوۃ-کے-مسائل">زکوۃ کے مسائل</div><div class="tag-option" data-value="زکوۃ-و-صدقہ">زکوۃ و صدقہ</div><div class="tag-option" data-value="سیرت-و-سوانح">سیرت و سوانح</div><div class="tag-option" data-value="صحابہ-و-تابعین">صحابہ و تابعین</div><div class="tag-option" data-value="صلوۃ-و-سلام">صلوۃ و سلام</div><div class="tag-option" data-value="طہارت">طہارت</div><div class="tag-option" data-value="عقیدۂ-اہل-سنت">عقیدۂ اہل سنت</div><div class="tag-option" data-value="قرآن-مقدس">قرآن مقدس</div><div class="tag-option" data-value="uncategorized">متفرقات</div><div class="tag-option" data-value="معمولات-اہل-sنت">معمولات اہل سنت</div><div class="tag-option" data-value="منظومات">منظومات</div><div class="tag-option" data-value="نذر-و-نیاز">نذر و نیاز</div><div class="tag-option" data-value="نکاح-و-طلاق">نکاح و طلاق</div><div class="tag-option" data-value="نماز-کے-مسائل">نماز کے مسائل</div><div class="tag-option" data-value="والدین-کے-حقوق">والدین کے حقوق</div></div>
+                                </div>
+                            </div>
+                        </div>
+                
+                        <div id="inlineLoader" class="pill hidden">لوڈ ہو رہا ہے…</div>
+                    </div>
+                
+                    <!-- Loader -->
+                    <div id="loader" class="mb-8 hidden" style="align-items:center; justify-content:center;">
+                        لوڈ ہو رہا ہے…
+                    </div>
+                
+                    <!-- NEW Card List Design -->
+                    <div id="list" class="list">
+                        
+                        <a href="/fatwa/2778" class="card-link group">
+                            <div class="flex items-center gap-4">
+                                <div class="flex-shrink-0 w-12 h-12 bg-midnight_green text-white rounded-xl flex items-center justify-center font-bold text-2xl gulzartext">۱</div>
+                                <h3 class="heading font-semibold">احوال حضرت ابو بکر صدیق رضی اللہ عنہ</h3>
+                            </div>
+                            <p class="mt-3 mb-4 text-gray-700 line-clamp-2 gulzartext card-excerpt">احوال حضرت ابو بکر صدیق رضی اللہ عنہ</p>
+                            <div class="mt-4 flex justify-between items-center text-sm pt-3 border-t border-gray-100">
+                                <span class="font-bold heading text-green-700 group-hover:underline">
+                                    مکمل جواب پڑھیں
+                                    <i class="fa-solid fa-arrow-left text-xs mr-2 opacity-70 transition-transform group-hover:mr-3"></i>
+                                </span>
+                                <div class="flex items-center text-gray-500 gap-1.5" title="Views">
+                                    <i class="bi bi-eye-fill"></i>
+                                    <span>6014</span>
+                                </div>
+                            </div>
+                        </a>
+                        
+                        <a href="/fatwa/2788" class="card-link group">
+                            <div class="flex items-center gap-4">
+                                <div class="flex-shrink-0 w-12 h-12 bg-air_force_blue text-white rounded-xl flex items-center justify-center font-bold text-2xl gulzartext">۲</div>
+                                <h3 class="heading font-semibold">اس کرم کا کروں شکر کیسے ادا</h3>
+                            </div>
+                            <p class="mt-3 mb-4 text-gray-700 line-clamp-2 gulzartext card-excerpt">اس کرم کا کروں شکر کیسے ادا</p>
+                            <div class="mt-4 flex justify-between items-center text-sm pt-3 border-t border-gray-100">
+                                <span class="font-bold heading text-green-700 group-hover:underline">
+                                    مکمل جواب پڑھیں
+                                    <i class="fa-solid fa-arrow-left text-xs mr-2 opacity-70 transition-transform group-hover:mr-3"></i>
+                                </span>
+                                <div class="flex items-center text-gray-500 gap-1.5" title="Views">
+                                    <i class="bi bi-eye-fill"></i>
+                                    <span>7122</span>
+                                </div>
+                            </div>
+                        </a>
+
+                        <a href="/fatwa/2781" class="card-link group">
+                            <div class="flex items-center gap-4">
+                                <div class="flex-shrink-0 w-12 h-12 bg-midnight_green text-white rounded-xl flex items-center justify-center font-bold text-2xl gulzartext">۳</div>
+                                <h3 class="heading font-semibold">جمعہ کی نماز فرض ہے یا نفل ؟ محمد سلمان رضا واحدی امجدی</h3>
+                            </div>
+                            <p class="mt-3 mb-4 text-gray-700 line-clamp-2 gulzartext card-excerpt">جمعہ کی نماز فرض ہے یا نفل ؟ محمد سلمان رضا واحدی امجدی</p>
+                            <div class="mt-4 flex justify-between items-center text-sm pt-3 border-t border-gray-100">
+                                <span class="font-bold heading text-green-700 group-hover:underline">
+                                    مکمل جواب پڑھیں
+                                    <i class="fa-solid fa-arrow-left text-xs mr-2 opacity-70 transition-transform group-hover:mr-3"></i>
+                                </span>
+                                <div class="flex items-center text-gray-500 gap-1.5" title="Views">
+                                    <i class="bi bi-eye-fill"></i>
+                                    <span>6377</span>
+                                </div>
+                            </div>
+                        </a>
+                        
+                        <a href="/fatwa/2793" class="card-link group">
+                            <div class="flex items-center gap-4">
+                                <div class="flex-shrink-0 w-12 h-12 bg-air_force_blue text-white rounded-xl flex items-center justify-center font-bold text-2xl gulzartext">۴</div>
+                                <h3 class="heading font-semibold">حاملہ عورت کو جنات کے شر سے محفوظ رکھنے کے لئے اس کے پاس لوہے یا پیتل کی چیز رکھنا کیسا ہے ؟</h3>
+                            </div>
+                            <p class="mt-3 mb-4 text-gray-700 line-clamp-2 gulzartext card-excerpt">کیا فرماتے ہیں علماء دین و مفتیان شرح متین مسئلہ ذیل میں کہ گورکھپور میں جب کوئی عورت حمل سے ہوتی ہے  تو اسکے پاس کوی لوہے یا پیتل کی چیز کو رکھتے ہیں یا لوہے کا چاقو پہنا دیتے ہیں تاکہ وہ جنات کے شر سے محفوظ رہیں۔ انکا ماننا یہ ہے اس طرح کرنے سے جنات دور رہتے ہیں تو کیا اس طرح نظریہ رکھنا انکا صحیح ہے۔ جواب عنایت فرما کر شکریہ کا موقع دیں ...</p>
+                            <div class="mt-4 flex justify-between items-center text-sm pt-3 border-t border-gray-100">
+                                <span class="font-bold heading text-green-700 group-hover:underline">
+                                    مکمل جواب پڑھیں
+                                    <i class="fa-solid fa-arrow-left text-xs mr-2 opacity-70 transition-transform group-hover:mr-3"></i>
+                                </span>
+                                <div class="flex items-center text-gray-500 gap-1.5" title="Views">
+                                    <i class="bi bi-eye-fill"></i>
+                                    <span>4</span>
+                                </div>
+                            </div>
+                        </a>
+
+                        <a href="/fatwa/2828" class="card-link group">
+                            <div class="flex items-center gap-4">
+                                <div class="flex-shrink-0 w-12 h-12 bg-midnight_green text-white rounded-xl flex items-center justify-center font-bold text-2xl gulzartext">۹</div>
+                                <h3 class="heading font-semibold">غوث پاک نے حضرت عزرائیل سے روح کا تھیلا چھین لیا یہ کہنا کیسا ہے؟</h3>
+                            </div>
+                            <p class="mt-3 mb-4 text-gray-700 line-clamp-2 gulzartext card-excerpt">کیا فرماتے ہیں اہلِ علم اس بارے میں کچھ کتابوں میں غوث اعظم رضی اللہ تعالی عنہ کی ایک کرامت ل khaki جس کا مضمون کچھ یوں ہے کہ غوث پاک کے ایک خادم کی موت ہو گئی موت ہونے کے بعد ان کی بیوی یا بیٹی غوث اعظم کے پاس آ کر فریاد کی...</p>
+                            <div class="mt-4 flex justify-between items-center text-sm pt-3 border-t border-gray-100">
+                                <span class="font-bold heading text-green-700 group-hover:underline">
+                                    مکمل جواب پڑھیں
+                                    <i class="fa-solid fa-arrow-left text-xs mr-2 opacity-70 transition-transform group-hover:mr-3"></i>
+                                </span>
+                                <div class="flex items-center text-gray-500 gap-1.5" title="Views">
+                                    <i class="bi bi-eye-fill"></i>
+                                    <span>2</span>
+                                </div>
+                            </div>
+                        </a>
+                        
+                        <!-- Add more cards as needed following the pattern above -->
+
+                    </div>
+                
+                    <!-- Pagination - Correct RTL Order -->
+                    <div class="mt-6 pagination" id="pagination">
+                        <button class="page-btn" id="nextPage">اگلا →</button>
+                        <div id="pageNumbers" class="inline-flex" style="gap:6px;">
+                            <button class="page-btn active">۱</button>
+                            <!-- More page numbers can be added here -->
+                        </div>
+                        <button class="page-btn" id="prevPage" disabled="">← پچھلا</button>
+                    </div>
+                </div>
+
+            </section>
+            <!-- === END OF ALL QUESTIONS CONTENT === -->
+
+        </main>
+    </div>
+
+    <!-- Simple Toast Notification -->
+    <div id="toast" class="fixed bottom-24 right-6 bg-gray-800 text-white px-5 py-3 rounded-lg shadow-lg opacity-0 transition-opacity duration-300 z-50">
+        Link copied to clipboard!
+    </div>
+
+
+    <!-- Footer -->
+    <footer class="bg-[#718e56] text-white mt-16 sm:mt-20 relative z-20"> <!-- Compacted -->
+        <div class="max-w-7xl mx-auto px-6 lg:px-8 py-8"> <!-- Compacted -->
+            
+            <!-- Logo and Socials (Horizontal/Centered) -->
+            <div class="flex flex-col items-center">
+                <!-- Logo -->
+                <a href="index.html" class="flex items-center space-x-3 mb-5"> <!-- Compacted -->
+                    <img class="h-12 w-auto bg-white rounded-full p-1" src="https://minaramasjid.com/assets/image/logo/marc.png" alt="Maula Ali Research Center Logo"> <!-- Compacted -->
+                    <span class="text-lg font-bold text-white">Maula Ali Research Center</span> <!-- Compacted -->
+                </a>
+                
+                <!-- Social Media Icons -->
+                <div class="flex space-x-5"> <!-- Compacted -->
+                    <a href="#" class="text-green-200 hover:text-white transition-colors" aria-label="Facebook">
+                        <i class="fab fa-facebook-f fa-lg"></i>
+                    </a>
+                    <a href="#" class="text-green-200 hover:text-white transition-colors" aria-label="Twitter">
+                        <i class="fab fa-twitter fa-lg"></i>
+                    </a>
+                    <a href="#" class="text-green-200 hover:text-white transition-colors" aria-label="Instagram">
+                        <i class="fab fa-instagram fa-lg"></i>
+                    </a>
+                    <a href="#" class="text-green-200 hover:text-white transition-colors" aria-label="LinkedIn">
+                        <i class="fab fa-linkedin-in fa-lg"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Copyright Bottom Line -->
+            <div class="mt-8 pt-5 border-t border-green-400/50 text-center"> <!-- Compacted -->
+                 <p class="text-sm text-green-200">
+                     &copy; 2024 - 2025 Design and Develop by
+                     <a href='https://www.AlQalamArts.com/' target="_blank" rel="noopener noreferrer" class="font-medium text-white hover:text-green-100">
+                          www.AlQalamArts.com
+                     </a>
+                 </p>
+            </div>
+        </div>
+    </footer>
+
+
+    <!-- Back To Top Button -->
+    <button id="backToTopBtn" class="fixed bottom-6 right-6 bg-[#4a7031] hover:bg-[#3b5a28] text-white w-10 h-10 rounded-full shadow-lg hidden justify-center items-center transition-all duration-300 opacity-0 z-40"> <!-- Compacted -->
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- Inline JavaScript -->
+    <script type="module">
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- Mobile Menu Toggle ---
+            const mobileMenuButton = document.getElementById('mobile-menu-toggle');
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (mobileMenuButton && mobileMenu) {
+                mobileMenuButton.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('mobile-menu-hidden');
+                    mobileMenu.classList.toggle('mobile-menu-visible');
+                });
+            }
+
+            // --- Back To Top Button ---
+            const backToTopBtn = document.getElementById('backToTopBtn');
+            if (backToTopBtn) {
+                window.addEventListener('scroll', () => {
+                    if (window.scrollY > 300) {
+                        backToTopBtn.classList.remove('hidden');
+                        backToTopBtn.classList.add('flex');
+                        backToTopBtn.classList.remove('opacity-0');
+                    } else {
+                        backToTopBtn.classList.add('opacity-0');
+                        setTimeout(() => {
+                            if (window.scrollY <= 300) {
+                                backToTopBtn.classList.add('hidden');
+                                backToTopBtn.classList.remove('flex');
+                            }
+                        }, 300); 
+                    }
+                });
+
+                backToTopBtn.addEventListener('click', () => {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+            }
+            
+            // --- NEW: Tag Combobox Logic ---
+            const tagBox = document.getElementById('tagBox');
+            if (tagBox) {
+                const tagButton = document.getElementById('tagButton');
+                const tagPanel = document.getElementById('tagPanel');
+                const tagSearchInput = document.getElementById('tagSearchInput');
+                const tagOptionsContainer = document.getElementById('tagOptions');
+                const allTagOptions = Array.from(tagOptionsContainer.querySelectorAll('.tag-option'));
+                const tagButtonLabel = document.getElementById('tagButtonLabel');
+
+                // Toggle panel
+                tagButton.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const isHidden = tagPanel.classList.toggle('hidden');
+                    if (!isHidden) {
+                        tagSearchInput.focus();
+                        // Reset search
+                        tagSearchInput.value = '';
+                        allTagOptions.forEach(opt => opt.style.display = '');
+                    }
+                });
+
+                // Close on click outside
+                document.addEventListener('click', (e) => {
+                    if (!tagBox.contains(e.target)) {
+                        tagPanel.classList.add('hidden');
+                    }
+                });
+
+                // Handle option selection
+                tagOptionsContainer.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('tag-option')) {
+                        // Update styles
+                        allTagOptions.forEach(opt => opt.setAttribute('aria-selected', 'false'));
+                        e.target.setAttribute('aria-selected', 'true');
+                        
+                        // Update button label
+                        tagButtonLabel.textContent = e.target.textContent;
+                        
+                        // Close panel
+                        tagPanel.classList.add('hidden');
+                        
+                        // You would typically fire off a search/filter function here
+                        // e.g., filterQuestionsByTag(e.target.dataset.value);
+                    }
+                });
+
+                // Handle search filtering
+                tagSearchInput.addEventListener('input', () => {
+                    const searchTerm = tagSearchInput.value.toLowerCase();
+                    allTagOptions.forEach(option => {
+                        const text = option.textContent.toLowerCase();
+                        if (text.includes(searchTerm)) {
+                            option.style.display = '';
+                        } else {
+                            option.style.display = 'none';
+                        }
+                    });
+                });
+            }
+            
+        });
+    </script>
+
+</body>
+</html>
