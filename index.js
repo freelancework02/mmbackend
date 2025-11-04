@@ -9,7 +9,7 @@
 // const app = express();
 // const PORT = process.env.PORT || 5000;
 
-
+    
 
 // // View engine: EJS
 // app.set("views", path.join(__dirname, "views"));
@@ -108,7 +108,6 @@
 // });
 
 
-
 // server.js
 require("dotenv").config();
 const express = require("express");
@@ -123,12 +122,11 @@ const PORT = process.env.PORT || 5000;
 /**
  * Internal base for SSR to call THIS server's API.
  * Ends with /api so you can do `${API_BASE}/books` etc.
- * Using 127.0.0.1 works locally; on platforms like Render this still hits the same container.
  */
 const API_BASE =
   (process.env.INTERNAL_API_BASE &&
     process.env.INTERNAL_API_BASE.replace(/\/+$/, "")) ||
-  `https://minaramasjid-backend.onrender.com/api`;
+  `http://localhost:5000/api`;
 
 // ---- View engine ----
 app.set("views", path.join(__dirname, "views"));
@@ -149,7 +147,8 @@ const slugify = (text = "") =>
     .trim()
     .replace(/\s+/g, "-")
     .replace(/[.,\/#!$%\^&\*;:{}=\_`~()؟“”"’']/g, "")
-    .replace(/-+/g, "-");
+    .replace(/-+/g, "-")
+    .replace(/^-+|-+$/g, "");
 
 const stripTags = (html = "") => String(html).replace(/<[^>]*>/g, "");
 const stripHTML = (html = "") =>
@@ -169,17 +168,14 @@ const formatDate = (raw) => {
   });
 };
 
-// Light, dependency-free sanitizer good enough for CMS HTML blocks
+// Light, dependency-free sanitizer
 function sanitizeHtml(unsafeHtml = "") {
   return String(unsafeHtml)
-    // kill script/style blocks
     .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
     .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, "")
-    // remove on* handlers (onload, onclick, …)
     .replace(/\son\w+\s*=\s*"[^"]*"/gi, "")
     .replace(/\son\w+\s*=\s*'[^']*'/gi, "")
     .replace(/\son\w+\s*=\s*[^\s>]+/gi, "")
-    // neutralize javascript: urls
     .replace(/javascript:/gi, "");
 }
 
@@ -191,7 +187,6 @@ async function fetchJSON(url) {
   return res.data;
 }
 
-// Pull home-page data server-side so the client never sees external API calls
 async function getHomeData() {
   try {
     const [articles, writers, books, events] = await Promise.all([
@@ -291,17 +286,43 @@ app.get("/", async (req, res) => {
 
 app.get("/article", (req, res) => res.render("pages/article"));
 app.get("/book", (req, res) => res.render("pages/book"));
-app.get("/qa", (req, res) => res.render("pages/qa"));
 app.get("/about", (req, res) => res.render("pages/about"));
 app.get("/contact", (req, res) => res.render("pages/contact"));
- 
+
+/** ----------------- QA LIST (SSR) /qa ----------------- */
+app.get("/qa", async (req, res) => {
+  // Call THIS server's API so it works locally and on Render
+  const LOCAL_API_BASE = `${req.protocol}://${req.get("host")}/api`;
+
+  try {
+    const [qRes, tRes] = await Promise.all([
+      axios.get(`${LOCAL_API_BASE}/questions`, { timeout: 15000 }),
+      axios.get(`${LOCAL_API_BASE}/topics`, { timeout: 15000 }).catch(() => ({ data: [] })),
+    ]);
+
+    const questions = Array.isArray(qRes.data) ? qRes.data : (Array.isArray(qRes.data?.data) ? qRes.data.data : []);
+    const topics = Array.isArray(tRes.data) ? tRes.data : (Array.isArray(tRes.data?.data) ? tRes.data.data : []);
+
+    res.render("pages/qa", {
+      questions,
+      topics,
+      apiBase: LOCAL_API_BASE,
+    });
+  } catch (err) {
+    console.error("QA list error:", err?.message || err);
+    res.render("pages/qa", {
+      questions: [],
+      topics: [],
+      apiBase: LOCAL_API_BASE,
+    });
+  }
+});
 
 /** ----------------- BOOK DETAIL (SSR) /bookdetail/:id/:slug ----------------- */
 app.get("/bookdetail/:id/:slug", async (req, res) => {
   const { id, slug } = req.params;
 
   try {
-    // use INTERNAL API base
     const bookRes = await axios.get(`${API_BASE}/books/${id}`);
     const book = bookRes.data;
 
@@ -337,7 +358,6 @@ app.get("/bookdetail/:id/:slug", async (req, res) => {
     const metaDesc =
       stripHTML(book.description || "") ||
       "Read details about this book on Maula Ali Research Centre.";
-    // Use current host (works locally and in prod)
     const metaImage = `${req.protocol}://${req.get("host")}/api/books/cover/${book.id}`;
     const pageUrl = `${req.protocol}://${req.get("host")}${req.originalUrl}`;
     const baseHref =
@@ -374,7 +394,6 @@ app.get("/article/:id/:slug", async (req, res) => {
 
     const actualSlug = slugify(article.title);
     if (slug !== actualSlug) {
-      // FIX: redirect to the SAME route shape (not /articledetail)
       return res.redirect(301, `/article/${article.id}/${actualSlug}`);
     }
 
@@ -435,7 +454,6 @@ app.get("/article/:id/:slug", async (req, res) => {
 app.get("/question/:id/:slug", async (req, res) => {
   const { id, slug } = req.params;
 
-  // Use the current request host so it works in prod too
   const LOCAL_API_BASE = `${req.protocol}://${req.get("host")}/api`;
 
   try {
@@ -481,7 +499,6 @@ app.get("/question/:id/:slug", async (req, res) => {
       ) || titleText || "Question & Answer";
     const metaDesc = clamp(rawDesc, 300);
 
-    // A generic image (replace if you have per-question images)
     const metaImage = `${req.protocol}://${req.get("host")}/assets/og-default.png`;
 
     // 4) Prepare HTML blocks (sanitized)
@@ -491,24 +508,17 @@ app.get("/question/:id/:slug", async (req, res) => {
     const answerHTML = sanitizeHtml(
       String(question.answerUrdu || question.answerEnglish || "")
     );
- 
+
     res.render("pages/question_view", {
-      // SEO/meta
       metaTitle,
       metaDesc,
       metaImage,
       pageUrl,
-
-      // core data
       question,
       sidebar,
       related,
-
-      // prepared HTML to render with <%- %>
       questionHTML,
       answerHTML,
-
-      // helpers
       slugify,
       detectDirection,
       stripTags,
@@ -519,8 +529,7 @@ app.get("/question/:id/:slug", async (req, res) => {
   }
 });
 
-
-/** ----------------- NEWS & EVENTS (SSR LIST) /newsandevent ----------------- */
+/** ----------------- EVENTS LIST ----------------- */
 app.get("/events", async (req, res) => {
   try {
     const events = await fetchJSON(`${API_BASE}/events`);
@@ -542,7 +551,7 @@ app.get("/events", async (req, res) => {
   }
 });
 
-/** ----------------- EVENT DETAIL (SSR) /newsandevent/:id/:slug ------------- */
+/** ----------------- EVENT DETAIL ----------------- */
 app.get("/events/:id/:slug", async (req, res) => {
   const { id, slug } = req.params;
   try {
@@ -554,7 +563,6 @@ app.get("/events/:id/:slug", async (req, res) => {
       return res.redirect(301, `/events/${ev.id}/${actual}`);
     }
 
-    // Pull some more for "related"
     const all = await fetchJSON(`${API_BASE}/events`);
     const related = (Array.isArray(all) ? all : [])
       .filter((x) => x.id !== ev.id)
@@ -562,7 +570,6 @@ app.get("/events/:id/:slug", async (req, res) => {
 
     const pageUrl = `${req.protocol}://${req.get("host")}${req.originalUrl}`;
     res.render("pages/event_view", {
-      // minimal detail page to avoid 404 from list links
       title: ev.title || "Event",
       description: stripHTML(ev.content || ""),
       pageUrl,
@@ -577,7 +584,6 @@ app.get("/events/:id/:slug", async (req, res) => {
     res.status(500).send("Something went wrong");
   }
 });
-
 
 // Health checks
 app.get("/healthz", (req, res) => res.status(200).send("ok"));
@@ -608,7 +614,6 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://127.0.0.1:${PORT}`);
 
-  // Test DB connection once at boot
   db.getConnection((err, connection) => {
     if (err) {
       console.error("❌ Database connection failed:", err.message);

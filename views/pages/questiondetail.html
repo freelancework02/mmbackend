@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+
     <!-- Meta Tags for Question Detail Page -->
     <title>Question Detail | Maula Ali Research Center</title>
     <meta name="keywords" content="Maula Ali Research Centre, Islamic Questions, Fatwa, Islamic Rulings, Ask Scholars, Urdu Fatwa">
     <meta name="description" content="Read the detailed answer to this Islamic question on Maula Ali Research Centre. Explore Islamic knowledge, research, and insights from our dedicated scholars.">
     <meta name="robots" content="index, follow">
     <!-- <link rel="canonical" href="https://minaramasjid.com/question/..."> -->
-    
+
     <meta property="og:title" content="Question Detail | Maula Ali Research Center">
     <meta property="og:description" content="Read the detailed answer to this Islamic question on Maula Ali Research Centre.">
     <meta property="og:image" content="https://placehold.co/1200x630/6a8a4f/white?text=Question&font=roboto">
@@ -35,11 +35,19 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,400;8..144,500;8..144,700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Gulzar&display=swap" rel="stylesheet">
 
-    
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
     
     <style>
+        /* Define the custom Urdu font */
+        @font-face {
+            font-family: 'NaatFont';
+            src: url('https://res.cloudinary.com/awescreative/raw/upload/v1749150996/Awes/naatfont.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
+        }
+
         /* Set default font */
         body {
             font-family: "Roboto Flex", sans-serif;
@@ -63,12 +71,12 @@
             opacity: 1;
             transition: max-height 0.4s ease-in, opacity 0.3s ease-in;
         }
-        /* Gulzar font class from example */
-        .gulzartext {
-            font-family: 'Gulzar', serif;
-        }
-        .heading {
-             font-family: 'Gulzar', serif; /* Assuming 'heading' class also uses Gulzar */
+        
+        /* Apply custom Urdu font to relevant classes */
+        .gulzartext,
+        .heading,
+        .prose-rtl {
+            font-family: 'NaatFont', 'Gulzar', serif;
         }
         
         /* Prose styles for article content */
@@ -181,8 +189,8 @@
                 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     
-                    <!-- Main Content Column -->
-                    <div class="lg:col-span-2">
+                    <!-- Main Content Column (MOVED TO RIGHT ON LG) -->
+                    <div class="lg:col-span-2 lg:order-2">
                         <!-- Question Info Block -->
                         <div class="bg-white p-6 md:p-8 rounded-3xl mb-8 shadow-xl animate-fade-in-up"> <!-- Compacted p, mb -->
                             <div class="rtl text-right">
@@ -197,13 +205,15 @@
 
                                 <!-- Stats & Share -->
                                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6"> <!-- Compacted -->
-                                        <!-- View Count -->
+                                    
+                                    <!-- View Count -->
                                     <div class="flex items-center gap-2 text-gray-500">
                                         <i class="fas fa-eye w-4 text-gray-400"></i>
                                         <span class="text-md font-bold text-gray-900">1</span>
                                         <span class="text-sm font-semibold">Views</span>
                                     </div>
-                                        <!-- Share Button -->
+                                    
+                                    <!-- Share Button -->
                                     <button id="shareBtn" title="Share question" class="inline-flex items-center justify-center gap-2 bg-[#e8f0e0] text-[#4a7031] rounded-full hover:bg-[#d6e5c4] transition duration-300 shadow-sm px-4 py-2 text-sm font-semibold"> <!-- Compacted -->
                                         <i class="fas fa-share-alt"></i>
                                         <span>Share</span>
@@ -222,14 +232,14 @@
                             <div id="content-ur" class="lang-content prose prose-rtl max-w-none gulzartext text-lg leading-relaxed"> <!-- Compacted text-lg -->
                                 <h2 class="heading text-2xl font-bold text-[#4a7031] mb-3">سوال:</h2> <!-- Compacted -->
                                 <div id="fatwa-question">
-                                    <p>کیا فرماتے ہیں اہلِ علم اس بارے میں کچھ کتابوں میں غوث اعظم رضی اللہ تعالی عنہ کی ایک کرامت لکھی جس کا مضمون کچھ یوں ہے کہ غوث پاک کے ایک خادم کی موت ہو گئی موت ہونے کے بعد ان کی بیوی یا بیٹی غوث اعظم کے پاس آ کر فریاد کی تو غوث اعظم نے انکھیں بند فرمائی اور عزرائیل علیہ السلام کو دیکھا کہ وہ روح لے کر جا رہے تھے ان سے کہا کہ میرے خادم کی روح واپس کرو انکار کیا تو غوث اعظم نے ان سے روحوں والا تھیلا چھین لیا اور ساری روحوں کو جو اس تھیلے میں تھی ان کو ازاد کروا دیا اب پوچھنا یہ ہے کیا غوث پاک کی طرف اس کرامت کی نسبت کرنا صحیح ہے یا نہیں اور جن کتابوں کے اندر لکھا ہے کیا ان کا پڑھنا صحیح ہے یا نہیں اہل علم اس پر روشنی ڈالیں۔</p><p><br></p><p>المستفتی:(حافظ)محمد اشتیاق قادری تھنہ منڈی</p>
+                                    <p>کیا فرماتے ہیں اہلِ علم اس بارے میں کچھ کتابوں میں غوث اعظم رضی اللہ تعالی عنہ کی ایک کرامت لKhi جس کا مضمون کچھ یوں ہے کہ غوث پاک کے ایک خادم کی موت ہو گئی موت ہونے کے بعد ان کی بیوی یا بیٹی غوث اعظم کے پاس آ کر فریاد کی تو غوث اعظم نے انکھیں بند فرمائی اور عزرائیل علیہ السلام کو دیکھا کہ وہ روح لے کر جا رہے تھے ان سے کہا کہ میرے خادم کی روح واپس کرو انکار کیا تو غوث اعظم نے ان سے روحوں والا تھیلا چھین لیا اور ساری روحوں کو جو اس تھیلے میں تھی ان کو ازاد کروا دیا اب پوچھنا یہ ہے کیا غوث پاک کی طرف اس کرامت کی نسبت کرنا صحیح ہے یا نہیں اور جن کتابوں کے اندر لکھا ہے کیا ان کا پڑھنا صحیح ہے یا نہیں اہل علم اس پر روشنی ڈالیں۔</p><p><br></p><p>المستفتی:(حافظ)محمد اشتیاق قادری تھنہ منڈی</p>
                                 </div>
                                 
                                 <hr class="my-6"> <!-- Compacted -->
 
                                 <h2 class="heading text-2xl font-bold text-[#4a7031] mb-3">جواب:</h2> <!-- Compacted -->
                                 <div id="fatwa-answer">
-                                    <p><strong>باسمه تعالى وتقدس الجواب بعون الملك الوهاب:</strong></p><p> صورت مسؤلہ میں جس واقعہ کا ذکر کیا گیا ہے وہ من گھڑت اور کفریہ ہے اس طرح کے کفریہ واقعہ کو معاذاللہ کرامت کہہ کر سرکار غوث اعظم رضی اللہ تعالیٰ عنہ کی طرف منسوب کرنا ہرگز ہرگز صحیح نہیں بلکہ اس(منسوب کرنے) میں سرکار کی سخت توہین وبے ادبی ہے،  </p><p>   اعلی حضرت امام اہل سنت اس من گھڑت واقعہ کے بارے میں تحریر فرماتے ہیں:</p><p>" اور دوسری روایت ابلیس کی گڑھی ہوئی ہے اور اس کا پڑھنا اور سننا دونوں حرام۔ احمق، جاہل بے ادب نے یہ جانا کہ وہ اس میں حضور سیدنا غوث اعظم رضی الله تعالیٰ عنہ کی تعظیم کرتا ہے حالانکہ وہ حضور کی سخت توہین کر رہا ہے، کسی عالم مسلمان کی اس سے زیادہ توہین کیا ہوگی کہ معاذ الله اسے کفر کی طرف نسبت کیا جائے نہ کہ محبوبان الٰہی سیدنا عزرائیل علیہ السلام مرسلین ملائکہ میں سے ہیں اور مرسلین ملائکہ بالاجماع تمام غیر انبیاء سے افضل ہیں کسی رسول کے ساتھ ایسی حرکت کرنا توہین رسول کے سبب معاذ الله اس کے لئے باعث کفر ہے، الله تعالیٰ جہالت و ضلالت سے پناہ دے "( فتاوی رضویہ مترجم، ج ۲۹ ص ۶۳۰ تا ۶۳۱/ ناشر:رضا اکیڈمی،ممبئی) </p><p>  نیز تحریر فرماتے ہیں:</p><p>" زنبیل ارواح (روحوں کا تھیلا) چھین لینا خرافات مخترعہ جہال سے ہے۔ سیدنا عزرائیل علیہ الصلوۃ والسلام رسل ملائکہ سے ہیں اور رسل ملائکہ اولیاء بشر سے بالاجماع افضل۔ تو مسلمانوں کو ایسے اباطیل واہیہ سے احتراز لازم "(حوالہ سابق/ ج ۲۸/ص ۴۱۸ تا ۴۱۹)</p><p>   جن کتابوں میں اسی طرح کے من گھڑت واقعات بھرے پڑے ہیں انہیں پڑھنے سے گریز کیا جائے، سرکار غوث اعظم رضی اللہ تعالیٰ عنہ کی حیات مبارکہ کے بارے میں معلومات حاصل کرنے کے لیے انہی کتابوں کو پڑھیں جن کو علماء محققین نے معتبر ومستند قرار دیا ہے جیسے کہ امام اہل سنت قدس سرہ العزیز کتاب مستطاب بھجۃ الاسرار شریف اورمصنف کتاب امام ابو الحسن علی نور الدین رحمہ اللہ تعالی کے بارے میں اکابرین وعمائدین اہل سنت کے اقوال نقل کرنے کے بعد تحریر فرماتے ہیں: "الحمدللہ ان عبارات ائمہ واکابر سے واضح ہوا کہ امام ابو الحسن علی نور الدین مصنف کتاب مستطاب بہجۃ الاسرار  امام اجل امام یکتا محقق بارع فقیہ شیخ القراء منجملہ مشاہیر مشائخ وعلما ہیں اور یہ کتاب مستطاب معتبر ومعتمد کہ اکابر ائمہ نے اس سے استناد کیا اور کتب حدیث کی طرح اس کی اجازتیں لیں دیں۔ کتب مناقب سرکار غوثیت میں باعتبار علو اسانید اسکا وہ مرتبہ ہے جو کتب حدیث میں موطائے امام مالک کا۔ اور کتب مناقب اولیاء میں باعتبار صحت اسانید اسکا وہ مرتبہ ہے جو کتب حدیث میں صحیح بخاری کا بلکہ صحاح میں بعض شاذ بھی ہوتی ہیں اور اس میں کوئی حدیث شاذ بھی نہیں امام بخاری نے صرف صحت کا التزام کیا اور ان امام جلیل نے صحت وعدم شذوذ دونوں کا اور بشہادت علامہ عمر حلبی وہ التزام تام ہوا کہ اسکی ہر حدیث کے لیے متعدد متابع موجود ہیں"( فتاوی رضویہ قدیم، ج ۱۲ ص ۲۳۶/کتاب الشتی)والله سبحانه وتعالى أعلم</p><p><br></p><p><strong> کتبہ: محمد ارشاد رضا علیمیؔ غفرلہ خادم دار العلوم رضویہ اشرفیہ ایتی راجوری جموں وکشمیر </strong></p><p><br></p><p><strong>۲۳/ربیع الآخر ۱۴۴۷ھ مطابق ۱۷/اکتوبر ۲۰۲۵ء</strong></p><p><br></p><p><strong>الجواب صحیح</strong></p><p><strong>محمد نظام الدین قادری خادم درس وافتا دار العلوم علیمیہ جمدا شاہی بستی یوپی</strong></p><p><br></p><p><strong>الجواب صحیح والمجیب نجیح</strong></p><p><strong>محمد عارف قادری نعیمی عفی عنہ </strong></p><p><strong>خادم التدریس والافتاء جامعہ حنفیہ نظامیہ حنفی نگر ایتی راجوری</strong></p>
+                                    <p><strong>باسمه تعالى وتقدس الجواب بعون الملك الوهاب:</strong></p><p> صورت مسؤلہ میں جس واقعہ کا ذکر کیا گیا ہے وہ من گھڑت اور کفریہ ہے اس طرح کے کفریہ واقعہ کو معاذاللہ کرامت کہہ کر سرکار غوث اعظم رضی اللہ تعالیٰ عنہ کی طرف منSوب کرنا ہرگز ہرگز صحیح نہیں بلکہ اس(منسوب کرنے) میں سرکار کی سخت توہین وبے ادبی ہے،  </p><p>  اعلی حضرت امام اہل سنت اس من گھڑت واقعہ کے بارے میں تحریر فرماتے ہیں:</p><p>" اور دوسری روایت ابلیس کی گڑھی ہوئی ہے اور اس کا پڑھنا اور سننا دونوں حرام۔ احمق، جاہل بے ادب نے یہ جانا کہ وہ اس میں حضور سیدنا غوث اعظم رضی الله تعالیٰ عنہ کی تعظیم کرتا ہے حالانکہ وہ حضور کی سخت توہین کر رہا ہے، کسی عالم مسلمان کی اس سے زیادہ توہین کیا ہوگی کہ معاذ الله اسے کفر کی طرف نسبت کیا جائے نہ کہ محبوبان الٰہی سیدنا عزرائیل علیہ السلام مرسلین ملائکہ میں سے ہیں اور مرسلین ملائکہ بالاجماع تمام غیر انبیاء سے افضل ہیں کسی رسول کے ساتھ ایسی حرکت کرنا توہین رسول کے سبب معاذ الله اس کے لئے باعث کفر ہے، الله تعالیٰ جہالت و ضلالت سے پناہ دے "( فتاوی رضویہ مترجم، ج ۲۹ ص ۶۳۰ تا ۶۳۱/ ناشر:رضا اکیڈمی،ممبئی) </p><p>  نیز تحریر فرماتے ہیں:</p><p>" زنبیل ارواح (روحوں کا تھیلا) چھین لینا خرافات مخترعہ جہال سے ہے۔ سیدنا عزرائیل علیہ الصلوۃ والسلام رسل ملائکہ سے ہیں اور رسل ملائکہ اولیاء بشر سے بالاجماع افضل۔ تو مسلمانوں کو ایسے اباطیل واہیہ سے احتراز لازم "(حوالہ سابق/ ج ۲۸/ص ۴۱۸ تا ۴۱۹)</p><p>  جن کتابوں میں اسی طرح کے من گھڑت واقعات بھرے پڑے ہیں انہیں پڑھنے سے گریز کیا جائے، سرکار غوث اعظم رضی اللہ تعالیٰ عنہ کی حیات مبارکہ کے بارے میں معلومات حاصل کرنے کے لیے انہی کتابوں کو پڑھیں جن کو علماء محققین نے معتبر ومستند قرار دیا ہے جیسے کہ امام اہل سنت قدس سرہ العزیز کتاب مستطاب بھجۃ الاسرار شریف اورمصنف کتاب امام ابو الحسن علی نور الدین رحمہ اللہ تعالی کے بارے میں اکابرین وعمائدین اہل سنت کے اقوال نقل کرنے کے بعد تحریر فرماتے ہیں: "الحمدللہ ان عبارات ائمہ واکابر سے واضح ہوا کہ امام ابو الحسن علی نور الدین مصنف کتاب مستطاب بہجۃ الاسرار  امام اجل امام یکتا محقق بارع فقیہ شیخ القراء منجملہ مشاہیر مشائخ وعلما ہیں اور یہ کتاب مستطاب معتبر ومعتمد کہ اکابر ائمہ نے اس سے استناد کیا اور کتب حدیث کی طرح اس کی اجازتیں لیں دیں۔ کتب مناقب سرکار غوثیت میں باعتبار علو اسانید اسکا وہ مرتبہ ہے جو کتب حدیث میں موطائے امام مالک کا۔ اور کتب مناقب اولیاء میں باعتبار صحت اسانید اسکا وہ مرتبہ ہے جو کتب حدیث میں صحیح بخاری کا بلکہ صحاح میں بعض شاذ بھی ہوتی ہیں اور اس میں کوئی حدیث شاذ بھی نہیں امام بخاری نے صرف صحت کا التزام کیا اور ان امام جلیل نے صحت وعدم شذوذ دونوں کا اور بشہادت علامہ عمر حلبی وہ التزام تام ہوا کہ اسکی ہر حدیث کے لیے متعدد متابع موجود ہیں"( فتاوی رضویہ قدیم، ج ۱۲ ص ۲۳۶/کتاب الشتی)والله سبحانه وتعالى أعلم</p><p><br></p><p><strong> کتبہ: محمد ارشاد رضا علیمیؔ غفرلہ خادم دار العلوم رضویہ اشرفیہ ایتی راجوری جموں وکشمیر </strong></p><p><br></p><p><strong>۲۳/ربیع الآخر ۱۴۴۷ھ مطابق ۱۷/اکتوبر ۲۰۲۵ء</strong></p><p><br></p><p><strong>الجواب صحیح</strong></p><p><strong>محمد نظام الدین قادری خادم درس وافتا دار العلوم علیمیہ جمدا شاہی بستی یوپی</strong></p><p><br></p><p><strong>الجواب صحیح والمجیب نجیح</strong></p><p><strong>محمد عارف قادری نعیمی عفی عنہ </strong></p><p><strong>خادم التدریس والافتاء جامعہ حنفیہ نظامیہ حنفی نگر ایتی راجوری</strong></p>
                                 </div>
                             </div>
 
@@ -260,9 +270,9 @@
                         <div class="animate-fade-in-up lg:hidden" style="animation-delay: 300ms;">
                             <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4 rtl text-right"> <!-- Compacted -->
                                 <h2 class="heading text-2xl font-bold text-[#4a7031]">تازہ ترین فتاویٰ</h2> <!-- Compacted -->
-                                <a href="/all-faq" class="bg-white border border-[#4a7031] text-[#4a7031] rounded-full px-4 py-2 text-sm font-medium hover:bg-[#eaf3df] transition-colors duration-300 shadow-sm flex-shrink-0 gulzartext">سب دیکھیں</a> 
-                            </div>
-                            
+                                <a href="/all-faq" class="bg-white border border-[#4a7031] text-[#4a7031] rounded-full px-4 py-2 text-sm font-medium hover:bg-[#eaf3df] transition-colors duration-300 shadow-sm flex-shrink-0 gulzartext">سب دیکھیں</a>
+                             </div>
+                             
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4"> <!-- Compacted -->
                                 <!-- Question Card Design -->
                                 <div class="bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 h-full">
@@ -337,8 +347,8 @@
                         </div>
                     </div>
 
-                    <!-- Sidebar Column -->
-                    <aside class="hidden lg:block lg:col-span-1 space-y-6 animate-fade-in-up" style="animation-delay: 150ms;">
+                    <!-- Sidebar Column (MOVED TO LEFT ON LG) -->
+                    <aside class="hidden lg:block lg:col-span-1 space-y-6 animate-fade-in-up lg:order-1" style="animation-delay: 150ms;">
                         <div class="sticky top-24"> <!-- Sticky top adjusted for compact header -->
                             <h3 class="heading text-2xl font-bold text-[#4a7031] mb-4 rtl text-right">متعلقہ سوالات</h3>
                             
@@ -406,8 +416,92 @@
                                 </div>
                             </a>
 
+                            <!-- Related Question Card 5 -->
+                            <a href="#" class="group flex items-start gap-3 bg-white p-4 rounded-2xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 mb-4 border border-transparent hover:border-[#c1d9a3]">
+                                <div class="flex-shrink-0 w-10 h-10 rounded-full bg-[#4a7031] flex items-center justify-center">
+                                    <span class="font-bold text-lg text-white">5</span>
+                                </div>
+                                <div class="flex-1 rtl text-right">
+                                    <h4 class="heading text-gray-800 group-hover:text-[#4a7031] text-md font-semibold leading-snug line-clamp-1 transition-colors duration-200">پانچواں متعلقہ سوال کا عنوان</h4>
+                                    <div class="flex items-center gap-1.5 text-xs text-gray-500 mt-1.5">
+                                        <i class="fas fa-eye fa-xs"></i>
+                                        <span>73</span>
+                                    </div>
+                                </div>
+                            </a>
+
+                            <!-- Related Question Card 6 -->
+                            <a href="#" class="group flex items-start gap-3 bg-white p-4 rounded-2xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 mb-4 border border-transparent hover:border-[#c1d9a3]">
+                                <div class="flex-shrink-0 w-10 h-10 rounded-full bg-[#4a7031] flex items-center justify-center">
+                                    <span class="font-bold text-lg text-white">6</span>
+                                </div>
+                                <div class="flex-1 rtl text-right">
+                                    <h4 class="heading text-gray-800 group-hover:text-[#4a7031] text-md font-semibold leading-snug line-clamp-1 transition-colors duration-200">چھٹا متعلقہ سوال کا عنوان</h4>
+                                    <div class="flex items-center gap-1.5 text-xs text-gray-500 mt-1.5">
+                                        <i class="fas fa-eye fa-xs"></i>
+                                        <span>51</span>
+                                    </div>
+                                </div>
+                            </a>
+
+                            <!-- Related Question Card 7 -->
+                            <a href="#" class="group flex items-start gap-3 bg-white p-4 rounded-2xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 mb-4 border border-transparent hover:border-[#c1d9a3]">
+                                <div class="flex-shrink-0 w-10 h-10 rounded-full bg-[#4a7031] flex items-center justify-center">
+                                    <span class="font-bold text-lg text-white">7</span>
+                                </div>
+                                <div class="flex-1 rtl text-right">
+                                    <h4 class="heading text-gray-800 group-hover:text-[#4a7031] text-md font-semibold leading-snug line-clamp-1 transition-colors duration-200">ساتواں متعلقہ سوال کا عنوان</h4>
+                                    <div class="flex items-center gap-1.5 text-xs text-gray-500 mt-1.5">
+                                        <i class="fas fa-eye fa-xs"></i>
+                                        <span>88</span>
+                                    </div>
+                                </div>
+                            </a>
+
+                            <!-- Related Question Card 8 -->
+                            <a href="#" class="group flex items-start gap-3 bg-white p-4 rounded-2xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 mb-4 border border-transparent hover:border-[#c1d9a3]">
+                                <div class="flex-shrink-0 w-10 h-10 rounded-full bg-[#4a7031] flex items-center justify-center">
+                                    <span class="font-bold text-lg text-white">8</span>
+                                </div>
+                                <div class="flex-1 rtl text-right">
+                                    <h4 class="heading text-gray-800 group-hover:text-[#4a7031] text-md font-semibold leading-snug line-clamp-1 transition-colors duration-200">آٹھواں متعلقہ سوال کا عنوان</h4>
+                                    <div class="flex items-center gap-1.5 text-xs text-gray-500 mt-1.5">
+                                        <i class="fas fa-eye fa-xs"></i>
+                                        <span>23</span>
+                                    </div>
+                                </div>
+                            </a>
+
+                            <!-- Related Question Card 9 -->
+                            <a href="#" class="group flex items-start gap-3 bg-white p-4 rounded-2xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 mb-4 border border-transparent hover:border-[#c1d9a3]">
+                                <div class="flex-shrink-0 w-10 h-10 rounded-full bg-[#4a7031] flex items-center justify-center">
+                                    <span class="font-bold text-lg text-white">9</span>
+                                </div>
+                                <div class="flex-1 rtl text-right">
+                                    <h4 class="heading text-gray-800 group-hover:text-[#4a7031] text-md font-semibold leading-snug line-clamp-1 transition-colors duration-200">نواں متعلقہ سوال کا عنوان</h4>
+                                    <div class="flex items-center gap-1.5 text-xs text-gray-500 mt-1.5">
+                                        <i class="fas fa-eye fa-xs"></i>
+                                        <span>42</span>
+                                    </div>
+                                </div>
+                            </a>
+
+                            <!-- Related Question Card 10 -->
+                            <a href="#" class="group flex items-start gap-3 bg-white p-4 rounded-2xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 mb-4 border border-transparent hover:border-[#c1d9a3]">
+                                <div class="flex-shrink-0 w-10 h-10 rounded-full bg-[#4a7031] flex items-center justify-center">
+                                    <span class="font-bold text-lg text-white">10</span>
+                                </div>
+                                <div class="flex-1 rtl text-right">
+                                    <h4 class="heading text-gray-800 group-hover:text-[#4a7031] text-md font-semibold leading-snug line-clamp-1 transition-colors duration-200">دسواں متعلقہ سوال کا عنوان</h4>
+                                    <div class="flex items-center gap-1.5 text-xs text-gray-500 mt-1.5">
+                                        <i class="fas fa-eye fa-xs"></i>
+                                        <span>19</span>
+                                    </div>
+                                </div>
+                            </a>
+
                             <!-- View All Button -->
-                            <a href="/all-faq" class="block text-center w-full bg-white border border-[#4a7031] text-[#4a7031] rounded-full px-4 py-2 text-sm font-medium hover:bg-[#eaf3df] transition-colors duration-300 shadow-sm gulzartext">سب دیکھیں</a> 
+                            <a href="/all-faq" class="block text-center w-full bg-white border border-[#4a7031] text-[#4a7031] rounded-full px-4 py-2 text-sm font-medium hover:bg-[#eaf3df] transition-colors duration-300 shadow-sm gulzartext">سب دیکھیں</a>
 
                         </div>
                     </aside>
@@ -422,7 +516,6 @@
     <div id="toast" class="fixed bottom-24 right-6 bg-gray-800 text-white px-5 py-3 rounded-lg shadow-lg opacity-0 transition-opacity duration-300 z-50">
         Link copied to clipboard!
     </div>
-
 
     <!-- Footer -->
     <footer class="bg-[#718e56] text-white mt-16 sm:mt-20 relative z-20"> <!-- Compacted -->
@@ -456,15 +549,14 @@
             <!-- Copyright Bottom Line -->
             <div class="mt-8 pt-5 border-t border-green-400/50 text-center"> <!-- Compacted -->
                  <p class="text-sm text-green-200">
-                     &copy; 2024 - 2025 Design and Develop by
+                     &copy; 2024 - 2025 Design and Develop by 
                      <a href='https://www.AlQalamArts.com/' target="_blank" rel="noopener noreferrer" class="font-medium text-white hover:text-green-100">
-                          www.AlQalamArts.com
+                         www.AlQalamArts.com
                      </a>
                  </p>
             </div>
         </div>
     </footer>
-
 
     <!-- Back To Top Button -->
     <button id="backToTopBtn" class="fixed bottom-6 right-6 bg-[#4a7031] hover:bg-[#3b5a28] text-white w-10 h-10 rounded-full shadow-lg hidden justify-center items-center transition-all duration-300 opacity-0 z-40"> <!-- Compacted -->

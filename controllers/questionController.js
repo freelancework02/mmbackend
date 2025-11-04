@@ -93,7 +93,6 @@ exports.getNewQuestionImage = (req, res) => {
       return res.status(500).send("Error fetching image");
     }
     if (results.length > 0 && results[0].image) {
-      // If you later store MIME type, set the proper Content-Type here.
       res.setHeader("Content-Type", "image/jpeg");
       return res.send(results[0].image);
     }
@@ -103,9 +102,6 @@ exports.getNewQuestionImage = (req, res) => {
 
 /* =========================================
    POST: Create
-   Required: slug, writer, date, language, topic, image, answeredStatus
-   Optional: tags, translator, isPublished (default 0),
-             EN/UR/Roman/Hindi Q/A (default empty strings)
 ========================================= */
 exports.createNewQuestion = (req, res) => {
   const {
@@ -144,15 +140,6 @@ exports.createNewQuestion = (req, res) => {
   const modifiedOn = new Date();
   const isDeleted = 0;
 
-  // EXACT column order & count matches your schema (excluding auto id):
-  // image, imageName, slug,
-  // questionEnglish, answerEnglish,
-  // questionUrdu, answerUrdu,
-  // questionRoman, answerRoman,
-  // questionHindi, answerHindi,
-  // writer, date, tags, language, topic, translator,
-  // answeredStatus,
-  // createdOn, isPublished, modifiedOn, isDeleted
   const sql = `
     INSERT INTO New_Question_Table
     (
@@ -206,9 +193,6 @@ exports.createNewQuestion = (req, res) => {
 
 /* =========================================
    PATCH: Update (partial)
-   - If slug is sent, it wins (after slugify).
-   - Else if any question text (EN/UR/Roman/Hindi) changes, regenerate from first
-     non-empty in priority EN > UR > Roman > Hindi.
 ========================================= */
 exports.updateNewQuestion = (req, res) => {
   const { id } = req.params;
@@ -237,7 +221,6 @@ exports.updateNewQuestion = (req, res) => {
   const imageBuffer = req.file ? req.file.buffer : null;
   const imageName = req.file?.originalname || null;
 
-  // Get existing for slug decision & comparisons
   const fetchSql = `
     SELECT
       questionEnglish, questionUrdu, questionRoman, questionHindi, slug
@@ -253,19 +236,14 @@ exports.updateNewQuestion = (req, res) => {
 
     const existing = rows[0];
 
-    // Slug logic
     let nextSlug = null;
     if (typeof slugBody === "string" && slugBody.trim() !== "") {
       nextSlug = slugify(slugBody);
     } else {
-      const enChanged =
-        questionEnglish !== undefined && questionEnglish !== existing.questionEnglish;
-      const urChanged =
-        questionUrdu !== undefined && questionUrdu !== existing.questionUrdu;
-      const rnChanged =
-        questionRoman !== undefined && questionRoman !== existing.questionRoman;
-      const hiChanged =
-        questionHindi !== undefined && questionHindi !== existing.questionHindi;
+      const enChanged = questionEnglish !== undefined && questionEnglish !== existing.questionEnglish;
+      const urChanged = questionUrdu !== undefined && questionUrdu !== existing.questionUrdu;
+      const rnChanged = questionRoman !== undefined && questionRoman !== existing.questionRoman;
+      const hiChanged = questionHindi !== undefined && questionHindi !== existing.questionHindi;
 
       if (enChanged || urChanged || rnChanged || hiChanged) {
         const en = (questionEnglish ?? existing.questionEnglish) || "";
@@ -276,7 +254,6 @@ exports.updateNewQuestion = (req, res) => {
       }
     }
 
-    // Build dynamic update safely
     let sql = `UPDATE New_Question_Table SET `;
     const fields = [];
     const params = [];
@@ -290,77 +267,28 @@ exports.updateNewQuestion = (req, res) => {
       }
     }
 
-    if (questionEnglish !== undefined) {
-      fields.push("questionEnglish = ?");
-      params.push(questionEnglish);
-    }
-    if (answerEnglish !== undefined) {
-      fields.push("answerEnglish = ?");
-      params.push(answerEnglish);
-    }
-    if (questionUrdu !== undefined) {
-      fields.push("questionUrdu = ?");
-      params.push(questionUrdu);
-    }
-    if (answerUrdu !== undefined) {
-      fields.push("answerUrdu = ?");
-      params.push(answerUrdu);
-    }
-    if (questionRoman !== undefined) {
-      fields.push("questionRoman = ?");
-      params.push(questionRoman);
-    }
-    if (answerRoman !== undefined) {
-      fields.push("answerRoman = ?");
-      params.push(answerRoman);
-    }
-    if (questionHindi !== undefined) {
-      fields.push("questionHindi = ?");
-      params.push(questionHindi);
-    }
-    if (answerHindi !== undefined) {
-      fields.push("answerHindi = ?");
-      params.push(answerHindi);
-    }
+    if (questionEnglish !== undefined) { fields.push("questionEnglish = ?"); params.push(questionEnglish); }
+    if (answerEnglish !== undefined)   { fields.push("answerEnglish = ?");   params.push(answerEnglish); }
+    if (questionUrdu !== undefined)    { fields.push("questionUrdu = ?");    params.push(questionUrdu); }
+    if (answerUrdu !== undefined)      { fields.push("answerUrdu = ?");      params.push(answerUrdu); }
+    if (questionRoman !== undefined)   { fields.push("questionRoman = ?");   params.push(questionRoman); }
+    if (answerRoman !== undefined)     { fields.push("answerRoman = ?");     params.push(answerRoman); }
+    if (questionHindi !== undefined)   { fields.push("questionHindi = ?");   params.push(questionHindi); }
+    if (answerHindi !== undefined)     { fields.push("answerHindi = ?");     params.push(answerHindi); }
 
-    if (writer !== undefined) {
-      fields.push("writer = ?");
-      params.push(writer);
-    }
-    if (date !== undefined) {
+    if (writer !== undefined)          { fields.push("writer = ?");          params.push(writer); }
+    if (date !== undefined)            {
       if (!isValidDate(date)) return res.status(400).send("Invalid date format.");
-      fields.push("date = ?");
-      params.push(date);
+      fields.push("date = ?"); params.push(date);
     }
-    if (tags !== undefined) {
-      fields.push("tags = ?");
-      params.push(tags || null);
-    }
-    if (language !== undefined) {
-      fields.push("language = ?");
-      params.push(language);
-    }
-    if (topic !== undefined) {
-      fields.push("topic = ?");
-      params.push(topic);
-    }
-    if (translator !== undefined) {
-      fields.push("translator = ?");
-      params.push(translator || null);
-    }
-    if (answeredStatus !== undefined) {
-      fields.push("answeredStatus = ?");
-      params.push(answeredStatus);
-    }
-    if (isPublished !== undefined) {
-      fields.push("isPublished = ?");
-      params.push(Number(isPublished) ? 1 : 0);
-    }
+    if (tags !== undefined)            { fields.push("tags = ?");            params.push(tags || null); }
+    if (language !== undefined)        { fields.push("language = ?");        params.push(language); }
+    if (topic !== undefined)           { fields.push("topic = ?");           params.push(topic); }
+    if (translator !== undefined)      { fields.push("translator = ?");      params.push(translator || null); }
+    if (answeredStatus !== undefined)  { fields.push("answeredStatus = ?");  params.push(answeredStatus); }
+    if (isPublished !== undefined)     { fields.push("isPublished = ?");     params.push(Number(isPublished) ? 1 : 0); }
 
-    if (nextSlug) {
-      fields.push("slug = ?");
-      params.push(nextSlug);
-    }
+    if (nextSlug) { fields.push("slug = ?"); params.push(nextSlug); }
 
     fields.push("modifiedOn = ?");
     params.push(new Date());
@@ -400,5 +328,53 @@ exports.deleteNewQuestion = (req, res) => {
     }
     if (result.affectedRows === 0) return res.status(404).send("Question not found.");
     res.send("Question deleted (soft delete) successfully!");
+  });
+};
+
+/* =========================================
+   NEW: GET by Tag (normalized)
+   - Matches either CSV 'tags' OR single 'topic' column.
+========================================= */
+exports.getQuestionsByTag = (req, res) => {
+  const raw = (req.params.tag || "").toString().trim();
+  if (!raw) return res.status(400).send("Tag is required");
+
+  // normalize like client
+  const norm = (s="") => s.toLowerCase().trim()
+    .replace(/[\u0600-\u06FF]+/g,"")
+    .replace(/[^a-z0-9]+/g,"-")
+    .replace(/(^-|-$)+/g,"");
+
+  const wanted = norm(raw);
+
+  const sql = `
+    SELECT id, imageName, slug,
+           questionEnglish, answerEnglish,
+           questionUrdu,   answerUrdu,
+           questionRoman,  answerRoman,
+           questionHindi,  answerHindi,
+           writer, date, tags, language, topic, translator,
+           answeredStatus,
+           createdOn, isPublished, modifiedOn, isDeleted, views
+    FROM New_Question_Table
+    WHERE isDeleted = 0
+  `;
+  db.query(sql, (err, rows) => {
+    if (err) {
+      console.error("Error fetching questions by tag:", err);
+      return res.status(500).send("Error fetching questions by tag");
+    }
+    const matches = (rows || []).filter(q => {
+      const bag = [];
+      if (q.topic) bag.push(q.topic);
+      if (q.tag) bag.push(q.tag);
+      if (typeof q.tags === "string") bag.push(...q.tags.split(","));
+      if (Array.isArray(q.tags)) bag.push(...q.tags);
+      const normalized = bag.map(x => norm(String(x||"")));
+      return normalized.includes(wanted);
+    });
+
+    if (!matches.length) return res.status(404).json([]);
+    res.json(matches);
   });
 };

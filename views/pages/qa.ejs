@@ -1,517 +1,620 @@
 <!DOCTYPE html>
 <html lang="ur" dir="rtl">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>FAQs | Maula Ali Research Center</title>
+  <% /* ===== META / SEO ===== */ %>
+  <title>تمام فتاویٰ | Maula Ali Research Center</title>
+  <meta name="description" content="تمام اسلامی سوالات و فتاویٰ—فلٹر کریں، تلاش کریں، اور مکمل جواب پڑھیں۔" />
+  <meta property="og:title" content="تمام فتاویٰ | Maula Ali Research Center" />
+  <meta property="og:description" content="اسلامی سوالات و فتاویٰ براؤز کریں۔" />
+  <meta property="og:image" content="https://placehold.co/1200x630/6a8a4f/white?text=All+Questions" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
 
-  <!-- Tailwind CDN -->
+  <base href="http://localhost:5000/" />
+  <link rel="icon" href="https://minaramasjid.com/assets/image/logo/favicon.ico" type="image/x-icon" />
+
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Fonts: Amiri (Arabic), Gulzar (Urdu headings), Noto Nastaliq (fallback) -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=Gulzar&family=Noto+Nastaliq+Urdu:wght@400;600&display=swap"
-    rel="stylesheet"
-  />
-
-  <!-- Your theme file (keep if you already have it) -->
-  <link rel="stylesheet" href="/assets/Style/fonts.css"/>
-
-  <link rel="icon" href="/images/marc.png" type="image/x-icon"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,400;8..144,500;8..144,700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Gulzar&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" />
 
   <style>
-    /* Font helpers */
-    .font-amiri   { font-family: "Amiri", serif; }
-    .font-gulzar  { font-family: "Gulzar", serif; }
-    .font-nastaliq{ font-family: "Noto Nastaliq Urdu", serif; }
-    .arabic-text  { font-family: "Amiri", serif; }
+    @font-face {
+      font-family: 'NaatFont';
+      src: url('https://res.cloudinary.com/awescreative/raw/upload/v1749150996/Awes/naatfont.ttf') format('truetype');
+      font-weight: normal; font-style: normal;
+    }
+    body { font-family: "Roboto Flex", sans-serif; background-color: #f0f5e9; }
+    .gulzartext, .heading { font-family: 'NaatFont','Gulzar',serif; }
+    .mobile-menu-hidden { max-height:0; opacity:0; transition:max-height .3s ease-out, opacity .2s ease-out; overflow:hidden; }
+    .mobile-menu-visible { max-height:500px; opacity:1; transition:max-height .4s ease-in, opacity .3s ease-in; }
 
-    /* Line clamp helpers */
-    .line-clamp-1 { display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden; }
-    .line-clamp-2 { display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+    .qa-layout-grid { display:grid; gap:2rem; grid-template-columns:1fr; max-width:75rem; margin:0 auto; padding:0 1rem; }
+    @media (min-width: 1024px){ .qa-layout-grid { grid-template-columns: 1fr 18rem; padding:0; } .page-container{ grid-column:1/2; } #sidebar{ grid-column:2/3; } }
+    .page-container { padding-top:0; }
+    #sidebar { background:#fff; padding:1.5rem; border-radius:1.5rem; box-shadow:0 4px 12px rgba(0,0,0,.05); border:1px solid #e5e7eb; position:sticky; top:6rem; align-self:flex-start; }
+    .sidebar-heading { color:#4a7031; font-size:1.25rem; font-weight:700; margin-bottom:1rem; padding-bottom:.5rem; border-bottom:2px solid #e8f0e0; text-align:right; }
+    .tag-list-item{ display:flex; justify-content:space-between; align-items:center; padding:.5rem .5rem; border-radius:.5rem; transition:background-color .2s; cursor:pointer; font-size:1.05rem; text-align:right; }
+    .tag-list-item:hover{ background:#f3f4f6; color:#4a7031; }
+    .tag-count{ background:#eaf3df; color:#4a7031; padding:.05rem .6rem; border-radius:9999px; font-size:.9rem; font-weight:600; }
+    @media (min-width:1024px){ .tag-combobox{ display:none; } } @media (max-width:1023px){ #sidebar{ display:none; } }
 
-    :root{
-      --green-700:#4a7031;
-      --brand:#718e56;      /* header */
-      --brand-dark:#5a7544; /* mobile menu */
-    }
+    .controls{ display:flex; flex-direction:column; gap:1rem; padding:1.25rem; background:#f9fafb; border-radius:1.25rem; margin-bottom:2rem; border:1px solid #f3f4f6; box-shadow:0 4px 12px rgba(0,0,0,.03); }
+    @media (min-width:768px){ .controls{ flex-direction:row; flex-wrap:wrap; align-items:center; } }
+    .control{ display:flex; align-items:center; flex-grow:1; position:relative; }
+    .control-input-wrapper{ display:flex; align-items:center; gap:.5rem; width:100%; background:#fff; border:1px solid #e5e7eb; border-radius:.75rem; padding:0 .75rem; transition:all .2s; box-shadow:0 1px 2px rgba(0,0,0,.03); }
+    .control-input-wrapper:focus-within{ border-color:#4a7031; box-shadow:0 0 0 3px #e8f0e0; }
+    .control-input-wrapper i{ color:#6b7280; flex-shrink:0; font-size:1.1rem; }
 
-    /* Card polish */
-    .qa-card{
-      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06);
-      border: 1px solid rgba(15, 23, 42, 0.06);
-      background:
-        radial-gradient(1200px 400px at 100% -50%, rgba(16,185,129,0.08), transparent 40%),
-        radial-gradient(800px 300px at -20% 120%, rgba(113,142,86,0.08), transparent 45%),
-        #fff;
+    #searchInput, select.pill{
+      border:none; outline:none; background:transparent; width:100%; padding:.6rem .5rem .6rem .2rem;
+      font-size:1rem; font-family:'NaatFont','Gulzar',serif; color:#374151;
     }
-    .qa-card:hover{
-      box-shadow: 0 18px 35px rgba(15, 23, 42, 0.12);
-      transform: translateY(-2px);
-    }
-    .badge-num{
-      background: #1f4b57;
-    }
-    .layout-toggle-active{ background:#10b981; color:#fff; }
-    .layout-toggle-active:hover{ background:#059669; }
+    .tag-button{ cursor:pointer; padding-top:.6rem; padding-bottom:.6rem; }
+    .tag-button #tagButtonLabel{ font-size:1rem; font-family:'NaatFont','Gulzar',serif; color:#374151; flex-grow:1; text-align:right; }
+    .tag-panel{ position:absolute; top:100%; right:0; margin-top:.25rem; z-index:20; width:16rem; overflow:hidden; background:#fff; border:1px solid #e5e7eb; border-radius:.75rem; box-shadow:0 10px 15px -3px rgba(0,0,0,.1), 0 4px 6px -2px rgba(0,0,0,.05); font-family:'NaatFont','Gulzar',serif; }
+    .tag-panel .inner{ max-height:18rem; overflow-y:auto; }
+    .tag-search{ width:100%; border:none; border-bottom:1px solid #e5e7eb; position:sticky; top:0; padding:.75rem 1rem; font-family:'NaatFont','Gulzar',serif; font-size:1rem; background:#f9fafb; }
+    .tag-option{ padding:.75rem 1rem; cursor:pointer; text-align:right; font-size:1.05rem; display:flex; justify-content:space-between; align-items:center; }
+    .tag-option:hover{ background:#e8f0e0; }
+    .tag-option[aria-selected="true"]{ font-weight:700; background:#eaf3df; color:#4a7031; }
 
-    /* Soft section header chip */
-    .section-chip {
-      background: linear-gradient(90deg, rgba(16,185,129,0.12), rgba(113,142,86,0.12));
-      border: 1px solid rgba(16,185,129,0.25);
-    }
+    .list{ display:grid; grid-template-columns:1fr; gap:1rem; }
+    .card-link{ display:block; background:#fff; padding:1.25rem; border-radius:1.25rem; box-shadow:0 4px 12px rgba(0,0,0,.05); transition:all .3s; border:1px solid #fff; }
+    .card-link:hover{ transform:translateY(-4px); box-shadow:0 12px 28px -5px rgba(0,0,0,.08), 0 8px 10px -6px rgba(0,0,0,.05); border-color:#e8f0e0; }
+    .card-link h3{ transition:color .3s; font-size:1.35rem; font-weight:800; color:#1f2937; }
+    .card-link:hover h3{ color:#4a7031; }
+    .card-excerpt{ font-size:1.05rem; color:#374151; line-height:1.7; }
 
-    /* Subtle header blur */
-    .frost {
-      -webkit-backdrop-filter: saturate(120%) blur(4px);
-      backdrop-filter: saturate(120%) blur(4px);
-    }
+    .bg-midnight_green{ background:#4a7031; }
+    .pagination{ display:flex; justify-content:center; align-items:center; gap:.5rem; margin-top:2rem; }
+    .page-btn{ padding:.4rem 1rem; border-radius:9999px; font-size:1.05rem; font-weight:700; border:1px solid #d1d5db; background:#fff; color:#374151; }
+    .page-btn.active{ background:#4a7031; color:#fff; border-color:#4a7031; }
+    .page-btn:disabled{ opacity:.5; cursor:not-allowed; background:#f3f4f6; }
+    .hidden{ display:none; }
+    .pill { padding:.4rem .75rem; border-radius:9999px; border:1px solid #e5e7eb; background:#fff; font-weight:700; }
   </style>
+
+  <%
+    // ---------- Server-side helpers only for initial render ----------
+    function escapeHTML(s){
+      return String(s||"")
+        .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+    }
+    function slugify(text){
+      return String(text||"").toLowerCase().trim()
+        .replace(/[\u0600-\u06FF]+/g,"")          // strip Arabic/Urdu letters from slug
+        .replace(/\s+/g,"-")
+        .replace(/[.,\/#!$%\^&\*;:{}=\_`~()؟"’’“”]/g,"")
+        .replace(/-+/g,"-")
+        .replace(/^-+|-+$/g,"");
+    }
+    function toEastern(num){ const d=['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹']; return String(num).replace(/\d/g,ch=>d[Number(ch)]); }
+    function qText(q){ return q?.questionUrdu || q?.questionEnglish || q?.title || ""; }
+    const pageSize = 12;
+    const totalPages = Math.max(1, Math.ceil((questions?.length || 0) / pageSize));
+  %>
 </head>
+<body class="bg-[#f0f5e9] text-gray-800 antialiased">
+  <div class="min-h-screen z-10">
+    <div class="absolute inset-0 bg-cover bg-no-repeat opacity-70" style="background-image:url('/assets/bg-DgzunbF9.png'); background-position:center; z-index:-1;"></div>
 
-<body class="bg-slate-50 text-slate-800 font-amiri">
-  <!-- Header -->
-  <header class="bg-[var(--brand)] sticky top-0 z-50 shadow-md border-b border-green-100 frost">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex justify-between items-center py-4 relative">
-        <!-- Left nav (desktop) -->
-        <nav class="font-nastaliq hidden md:flex gap-6 text-md text-white tracking-wide">
-          <a href="/">ہوم</a>
-          <a href="/about">تعارف</a>
-          <a href="/newsandevent">خبریں و تقاریب</a>
-          <a href="/book">کتب</a>
-        </nav>
+    <!-- Header -->
+    <header class="bg-[#718e56] sticky top-0 z-50 shadow-md border-b border-green-100">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center py-3 relative">
+          <nav class="hidden md:flex gap-5 text-md font-semibold text-white tracking-wide">
+            <a href="index.html" class="hover:text-green-100">Home</a>
+            <a href="about.html" class="hover:text-green-100">About</a>
+            <a href="events.html" class="hover:text-green-100">News & Event</a>
+            <a href="books.html" class="hover:text-green-100">Books</a>
+          </nav>
 
-        <!-- Center logo -->
-        <div class="absolute left-1/2 -translate-x-1/2 -bottom-7 bg-white rounded-full p-1 shadow-lg border border-green-100 z-10">
-          <img src="/images/marc.png" alt="Logo" class="w-16 h-16 rounded-full object-contain"/>
-        </div>
+          <div class="absolute left-1/2 transform -translate-x-1/2 -bottom-7 bg-white rounded-full p-1 shadow-lg border border-green-100 z-10">
+            <a href="index.html"><img src="https://minaramasjid.com/assets/image/logo/marc.png" alt="Logo" class="w-16 h-16 rounded-full object-contain"></a>
+          </div>
 
-        <!-- Right nav (desktop) -->
-        <nav class=" font-nastaliq hidden md:flex gap-6 text-md text-white tracking-wide">
-          <a href="/article">مضامین</a>
-          <a href="/question">سوال و جواب</a>
-          <a href="/requestbook">کتاب کی درخواست</a>
-          <a href="/contact">رابطہ</a>
-        </nav>
+          <nav class="hidden md:flex gap-5 text-md font-semibold text-white tracking-wide">
+            <a href="articles.html" class="hover:text-green-100">Articles</a>
+            <a href="/qa" class="text-white font-bold" aria-current="page">Question Answer</a>
+            <a href="book-request.html" class="hover:text-green-100">Request a Book</a>
+            <a href="contact.html" class="hover:text-green-100">Contact</a>
+          </nav>
 
-        <!-- Mobile menu button -->
-        <div class="md:hidden">
-          <button id="mobileMenuBtn" class="text-white focus:outline-none" aria-label="Toggle menu">
-            <span id="iconOpen" class="inline-block">
-              <!-- Hamburger -->
-              <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M4 6h16M4 12h16M4 18h16"/>
-              </svg>
-            </span>
-            <span id="iconClose" class="hidden">
-              <!-- X -->
-              <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M6 18L18 6M6 6l12 12"/>
-              </svg>
-            </span>
-          </button>
-        </div>
-      </div>
-
-      <!-- Mobile dropdown -->
-      <div id="mobileMenu" class="md:hidden transition-all overflow-hidden max-h-0 opacity-0">
-        <div class="ffont-nastaliq lex flex-col gap-3 py-4 px-2 text-white bg-[var(--brand-dark)] rounded-b-xl">
-          <a href="/" class="px-4 py-2">ہوم</a>
-          <a href="/about" class="px-4 py-2">تعارف</a>
-          <a href="/book" class="px-4 py-2">کتب</a>
-          <a href="/newsandevent" class="px-4 py-2">خبریں و تقاریب</a>
-          <a href="/article" class="px-4 py-2">مضامین</a>
-          <a href="/question" class="px-4 py-2">سوال و جواب</a>
-          <a href="/requestbook" class="px-4 py-2">کتاب کی درخواست</a>
-          <a href="/contact" class="px-4 py-2">رابطہ</a>
-        </div>
-      </div>
-    </div>
-  </header>
-
-  <!-- Background watermark -->
-  <div class="absolute inset-0 opacity-30 pointer-events-none"
-       style="background-image:url('/images/newbg.png'); background-size:cover; background-position:center;"></div>
-
-  <!-- Intro banner -->
-  <div class="relative z-10 w-full -mt-8 overflow-hidden bg-cover bg-center" style="background-image:url('/images/newbg.png')">
-    <div class="flex items-center justify-center mt-8 h-[200px] w-full bg-[#C0D7AA]/80 rounded-b-[2rem] sm:mt-8">
-      <div class="text-center mb-6 px-4">
-        <h3 class="text-2xl font-gulzar font-bold text-[var(--green-700)] mt-12">شرعی سوالات</h3>
-        <p class="text-md text-gray-700 text-[18.5px] font-nastaliq">
-          ہمارے مرکز کا مقصد اسلامی تعلیمات کی روشنی میں موجودہ مسائل کا حل پیش کرنا ہے۔
-          یہاں آپ سوالات دیکھ سکتے ہیں اور تفصیلی جوابات پڑھ سکتے ہیں۔
-        </p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Content -->
-  <div class="relative z-10 container mx-auto px-4 py-8">
-
-    <!-- Controls -->
-    <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4 px-2 md:px-4">
-      <!-- Search -->
-      <div class="relative w-full md:w-2/5 lg:w-1/3">
-        <div class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
-          <svg class="h-5 w-5 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="11" cy="11" r="8"></circle>
-            <path d="m21 21-4.3-4.3"></path>
-          </svg>
-        </div>
-        <input id="searchInput"
-               type="text"
-               class="block w-full rounded-full bg-white border border-slate-300 py-2.5 px-4 text-right pl-12 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none text-sm placeholder-slate-400 font-nastaliq"
-               placeholder="تلاش کریں"/>
-      </div>
-
-      <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 w-full md:w-auto">
-
-        <!-- Sort dropdown -->
-        <div class="relative">
-          <div class="flex flex-col">
-            <label class="text-xs text-slate-600 mb-1 font-nastaliq">ترتیب</label>
-            <div class="relative">
-              <button id="sortBtn"
-                      class="flex items-center justify-between gap-2 bg-white border border-slate-300 rounded-md px-3 py-1.5 w-40 text-sm hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
-                <span id="sortLabel" class="text-slate-700">Latest</span>
-                <svg class="h-4 w-4 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M6 9l6 6 6-6"/>
-                </svg>
-              </button>
-              <div id="sortMenu" class="hidden absolute z-10 mt-1 w-40 bg-white shadow-lg rounded-md py-1 border border-slate-200">
-                <button data-sort="Latest"  class="w-full text-right px-3 py-1.5 text-sm hover:bg-slate-100">Latest</button>
-                <button data-sort="Oldest"  class="w-full text-right px-3 py-1.5 text-sm hover:bg-slate-100">Oldest</button>
-              </div>
-            </div>
+          <div class="md:hidden flex-1"></div>
+          <div class="md:hidden flex-1 flex justify-center">
+            <a href="index.html"><img src="https://minaramasjid.com/assets/image/logo/marc.png" alt="Logo" class="w-12 h-12 rounded-full object-contain"></a>
+          </div>
+          <div class="md:hidden flex-1 flex justify-end">
+            <button id="mobile-menu-toggle" class="text-white focus:outline-none"><i class="fas fa-bars w-7 h-7"></i></button>
           </div>
         </div>
 
-        <!-- Language dropdown -->
-        <div class="relative">
-          <div class="flex flex-col">
-            <label class="text-xs text-slate-600 mb-1 font-nastaliq">زبان</label>
-            <div class="relative">
-              <button id="langBtn"
-                      class="flex items-center justify-between gap-2 bg-white border border-slate-300 rounded-md px-3 py-1.5 w-40 text-sm hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
-                <span id="langLabel" class="font-nastaliq text-slate-700">All</span>
-                <svg class="h-4 w-4 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M6 9l6 6 6-6"/>
-                </svg>
-              </button>
-              <div id="langMenu" class="hidden absolute z-10 mt-1 w-40 bg-white shadow-lg rounded-md py-1 border border-slate-200">
-                <button data-lang="All"     class="w-full text-right px-3 py-1.5 text-sm hover:bg-slate-100">All</button>
-                <button data-lang="اردو"     class="w-full text-right px-3 py-1.5 text-sm hover:bg-slate-100">اردو</button>
-                <button data-lang="English" class="w-full text-right px-3 py-1.5 text-sm hover:bg-slate-100">English</button>
-                <button data-lang="Roman"   class="w-full text-right px-3 py-1.5 text-sm hover:bg-slate-100">Roman</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- View toggle -->
-        <div class="relative sm:mt-[1.35rem]">
-          <div class="flex items-center gap-1 p-0.5 bg-slate-100 rounded-md border border-slate-200">
-            <button id="listToggleBtn" title="List View"
-              class="cursor-pointer p-1.5 rounded-md text-slate-600 hover:bg-white hover:text-emerald-700 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-400">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="8" x2="21" y1="6" y2="6" />
-                <line x1="8" x2="21" y1="12" y2="12" />
-                <line x1="8" x2="21" y1="18" y2="18" />
-                <line x1="3" x2="3.01" y1="6" y2="6" />
-                <line x1="3" x2="3.01" y1="12" y2="12" />
-                <line x1="3" x2="3.01" y1="18" y2="18" />
-              </svg>
-            </button>
-            <button id="gridToggleBtn" title="Grid View"
-              class="cursor-pointer p-1.5 rounded-md text-slate-600 hover:bg-white hover:text-emerald-700 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-400">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect width="7" height="7" x="3"  y="3"  rx="1" />
-                <rect width="7" height="7" x="14" y="3"  rx="1" />
-                <rect width="7" height="7" x="14" y="14" rx="1" />
-                <rect width="7" height="7" x="3"  y="14" rx="1" />
-              </svg>
-            </button>
+        <div id="mobile-menu" class="md:hidden mobile-menu-hidden">
+          <div class="flex flex-col gap-2 py-3 px-2 text-white bg-[#5a7544] rounded-b-xl">
+            <a href="index.html" class="hover:bg-[#4f6639] px-4 py-2 rounded">Home</a>
+            <a href="about.html" class="hover:bg-[#4f6639] px-4 py-2 rounded">About</a>
+            <a href="events.html" class="hover:bg-[#4f6639] px-4 py-2 rounded">News & Event</a>
+            <a href="books.html" class="hover:bg-[#4f6639] px-4 py-2 rounded">Books</a>
+            <a href="articles.html" class="hover:bg-[#4f6639] px-4 py-2 rounded">Articles</a>
+            <a href="/qa" class="bg-[#4f6639] px-4 py-2 rounded" aria-current="page">Question Answer</a>
+            <a href="book-request.html" class="hover:bg-[#4f6639] px-4 py-2 rounded">Request a Book</a>
+            <a href="contact.html" class="hover:bg-[#4f6639] px-4 py-2 rounded">Contact</a>
           </div>
         </div>
       </div>
     </header>
 
-    <!-- Section label -->
-    <div class="flex justify-end mb-6 px-2 md:px-4">
-      <h2 class="font-gulzar text-[1.15rem] section-chip text-emerald-800 rounded-full px-5 py-2 font-semibold">
-        سوالات کی فہرست
-      </h2>
-    </div>
+    <!-- Main -->
+    <main class="relative z-10 pt-12 sm:pt-16">
+      <section class="relative max-w-7xl mx-auto py-8">
+        <h1 class="heading text-3xl lg:text-4xl font-bold text-[#4a7031] mb-6 text-center gulzartext">تمام فتاویٰ</h1>
 
-    <!-- Cards -->
-    <main id="cardsContainer"
-          class="w-full px-2 md:px-4 grid grid-cols-1 md:grid-cols-2 gap-5"></main>
-
-    <!-- Loading overlay -->
-    <div id="loadingOverlay"
-         class="hidden fixed inset-0 top-10 flex flex-col justify-center items-center bg-slate-100/80 space-y-6 z-50">
-      <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500"></div>
-      <div class="text-2xl text-emerald-700 font-semibold arabic-text">
-        صَلَّى ٱللّٰهُ عَلَيْهِ وَآلِهِ وَسَلَّمَ
-      </div>
-    </div>
-
-    <!-- Empty state -->
-    <div id="emptyState" class="hidden w-full text-center py-10">
-      <p class="font-nastaliq text-lg text-slate-600">کوئی سوال دستیاب نہیں ہے</p>
-    </div>
-  </div>
-
-  <script>
-    // ====== Config ======
-    const API_QUESTIONS = "/api/questions"; // relative path
-
-    // ====== State ======
-    let questions = [];
-    let viewMode = localStorage.getItem("viewMode") === "list" ? "list" : "grid";
-    let selectedLang = "All";
-    let selectedSort = "Latest";
-    let searchQuery = "";
-
-    // ====== Elements ======
-    const mobileMenuBtn = document.getElementById("mobileMenuBtn");
-    const mobileMenu = document.getElementById("mobileMenu");
-    const iconOpen = document.getElementById("iconOpen");
-    const iconClose = document.getElementById("iconClose");
-
-    const searchInput = document.getElementById("searchInput");
-    const sortBtn = document.getElementById("sortBtn");
-    const sortMenu = document.getElementById("sortMenu");
-    const sortLabel = document.getElementById("sortLabel");
-
-    const langBtn = document.getElementById("langBtn");
-    const langMenu = document.getElementById("langMenu");
-    const langLabel = document.getElementById("langLabel");
-
-    const listToggleBtn = document.getElementById("listToggleBtn");
-    const gridToggleBtn = document.getElementById("gridToggleBtn");
-
-    const cardsContainer = document.getElementById("cardsContainer");
-    const loadingOverlay = document.getElementById("loadingOverlay");
-    const emptyState = document.getElementById("emptyState");
-
-    // ====== Utils ======
-    const isUrdu = (txt) => /[\u0600-\u06FF]/.test(String(txt || ""));
-
-    const slugify = (text) => String(text || "")
-      .toLowerCase().trim()
-      .replace(/\s+/g, "-")
-      .replace(/[.,\/#!$%\^&\*;:{}=\_`~()؟"’']/g, "")
-      .replace(/-+/g, "-");
-
-    function setMenu(open){
-      if(open){
-        mobileMenu.classList.remove("max-h-0", "opacity-0");
-        mobileMenu.classList.add("max-h-screen", "opacity-100");
-        iconOpen.classList.add("hidden");
-        iconClose.classList.remove("hidden");
-      }else{
-        mobileMenu.classList.remove("max-h-screen", "opacity-100");
-        mobileMenu.classList.add("max-h-0", "opacity-0");
-        iconClose.classList.add("hidden");
-        iconOpen.classList.remove("hidden");
-      }
-    }
-
-    function applyViewMode(){
-      if(viewMode === "list"){
-        listToggleBtn.classList.add("layout-toggle-active");
-        gridToggleBtn.classList.remove("layout-toggle-active");
-        cardsContainer.className = "w-full px-2 md:px-4 flex flex-col gap-3";
-        cardsContainer.querySelectorAll(".qa-card-wrap").forEach(w=>{
-          w.classList.remove("flex-col");
-          w.classList.add("flex-row","items-center");
-        });
-      }else{
-        gridToggleBtn.classList.add("layout-toggle-active");
-        listToggleBtn.classList.remove("layout-toggle-active");
-        cardsContainer.className = "w-full px-2 md:px-4 grid grid-cols-1 md:grid-cols-2 gap-5";
-        cardsContainer.querySelectorAll(".qa-card-wrap").forEach(w=>{
-          w.classList.remove("flex-row","items-center");
-          w.classList.add("flex-col");
-        });
-      }
-      localStorage.setItem("viewMode", viewMode);
-    }
-
-    function fmtViews(n){ try{ return Number(n||0).toLocaleString("en-IN"); } catch { return n||0; } }
-
-    function cardHTML(item, idx){
-      const qText = item.questionUrdu || item.questionEnglish || "";
-      const urdu = isUrdu(qText);
-      const dir = urdu ? "rtl" : "ltr";
-      // Fonts: Urdu -> Nastaliq (for flavor) + Amiri fallback; Roman/English -> Amiri
-      const fontClass = urdu ? "font-nastaliq" : "font-amiri";
-      const align = urdu ? "text-right" : "text-left";
-      const langRaw = String(item.language || "");
-      const langChip = langRaw || (urdu ? "اردو" : "Roman");
-
-      const detailUrl = `/question/${item.id}/${slugify(item.slug || qText)}`;
-
-      return `
-        <a href="${detailUrl}" class="group block rounded-2xl qa-card transition-all duration-300 ease-in-out">
-          <div class="qa-card-wrap flex ${viewMode === "list" ? "flex-row items-center" : "flex-col"} p-5">
-            <!-- badge -->
-            <div class="order-2 md:order-none md:self-start md:ml-0 ml-4">
-              <div class="flex items-center justify-center w-14 h-14 rounded-2xl badge-num text-white text-xl bg-[#4A7031] font-bold shadow-md">
-                ${idx + 1}
+        <div class="qa-layout-grid">
+          <!-- MAIN -->
+          <div class="page-container gulzartext">
+            <div class="controls">
+              <!-- Search -->
+              <div class="control search-control">
+                <label for="searchInput" class="sr-only">تلاش:</label>
+                <div class="control-input-wrapper">
+                  <input id="searchInput" type="text" placeholder="عنوان یا سوال لکھیں…" spellcheck="false" />
+                  <i class="bi bi-search"></i>
+                </div>
               </div>
+
+              <!-- Sort -->
+              <div class="control control-sort">
+                <label for="sortMode" class="sr-only">ترتیب:</label>
+                <div class="control-input-wrapper">
+                  <i class="bi bi-arrow-down-up"></i>
+                  <select id="sortMode" class="pill">
+                    <option value="default">معیاری</option>
+                    <option value="latest">Latest</option>
+                    <option value="oldest">Oldest</option>
+                    <option value="views">Most Viewed</option>
+                    <option value="tag-az">Tag A→Z</option>
+                    <option value="tag-za">Tag Z→A</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Mobile Tags Combobox -->
+              <div class="control tag-combobox" id="tagBox">
+                <button type="button" id="tagButton" class="btn tag-button control-input-wrapper">
+                  <i class="bi bi-tags"></i>
+                  <span id="tagButtonLabel" class="flex-grow text-right">تمام ٹیگز</span>
+                  <i class="bi bi-chevron-down text-xs"></i>
+                </button>
+                <div id="tagPanel" class="tag-panel hidden" role="listbox" aria-labelledby="tagButton">
+                  <input id="tagSearchInput" class="tag-search" type="text" placeholder="ٹیگز تلاش کریں…" spellcheck="false" />
+                  <div class="inner">
+                    <a href="#" class="tag-option" data-value="" aria-selected="true">
+                      <span>تمام ٹیگز</span><span class="tag-count"><%= (questions||[]).length %></span>
+                    </a>
+                    <div id="tagOptions"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div id="inlineLoader" class="pill hidden">لوڈ ہو رہا ہے…</div>
             </div>
 
-            <!-- content -->
-            <div class="flex-1 ${viewMode === "list" ? "mr-4" : "mt-3"}">
-              <p dir="${dir}"
-                 class="${viewMode === "list" ? "line-clamp-1 mb-2" : "line-clamp-2 mb-2"} ${align} ${fontClass} text-slate-800 text-[18px] leading-relaxed">
-                ${qText}
-              </p>
+            <!-- SSR List (first page) -->
+            <div id="list" class="list">
+              <% if ((questions || []).length === 0) { %>
+                <div class="text-center text-gray-600 py-8">اس وقت کوئی سوال دستیاب نہیں۔</div>
+              <% } else {
+                   const firstPage = questions.slice(0, pageSize);
+                   firstPage.forEach((q, idx) => {
+                     const text = qText(q);
+                     const href = `/question/${q?.id}/${q?.slug || slugify(text)}`;
+              %>
+                <a href="<%= href %>" class="card-link group">
+                  <div class="flex items-center gap-4">
+                    <div class="flex-shrink-0 w-10 h-10 bg-midnight_green text-white rounded-full flex items-center justify-center font-bold text-lg gulzartext"><%= toEastern(idx+1) %></div>
+                    <h3 class="heading"><%- escapeHTML(text) %></h3>
+                  </div>
+                  <% if (q?.excerpt || text) { %>
+                    <p class="mt-3 mb-4 text-gray-700 line-clamp-3 gulzartext card-excerpt"><%- escapeHTML(q?.excerpt || text) %></p>
+                  <% } %>
+                  <div class="mt-4 flex justify-between items-center text-sm pt-3 border-t border-gray-100">
+                    <span class="bg-[#eaf3df] text-[#4a7031] rounded-full px-4 py-1.5 text-sm font-bold transition-colors group-hover:bg-[#4a7031] group-hover:text-white heading">
+                      مکمل جواب پڑھیں
+                      <i class="fa-solid fa-arrow-left text-xs mr-2 opacity-70 transition-transform group-hover:mr-3"></i>
+                    </span>
+                    <div class="flex items-center text-gray-500 gap-1.5" title="Views">
+                      <i class="bi bi-eye-fill"></i>
+                      <span><%= (q?.views||0).toLocaleString("en-IN") %></span>
+                    </div>
+                  </div>
+                </a>
+              <% }); } %>
+            </div>
 
-              <div class="mt-2 pt-3 border-t border-slate-200 flex items-center justify-between">
-                <!-- views -->
-                <span class="flex items-center text-slate-500 text-sm">
-                  <span class="mr-1">${fmtViews(item.views || 0)}</span>
-                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                    <circle cx="12" cy="12" r="3"></circle>
-                  </svg>
-                </span>
-
-                <!-- read more -->
-                <span class="font-gulzar text-[var(--green-700)] group-hover:text-emerald-700 text-sm md:text-base">
-                  مکمل جواب پڑھیں &larr;
-                </span>
+            <!-- Pagination -->
+            <div class="mt-6 pagination" id="pagination">
+              <button class="page-btn" id="nextPage" <%= totalPages>1 ? "" : "disabled" %> >اگلا →</button>
+              <div id="pageNumbers" class="inline-flex" style="gap:6px;">
+                <% for (let p=1; p<=totalPages; p++){ %>
+                  <button class="page-btn <%= p===1 ? 'active' : '' %>" data-page="<%= p %>"><%= toEastern(p) %></button>
+                <% } %>
               </div>
-
-              <!-- chips -->
-              <div class="mt-3 flex gap-2 justify-end">
-                <span class="bg-emerald-50 text-emerald-700 px-3 py-1 rounded-lg text-xs font-medium">${langChip}</span>
-              </div>
+              <button class="page-btn" id="prevPage" disabled>← پچھلا</button>
             </div>
           </div>
-        </a>
-      `;
-    }
 
-    function render(list){
-      cardsContainer.innerHTML = "";
-      if(!list.length){
-        emptyState.classList.remove("hidden");
-        return;
+          <!-- SIDEBAR -->
+          <aside id="sidebar" class="gulzartext">
+            <h2 class="sidebar-heading">تمام موضوعات</h2>
+            <div id="sidebarTagList">
+              <a href="#" class="tag-list-item font-bold bg-[#e8f0e0] text-[#4a7031] mb-2" data-value="">
+                <span>تمام ٹیگز</span>
+                <i class="bi bi-tag-fill"></i>
+              </a>
+              <% (topics || []).slice(0, 100).forEach(t => {
+                   const label = t?.name || t?.title || t?.topic || "";
+                   const value = slugify(t?.slug || label);
+                   const count = t?.count || t?.total || "";
+              %>
+                <a href="#" class="tag-list-item" data-value="<%= value %>">
+                  <span><%= label %></span>
+                  <span class="tag-count"><%= count %></span>
+                </a>
+              <% }); %>
+            </div>
+          </aside>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <button id="backToTopBtn" class="fixed bottom-6 left-6 bg-[#4a7031] hover:bg-[#3b5a28] text-white w-10 h-10 rounded-full shadow-lg hidden justify-center items-center transition-all duration-300 opacity-0 z-40">
+    <i class="fas fa-arrow-up"></i>
+  </button>
+
+  <!-- Boot data -->
+  <script>
+    window.__API_BASE__ = <%- JSON.stringify(apiBase) %>;
+    window.__QUESTIONS__ = <%- JSON.stringify(questions || []) %>;
+    window.__TOPICS__ = <%- JSON.stringify(topics || []) %>;
+  </script>
+
+  <!-- Page logic -->
+ <script type="module">
+    document.addEventListener('DOMContentLoaded', () => {
+      const API_BASE = String(window.__API_BASE__ || "").replace(/\/+$/,"");
+      const allQuestionsSSR = Array.isArray(window.__QUESTIONS__) ? window.__QUESTIONS__ : [];
+      const topicsRaw = Array.isArray(window.__TOPICS__) ? window.__TOPICS__ : [];
+
+      // ---- helpers (client) ----
+      const escapeHTML = (s)=>String(s||"")
+        .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+      const slugify = (t)=>String(t||"").toLowerCase().trim()
+        .replace(/[\u0600-\u06FF]+/g,"").replace(/\s+/g,"-")
+        .replace(/[.,\/#!$%\^&\*;:{}=\_`~()؟"’’“”]/g,"")
+        .replace(/-+/g,"-").replace(/^-+|-+$/g,"");
+      const fmtViews = (n)=>{ try{ return Number(n||0).toLocaleString("en-IN"); } catch { return n||0; } };
+      const toEastern = (num)=>String(num).replace(/\d/g,ch=>"۰۱۲۳۴۵۶۷۸۹"[Number(ch)]);
+      const qText = (q)=>q?.questionUrdu || q?.questionEnglish || q?.title || "";
+      const pageSize = 12;
+
+      const parseDate = (v)=>{
+        if(!v) return 0;
+        const d1 = new Date(v);
+        if(!isNaN(d1)) return +d1;
+        const m = String(v).match(/^(\d{2})-(\d{2})-(\d{4})/);
+        if(m){ const [,dd,mm,yy]=m; return +new Date(`${yy}-${mm}-${dd}T00:00:00Z`); }
+        return 0;
+      };
+
+      const normTag = (val)=>slugify(val);
+      function getQuestionTags(q){
+        const out = [];
+        if (Array.isArray(q?.tags)) out.push(...q.tags);
+        else if (typeof q?.tags === "string") out.push(...q.tags.split(","));
+        if (q?.topic) out.push(q.topic);
+        if (Array.isArray(q?.topics)) out.push(...q.topics);
+        if (q?.tag) out.push(q.tag);
+        return out.map(x => normTag(String(x||"").trim())).filter(Boolean);
       }
-      emptyState.classList.add("hidden");
-      const frag = document.createDocumentFragment();
-      list.forEach((item, i)=>{
-        const wrapper = document.createElement("div");
-        wrapper.innerHTML = cardHTML(item, i);
-        frag.appendChild(wrapper.firstElementChild);
-      });
-      cardsContainer.appendChild(frag);
-      applyViewMode();
-    }
 
-    function applyFilters(){
-      let out = [...questions];
+      // Derived topic counts from questions (fallback if server didn't provide)
+      const derivedTopicCounts = (() => {
+        const m = new Map();
+        for (const q of allQuestionsSSR) {
+          for (const t of getQuestionTags(q)) m.set(t, (m.get(t)||0)+1);
+        }
+        return m;
+      })();
 
-      // language
-      if(selectedLang !== "All"){
-        out = out.filter(q => String(q.language || "").toLowerCase() === String(selectedLang).toLowerCase());
+      // Normalized topics to render in both sidebar + mobile dropdown
+      const allTopics = (() => {
+        if (topicsRaw.length) {
+          return topicsRaw.map(t => {
+            const label = String(t?.name || t?.title || t?.topic || t?.slug || "").trim();
+            const value = normTag(t?.slug || label);
+            const count = t?.count || t?.total || derivedTopicCounts.get(value) || "";
+            return { label, value, count };
+          }).filter(x => x.label);
+        }
+        return Array.from(derivedTopicCounts.entries())
+          .map(([value,count]) => ({ label: value.replace(/-/g," "), value, count }))
+          .sort((a,b)=>a.label.localeCompare(b.label));
+      })();
+
+      // ---- DOM refs ----
+      const mobileMenuButton = document.getElementById('mobile-menu-toggle');
+      const mobileMenu = document.getElementById('mobile-menu');
+      const backToTopBtn = document.getElementById('backToTopBtn');
+
+      const listEl = document.getElementById('list');
+      const paginationEl = document.getElementById('pagination');
+      const pageNumbersEl = document.getElementById('pageNumbers');
+      const prevBtn = document.getElementById('prevPage');
+      const nextBtn = document.getElementById('nextPage');
+
+      const sidebarTagList = document.getElementById('sidebarTagList');
+      const tagOptionsContainer = document.getElementById('tagOptions');
+      const tagBox = document.getElementById('tagBox');
+      const tagButton = document.getElementById('tagButton');
+      const tagPanel = document.getElementById('tagPanel');
+      const tagSearchInput = document.getElementById('tagSearchInput');
+      const tagButtonLabel = document.getElementById('tagButtonLabel');
+
+      const searchInput = document.getElementById('searchInput');
+      const sortMode = document.getElementById('sortMode');
+      const inlineLoader = document.getElementById('inlineLoader');
+
+      // ---- state ----
+      const state = { page: 1, term: "", tag: "", sort: "default" };
+      const tagCache = new Map();
+      let workingSet = allQuestionsSSR.slice();
+
+      // ---- rendering ----
+      function cardHTML(q, idxOnPage){
+        const text = qText(q);
+
+        // ✅ UPDATED: Redirect to /question/:id/:slug
+        const href = `/question/${q?.id}/${q?.slug || slugify(text)}`;
+
+        return `
+          <a href="${href}" class="card-link group">
+            <div class="flex items-center gap-4">
+              <div class="flex-shrink-0 w-10 h-10 bg-midnight_green text-white rounded-full flex items-center justify-center font-bold text-lg gulzartext">${toEastern(idxOnPage)}</div>
+              <h3 class="heading">${escapeHTML(text)}</h3>
+            </div>
+            ${text ? `<p class="mt-3 mb-4 text-gray-700 line-clamp-3 gulzartext card-excerpt">${escapeHTML(q.excerpt || text)}</p>` : ""}
+            <div class="mt-4 flex justify-between items-center text-sm pt-3 border-t border-gray-100">
+              <span class="bg-[#eaf3df] text-[#4a7031] rounded-full px-4 py-1.5 text-sm font-bold transition-colors group-hover:bg-[#4a7031] group-hover:text-white heading">
+                مکمل جواب پڑھیں
+                <i class="fa-solid fa-arrow-left text-xs mr-2 opacity-70 transition-transform group-hover:mr-3"></i>
+              </span>
+              <div class="flex items-center text-gray-500 gap-1.5" title="Views">
+                <i class="bi bi-eye-fill"></i>
+                <span>${fmtViews(q?.views || 0)}</span>
+              </div>
+            </div>
+          </a>
+        `;
       }
-      // search (search both Urdu and English text)
-      if(searchQuery.trim()){
-        const s = searchQuery.toLowerCase();
-        out = out.filter(q=>{
-          const t1 = String(q.questionUrdu || "").toLowerCase();
-          const t2 = String(q.questionEnglish || "").toLowerCase();
-          return t1.includes(s) || t2.includes(s);
+
+      function applySort(arr){
+        const s = state.sort;
+        if(s === "latest") return arr.slice().sort((a,b)=> parseDate(b.createdAt||b.createdOn||b.date) - parseDate(a.createdAt||a.createdOn||a.date));
+        if(s === "oldest") return arr.slice().sort((a,b)=> parseDate(a.createdAt||a.createdOn||a.date) - parseDate(b.createdAt||b.createdOn||b.date));
+        if(s === "views")  return arr.slice().sort((a,b)=> (b.views||0) - (a.views||0));
+        if(s === "tag-az") return arr.slice().sort((a,b)=> (getQuestionTags(a)[0]||"").localeCompare(getQuestionTags(b)[0]||""));
+        if(s === "tag-za") return arr.slice().sort((a,b)=> (getQuestionTags(b)[0]||"").localeCompare(getQuestionTags(a)[0]||""));
+        return arr;
+      }
+
+      function filterLocal(arr){
+        const term = state.term.toLowerCase().trim();
+        if(!term) return arr;
+        return arr.filter(q => {
+          const u = String(q?.questionUrdu || "").toLowerCase();
+          const e = String(q?.questionEnglish || "").toLowerCase();
+          const t = String(q?.title || "").toLowerCase();
+          return u.includes(term) || e.includes(term) || t.includes(term);
         });
       }
-      // sort
-      out.sort((a,b)=>{
-        const da = new Date(a.createdAt || a.createdOn || 0);
-        const db = new Date(b.createdAt || b.createdOn || 0);
-        return (selectedSort === "Latest") ? (db - da) : (da - db);
-      });
 
-      render(out);
-    }
+      function renderListAndPager(source){
+        const filtered = filterLocal(applySort(source));
+        const total = filtered.length;
+        const pages = Math.max(1, Math.ceil(total / pageSize));
+        if(state.page > pages) state.page = pages;
 
-    // ====== Events ======
-    mobileMenuBtn.addEventListener("click", ()=>{
-      const open = mobileMenu.classList.contains("max-h-screen");
-      setMenu(!open);
-    });
+        const start = (state.page - 1) * pageSize;
+        const pageItems = filtered.slice(start, start + pageSize);
 
-    // dropdown toggles + selections
-    sortBtn.addEventListener("click", ()=> sortMenu.classList.toggle("hidden"));
-    langBtn.addEventListener("click", ()=> langMenu.classList.toggle("hidden"));
+        listEl.innerHTML = pageItems.length
+          ? pageItems.map((q, i) => cardHTML(q, i+1)).join("")
+          : `<div class="text-center text-gray-600 py-8">کوئی نتیجہ نہیں۔</div>`;
 
-    document.addEventListener("click", (e)=>{
-      // close dropdowns when clicking outside
-      if(!sortBtn.contains(e.target) && !sortMenu.contains(e.target)) sortMenu.classList.add("hidden");
-      if(!langBtn.contains(e.target) && !langMenu.contains(e.target)) langMenu.classList.add("hidden");
-    });
+        pageNumbersEl.innerHTML = Array.from({length: pages}, (_,i)=>{
+          const p = i+1; const active = p===state.page ? "active":"";
+          return `<button class="page-btn ${active}" data-page="${p}">${toEastern(p)}</button>`;
+        }).join("");
 
-    sortMenu.querySelectorAll("button").forEach(btn=>{
-      btn.addEventListener("click", ()=>{
-        selectedSort = btn.dataset.sort;
-        sortLabel.textContent = selectedSort;
-        sortMenu.classList.add("hidden");
-        applyFilters();
-      });
-    });
-
-    langMenu.querySelectorAll("button").forEach(btn=>{
-      btn.addEventListener("click", ()=>{
-        selectedLang = btn.dataset.lang;
-        langLabel.textContent = selectedLang;
-        langMenu.classList.add("hidden");
-        applyFilters();
-      });
-    });
-
-    // view toggles
-    listToggleBtn.addEventListener("click", ()=>{
-      viewMode = "list";
-      applyViewMode();
-    });
-    gridToggleBtn.addEventListener("click", ()=>{
-      viewMode = "grid";
-      applyViewMode();
-    });
-
-    // search
-    searchInput.addEventListener("input", (e)=>{
-      searchQuery = e.target.value || "";
-      applyFilters();
-    });
-
-    // ====== Init ======
-    (async function init(){
-      try{
-        loadingOverlay.classList.remove("hidden");
-        const res = await fetch(API_QUESTIONS);
-        const data = await res.json();
-        questions = Array.isArray(data) ? data : [];
-        applyViewMode();
-        applyFilters();
-      }catch(err){
-        console.error("Failed to fetch questions:", err);
-        emptyState.classList.remove("hidden");
-      }finally{
-        loadingOverlay.classList.add("hidden");
+        prevBtn.disabled = state.page <= 1;
+        nextBtn.disabled = state.page >= pages;
       }
-    })();
-  </script>
+
+      function showInlineLoader(on=true){
+        if(!inlineLoader) return;
+        inlineLoader.classList.toggle('hidden', !on);
+      }
+
+      async function ensureTagData(tagValue){
+        if(!tagValue){ workingSet = allQuestionsSSR.slice(); return; }
+        if(tagCache.has(tagValue)){ workingSet = tagCache.get(tagValue).slice(); return; }
+
+        try{
+          showInlineLoader(true);
+          const res = await fetch(`${API_BASE}/questions/tag/${encodeURIComponent(tagValue)}`);
+          if(!res.ok){
+            const fallback = allQuestionsSSR.filter(q => getQuestionTags(q).includes(tagValue));
+            tagCache.set(tagValue, fallback);
+            workingSet = fallback.slice();
+          } else {
+            const data = await res.json();
+            const arr = Array.isArray(data) ? data : [];
+            tagCache.set(tagValue, arr);
+            workingSet = arr.slice();
+          }
+        } catch(e){
+          const fallback = allQuestionsSSR.filter(q => getQuestionTags(q).includes(tagValue));
+          tagCache.set(tagValue, fallback);
+          workingSet = fallback.slice();
+        } finally {
+          showInlineLoader(false);
+        }
+      }
+
+      async function render(){ await ensureTagData(state.tag); renderListAndPager(workingSet); }
+
+      // ---- header/menu/back-to-top ----
+      if(mobileMenuButton && mobileMenu){
+        mobileMenuButton.addEventListener('click', () => {
+          mobileMenu.classList.toggle('mobile-menu-hidden');
+          mobileMenu.classList.toggle('mobile-menu-visible');
+        });
+      }
+      if(backToTopBtn){
+        window.addEventListener('scroll', () => {
+          if (window.scrollY > 300) {
+            backToTopBtn.classList.remove('hidden'); backToTopBtn.classList.add('flex'); backToTopBtn.classList.remove('opacity-0');
+          } else {
+            backToTopBtn.classList.add('opacity-0');
+            setTimeout(()=>{ if(window.scrollY <= 300){ backToTopBtn.classList.add('hidden'); backToTopBtn.classList.remove('flex'); }}, 300);
+          }
+        });
+        backToTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+      }
+
+      // ---- controls ----
+      const debounce = (fn,ms)=>{ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a),ms); }; };
+      if(searchInput) searchInput.addEventListener("input", debounce(e => { state.term = e.target.value || ""; state.page = 1; render(); }, 150));
+      if(sortMode) sortMode.addEventListener("change", () => { state.sort = sortMode.value; state.page = 1; render(); });
+
+      // Pagination
+      if(paginationEl){
+        paginationEl.addEventListener("click", (e)=>{
+          const btn = e.target.closest(".page-btn");
+          if(!btn) return;
+          if(btn.id === "prevPage"){ state.page = Math.max(1, state.page-1); render(); return; }
+          if(btn.id === "nextPage"){
+            const pages = Math.max(1, Math.ceil(filterLocal(applySort(workingSet)).length / pageSize));
+            state.page = Math.min(pages, state.page+1); render(); return;
+          }
+          const p = Number(btn.dataset.page||1);
+          state.page = p; render();
+        });
+      }
+
+      // ---- mobile tag dropdown ----
+      function renderTagOptions(){
+        const html = (allTopics||[]).map(t=>{
+          return `<a href="#" class="tag-option" data-value="${t.value}">
+                    <span>${t.label}</span>
+                    <span class="tag-count">${t.count ?? ""}</span>
+                  </a>`;
+        }).join("");
+        if (tagOptionsContainer) tagOptionsContainer.innerHTML = html;
+      }
+      renderTagOptions();
+
+      if(tagBox && tagButton && tagPanel && tagSearchInput){
+        tagButton.addEventListener('click', (e)=>{
+          e.stopPropagation();
+          tagPanel.classList.toggle('hidden');
+          if(!tagPanel.classList.contains('hidden')){
+            tagSearchInput.value = "";
+            tagPanel.querySelectorAll('.tag-option').forEach(opt => opt.style.display = "");
+            tagSearchInput.focus();
+          }
+        });
+        document.addEventListener('click', (e)=>{ if(!tagBox.contains(e.target)) tagPanel.classList.add('hidden'); });
+
+        tagPanel.addEventListener('click', async (e)=>{
+          const target = e.target.closest('.tag-option');
+          if(!target) return;
+          e.preventDefault();
+
+          tagPanel.querySelectorAll('.tag-option').forEach(o=>o.setAttribute('aria-selected','false'));
+          target.setAttribute('aria-selected','true');
+
+          const pickedName = target.querySelector('span')?.textContent || "تمام ٹیگز";
+          tagButtonLabel.textContent = pickedName;
+          tagPanel.classList.add('hidden');
+
+          state.tag = target.dataset.value || "";
+          state.page = 1;
+
+          document.querySelectorAll('#sidebarTagList .tag-list-item').forEach(item=>{
+            item.classList.remove('font-bold','bg-[#e8f0e0]','text-[#4a7031]');
+            if((item.dataset.value||"") === state.tag) item.classList.add('font-bold','bg-[#e8f0e0]','text-[#4a7031]');
+          });
+
+          await render();
+        });
+
+        tagSearchInput.addEventListener('input', ()=>{
+          const q = tagSearchInput.value.toLowerCase();
+          tagPanel.querySelectorAll('.tag-option').forEach(opt=>{
+            if(opt.dataset.value === "") return;
+            const txt = opt.textContent.toLowerCase();
+            opt.style.display = txt.includes(q) ? "" : "none";
+          });
+        });
+      }
+
+      // ---- sidebar topics ----
+      if(sidebarTagList){
+        const first = sidebarTagList.querySelector('a.tag-list-item[data-value=""]');
+        sidebarTagList.innerHTML = "";
+        if(first) sidebarTagList.appendChild(first);
+        for (const t of allTopics) {
+          const a = document.createElement('a');
+          a.href = "#";
+          a.className = "tag-list-item";
+          a.dataset.value = t.value;
+          a.innerHTML = `<span>${t.label}</span><span class="tag-count">${t.count ?? ""}</span>`;
+          sidebarTagList.appendChild(a);
+        }
+
+        sidebarTagList.addEventListener('click', async (e)=>{
+          const el = e.target.closest('.tag-list-item'); if(!el) return;
+          e.preventDefault();
+
+          sidebarTagList.querySelectorAll('.tag-list-item').forEach(i=>i.classList.remove('font-bold','bg-[#e8f0e0]','text-[#4a7031]'));
+          el.classList.add('font-bold','bg-[#e8f0e0]','text-[#4a7031]');
+
+          state.tag = el.dataset.value || "";
+          state.page = 1;
+
+          const labelText = el.querySelector('span')?.textContent || "تمام ٹیگز";
+          const labelEl = document.getElementById('tagButtonLabel');
+          if (labelEl) labelEl.textContent = labelText;
+
+          await render();
+        });
+      }
+
+      // initial render
+      render();
+    });
+</script>
+
 </body>
 </html>

@@ -16,14 +16,16 @@
     <meta property="og:image" content="https://placehold.co/1200x630/6a8a4f/white?text=All+Questions&font=roboto">
     <!-- <meta property="og:url" content="https://minaramasjid.com/all-faq"> -->
     <meta property="og:type" content="website">
+    
     <meta name="twitter:title" content="All Questions | Maula Ali Research Center">
-    <meta name="twitter:description" content="Browse all Islamic questions and fatwas on Maula Ali Research Centre.">
+    <meta property="og:description" content="Browse all Islamic questions and fatwas on Maula Ali Research Centre.">
     <meta name="twitter:image" content="https://placehold.co/1200x630/6a8a4f/white?text=All+Questions&font=roboto">
     <meta name="twitter:card" content="summary_large_image">
     
     
     <!-- Base Href (Preserved) -->
     <base href="https://minaramasjid.com/">
+    
     <link rel="icon" href="https://minaramasjid.com/assets/image/logo/favicon.ico" type="image/x-icon">
 
     <!-- Tailwind CSS -->
@@ -35,7 +37,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,400;8..144,500;8..144,700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Gulzar&display=swap" rel="stylesheet">
 
-    
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
     
@@ -43,11 +44,20 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" />
 
     <style>
+        /* Define new custom font for Urdu */
+        @font-face {
+            font-family: 'NaatFont';
+            src: url('https://res.cloudinary.com/awescreative/raw/upload/v1749150996/Awes/naatfont.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
         /* Set default font */
         body {
             font-family: "Roboto Flex", sans-serif;
             background-color: #f0f5e9;
         }
+
         /* Custom styles from original page */
         .rtl {
             direction: rtl;
@@ -66,30 +76,120 @@
             opacity: 1;
             transition: max-height 0.4s ease-in, opacity 0.3s ease-in;
         }
-        .gulzartext {
-            font-family: 'Gulzar', serif;
+
+        /* Apply new font to Urdu specific elements */
+        .gulzartext, .heading {
+            font-family: 'NaatFont', 'Gulzar', serif;
         }
-        .heading {
-             font-family: 'Gulzar', serif;
+        
+        /* New Layout Grid for Sidebar and Main Content */
+        .qa-layout-grid {
+            display: grid;
+            gap: 2rem;
+            grid-template-columns: 1fr; /* Default: 1 column on mobile */
+            max-width: 75rem; /* Wider container for 2-column layout */
+            margin: 0 auto;
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        @media (min-width: 1024px) { /* lg breakpoint */
+            .qa-layout-grid {
+                /* Defines 1fr (left, main content) and 18rem (right, sidebar) in LTR reading direction.
+                   Since dir="rtl", 1fr is the main area on the left, 18rem is the sidebar on the right. */
+                grid-template-columns: 1fr 18rem; 
+                padding-left: 0;
+                padding-right: 0;
+            }
+            /* Explicitly place Main Content into the wider left column (Column 1 in RTL flow) */
+            .page-container {
+                grid-column: 1 / 2; 
+            }
+            /* Explicitly place Sidebar into the narrower right column (Column 2 in RTL flow) */
+            #sidebar {
+                grid-column: 2 / 3;
+            }
         }
 
-        /* Re-scoped container class for this page */
+        /* Existing page-container needs margin/width removed for new grid */
         .page-container {
-             max-width: 65rem; /* Tighter container for the list itself */
-             margin-left: auto;
-             margin-right: auto;
+            max-width: none; /* Remove max-width */
+            margin-left: 0;
+            margin-right: 0;
+            padding-top: 0;
+        }
+        
+        /* Sidebar specific styles */
+        #sidebar {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border: 1px solid #e5e7eb;
+            /* Make the sidebar sticky on desktop */
+            position: sticky;
+            top: 6rem; /* Adjust based on header height */
+            align-self: flex-start; /* Important for sticky items in flex/grid */
+            min-height: min-content;
         }
 
-        /* NEW STYLES for all-questions page */
+        .sidebar-heading {
+            color: #4a7031;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e8f0e0;
+            text-align: right;
+        }
+        
+        .tag-list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0.25rem;
+            border-radius: 0.5rem;
+            transition: background-color 0.2s;
+            cursor: pointer;
+            font-size: 1.1rem;
+            text-align: right;
+        }
+        .tag-list-item:hover {
+            background-color: #f3f4f6;
+            color: #4a7031;
+        }
+        .tag-count {
+            background-color: #eaf3df;
+            color: #4a7031;
+            padding: 0.1rem 0.6rem;
+            border-radius: 9999px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            flex-shrink: 0;
+        }
+        
+        /* New: Hide combobox on large screens where sidebar is present */
+        @media (min-width: 1024px) {
+            .tag-combobox {
+                display: none;
+            }
+        }
+        @media (max-width: 1023px) {
+            #sidebar {
+                display: none; /* Hide sidebar on mobile/tablet */
+            }
+        }
+        
+        /* === NEW CONTROLS DESIGN === */
         .controls {
             display: flex;
             flex-direction: column;
             gap: 1rem;
-            padding: 1.5rem;
-            background-color: white;
-            border-radius: 1.5rem; /* rounded-3xl */
+            padding: 1.25rem;
+            background-color: #f9fafb; /* bg-gray-50 */
+            border-radius: 1.25rem; /* rounded-2xl */
             margin-bottom: 2rem;
-            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05), 0 8px 10px -6px rgba(0,0,0,0.05);
+            border: 1px solid #f3f4f6; /* bg-gray-100 */
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
         }
         @media (min-width: 768px) {
             .controls {
@@ -102,136 +202,142 @@
         .control {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
             flex-grow: 1;
+            position: relative; /* For tagbox panel */
         }
 
-        .control-sort {
-             flex-grow: 0; /* Don't grow the sort */
-             flex-basis: 200px; /* Give it a base width */
-        }
-
-        .control.search-control {
-            position: relative;
-            flex-basis: 300px; /* Give search more space */
-        }
-
-        .control label, .control span {
-            font-family: 'Gulzar', serif;
-            font-size: 1.125rem;
-            color: #333;
-            flex-shrink: 0;
-            display: none; /* Hide labels for a cleaner look */
-        }
-        
-        #searchInput {
-            border: 1px solid #d1d5db; /* border-gray-300 */
-            border-radius: 9999px; /* rounded-full */
-            padding-right: 2.75rem; /* Space for icon */
-            padding-left: 1rem;
-            padding-top: 0.6rem;
-            padding-bottom: 0.6rem;
-            font-size: 1rem; /* text-base */
-            font-family: 'Gulzar', serif;
+        /* New wrapper for all inputs */
+        .control-input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem; /* Space between icon and text/input */
             width: 100%;
-            outline: none;
+            background-color: white;
+            border: 1px solid #e5e7eb; /* border-gray-200 */
+            border-radius: 0.75rem; /* rounded-lg */
+            padding: 0 0.75rem; /* Padding for icons on both sides */
             transition: all 0.2s ease-in-out;
-            background-color: #f9fafb;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.03);
         }
-        .search-icon {
-            position: absolute;
-            right: 0.85rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #9ca3af; /* text-gray-400 */
-        }
-        #searchInput:focus {
-             box-shadow: 0 0 0 2px #4a7031; /* ring-2 focus:ring-[#4a7031] */
-             border-color: #4a7031;
-             background-color: white;
+        .control-input-wrapper:focus-within,
+        .control-input-wrapper.tag-button:focus {
+            border-color: #4a7031;
+            box-shadow: 0 0 0 3px #e8f0e0; /* Lighter ring */
         }
         
-        .pill, select.pill {
-            background-color: #f9fafb; /* bg-gray-50 */
-            color: #374151; /* text-gray-700 */
-            border-radius: 9999px;
-            padding-left: 1rem;
-            padding-right: 2.5rem; /* Space for arrow */
-            padding-top: 0.6rem;
-            padding-bottom: 0.6rem;
-            font-family: 'Gulzar', serif;
+        /* Style for icons inside the wrapper */
+        .control-input-wrapper i {
+            color: #6b7280; /* text-gray-500 */
+            flex-shrink: 0;
+            font-size: 1.1rem;
+            /* Fix for chevron */
+        }
+        .control-input-wrapper .bi-chevron-down {
+             font-size: 1rem;
+        }
+        
+        /* Reset for search input */
+        #searchInput {
+            border: none;
+            outline: none;
+            background-color: transparent;
+            width: 100%;
+            padding: 0.6rem 0.5rem 0.6rem 0.2rem; /* RTL padding */
             font-size: 1rem;
+            font-family: 'NaatFont', 'Gulzar', serif;
+            color: #374151;
+        }
+        #searchInput::placeholder {
+             color: #9ca3af;
+        }
+        
+        /* Reset for select pill */
+        select.pill {
+            border: none;
+            outline: none;
+            background-color: transparent;
+            width: 100%;
+            padding: 0.6rem 0.5rem 0.6rem 0.2rem; /* RTL padding */
+            font-size: 1rem;
+            font-family: 'NaatFont', 'Gulzar', serif;
+            color: #374151;
             -webkit-appearance: none;
             -moz-appearance: none;
             appearance: none;
-            outline: none;
-            border: 1px solid #d1d5db;
-            width: 100%;
+            /* SVG arrow */
             background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='M7 7l3-3 3 3m0 6l-3 3-3-3'/%3e%3c/svg%3e");
-            background-position: left 0.75rem center;
+            background-position: left 0.75rem center; /* Moved arrow to left for RTL */
             background-repeat: no-repeat;
             background-size: 1.25em 1.25em;
         }
-        select.pill:focus {
-             box-shadow: 0 0 0 2px #4a7031;
-             border-color: #4a7031;
-             background-color: white;
-        }
-
-        .tag-combobox {
-            position: relative;
-            flex-grow: 0;
-            flex-basis: 200px;
-        }
+        
+        /* Style for tag button (which is also a wrapper) */
         .tag-button {
-            background-color: #f9fafb;
-            border: 1px solid #d1d5db;
-            border-radius: 9999px;
-            padding: 0.6rem 1rem 0.6rem 2.5rem;
-            font-size: 1rem;
-            font-family: 'Gulzar', serif;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
             cursor: pointer;
-            width: 100%;
-            justify-content: space-between;
-            position: relative;
+            padding-top: 0.6rem;
+            padding-bottom: 0.6rem;
+            /* It already has .control-input-wrapper styles */
         }
         .tag-button:hover {
-            background-color: #f3f4f6; /* hover:bg-gray-100 */
+             background-color: #f9fafb; /* hover:bg-gray-50 */
         }
-        .tag-button .bi-tags {
-            position: absolute;
-            left: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #9ca3af;
+        .tag-button #tagButtonLabel {
+            font-size: 1rem;
+            font-family: 'NaatFont', 'Gulzar', serif;
+            color: #374151; /* text-gray-700 */
+            flex-grow: 1;
+            text-align: right; /* RTL */
         }
-        .tag-button .bi-chevron-down {
-             position: absolute;
-             right: 1rem;
-             top: 50%;
-             transform: translateY(-50%);
-             color: #9ca3af;
+
+        /* --- Responsive Layout for Controls (KEEP) --- */
+        
+        /* Tablet (md) layout: balanced grow for all 3 controls */
+        @media (min-width: 768px) {
+            .control {
+                flex-grow: 1;
+                flex-shrink: 1;
+                flex-basis: 0; /* Allows flex-grow to work properly */
+                min-width: 180px; /* Prevent controls from becoming too small */
+            }
+            .control.search-control {
+                min-width: 240px; /* Allow search to be a bit wider */
+            }
         }
-        .tag-button:focus {
-             box-shadow: 0 0 0 2px #4a7031;
-             border-color: #4a7031;
+        
+        /* Desktop (lg) layout: Search grows, sort is fixed, tag is hidden */
+        @media (min-width: 1024px) {
+            .control {
+                /* Reset basis to auto before setting specific ones */
+                flex-basis: auto;
+            }
+            .control.search-control {
+                flex-grow: 1; /* Explicitly set search to grow */
+                flex-basis: 300px; /* Give it a larger basis */
+                min-width: 300px;
+            }
+            .control-sort {
+                flex-grow: 0; /* Stop sort from growing */
+                flex-basis: 200px; /* Fix its basis */
+                min-width: 200px;
+            }
         }
+        
+        /* --- New Tag Panel Design --- */
         .tag-panel {
+            /* Kept old layout properties */
             position: absolute;
             top: 100%;
             right: 0;
             margin-top: 0.25rem;
+            z-index: 20;
+            width: 16rem; /* w-64 */
+            overflow: hidden;
+            /* New Style */
             background-color: white;
             border: 1px solid #e5e7eb; /* border-gray-200 */
             border-radius: 0.75rem; /* rounded-xl */
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-lg */
-            z-index: 20;
-            width: 16rem; /* w-64 */
-            font-family: 'Gulzar', serif;
-            overflow: hidden;
+            font-family: 'NaatFont', 'Gulzar', serif;
         }
         .tag-panel .inner {
             max-height: 18rem; /* max-h-72 */
@@ -244,19 +350,24 @@
             position: sticky;
             top: 0;
             padding: 0.75rem 1rem;
-            border-radius: 0;
-            font-family: 'Gulzar', serif;
+            font-family: 'NaatFont', 'Gulzar', serif;
             font-size: 1rem;
+            background-color: #f9fafb; /* bg-gray-50 */
         }
         .tag-search:focus {
             box-shadow: none;
             border-color: #4a7031;
+            background-color: white;
         }
         .tag-option {
-            padding: 0.5rem 1rem;
+            padding: 0.75rem 1rem; /* More padding */
             cursor: pointer;
             text-align: right;
-            font-size: 1.125rem;
+            font-size: 1.1rem; /* Slightly smaller */
+            transition: all 0.15s ease-out;
+            display: flex; /* Added */
+            justify-content: space-between; /* Added */
+            align-items: center; /* Added */
         }
         .tag-option:hover {
             background-color: #e8f0e0;
@@ -266,6 +377,7 @@
             background-color: #eaf3df;
             color: #4a7031;
         }
+        /* === END OF NEW CONTROLS DESIGN === */
 
         .list {
             display: grid;
@@ -276,28 +388,31 @@
         .card-link {
             display: block;
             background-color: white;
-            padding: 1.5rem; /* p-6 */
-            border-radius: 1.5rem; /* rounded-3xl */
-            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            padding: 1.25rem; /* p-5 */
+            border-radius: 1.25rem; /* rounded-2xl */
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
             transition: all 0.3s ease-in-out;
-            border: 1px solid #e5e7eb; /* border-gray-200 */
+            border: 1px solid white; /* Lighter border */
         }
         .card-link:hover {
             transform: translateY(-4px);
-            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.07), 0 8px 10px -6px rgba(0,0,0,0.07);
-            border-color: #c1d9a3;
+            box-shadow: 0 12px 28px -5px rgba(0,0,0,0.08), 0 8px 10px -6px rgba(0,0,0,0.05);
+            border-color: #e8f0e0;
         }
         .card-link h3 {
              transition: color 0.3s;
-             font-size: 1.3rem; /* Larger title */
+             font-size: 1.5rem; /* Larger title */
+             font-weight: 700; /* Bolder title */
              color: #1f2937; /* text-gray-800 */
         }
         .card-link:hover h3 {
              color: #4a7031;
         }
         .card-excerpt {
-            font-size: 1.125rem; /* text-lg */
-            color: #4b5563; /* text-gray-600 */
+            font-size: 1.1rem; /* Slightly smaller excerpt */
+            color: #374151; /* text-gray-700 */
+            line-height: 1.7;
+            /* Now handled by line-clamp utility in HTML */
         }
 
         /* Card number colors */
@@ -314,7 +429,7 @@
             align-items: center;
             gap: 0.5rem;
             margin-top: 2.5rem;
-            font-family: 'Gulzar', serif;
+            font-family: 'NaatFont', 'Gulzar', serif;
         }
         .page-btn {
             padding: 0.4rem 1rem;
@@ -352,7 +467,7 @@
         <!-- Background Image Overlay -->
         <div class="absolute inset-0 bg-cover bg-no-repeat opacity-70" style="background-image: url('/assets/bg-DgzunbF9.png'); background-position: center center; z-index: -1;"></div>
 
-        <!-- Header -->
+        <!-- Header (Fixed) -->
         <header class="bg-[#718e56] sticky top-0 z-50 shadow-md border-b border-green-100">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between items-center py-3 relative"> <!-- Compacted header -->
@@ -396,7 +511,7 @@
                         </button>
                     </div>
                 </div>
-
+                
                 <!-- Mobile Menu Dropdown -->
                 <div id="mobile-menu" class="md:hidden mobile-menu-hidden">
                     <div class="flex flex-col gap-2 py-3 px-2 text-white bg-[#5a7544] rounded-b-xl"> <!-- Compacted -->
@@ -417,170 +532,183 @@
         <main class="relative z-10 pt-12 sm:pt-16"> <!-- Compacted pt -->
             
             <!-- === ALL QUESTIONS CONTENT === -->
-            <section class="relative max-w-7xl mx-auto px-4 py-8" dir="rtl">
-                
-                <div class="page-container gulzartext">
-                    <h1 class="heading text-3xl lg:text-4xl font-bold text-[#4a7031] mb-6 text-center">تمام فتاویٰ</h1>
-                
-                    <div class="controls">
-                        <div class="control search-control">
-                            <label for="searchInput" class="sr-only">تلاش:</label>
-                            <input id="searchInput" type="text" placeholder="عنوان یا سوال لکھیں…" spellcheck="false">
-                            <i class="bi bi-search search-icon"></i>
-                        </div>
-                
-                        <div class="control control-sort">
-                            <label for="sortMode" class="sr-only">ترتیب:</label>
-                            <select id="sortMode" class="pill">
-                                <option value="default">معیاری</option>
-                                <option value="tag">ٹیگز کے لحاظ سے</option>
-                            </select>
-                        </div>
-                
-                        <!-- Tag combo -->
-                        <div class="control tag-combobox" id="tagBox">
-                            <button type="button" id="tagButton" class="btn tag-button">
-                                <i class="bi bi-tags"></i> 
-                                <span id="tagButtonLabel">تمام ٹیگز</span>
-                                <i class="bi bi-chevron-down text-xs"></i>
-                            </button>
-                            <div id="tagPanel" class="tag-panel hidden" role="listbox" aria-labelledby="tagButton">
-                                <input id="tagSearchInput" class="tag-search" type="text" placeholder="ٹیگز تلاش کریں…" spellcheck="false">
-                                <div class="inner">
-                                    <div class="tag-option" data-value="" aria-selected="true">تمام ٹیگز</div>
-                                    <!-- options injected -->
-                                    <div id="tagOptions"><div class="tag-option" data-value="اصلاح-معاشرہ">اصلاح معاشرہ</div><div class="tag-option" data-value="اعتراضات-مع-جوابات">اعتراضات مع جوابات</div><div class="tag-option" data-value="ترجمہ-و-تفسیر">ترجمہ و تفسیر</div><div class="tag-option" data-value="تفسیر-قرآن">تفسیر قرآن</div><div class="tag-option" data-value="حج-و-عمرہ">حج و عمرہ</div><div class="tag-option" data-value="حدیث">حدیث</div><div class="tag-option" data-value="خرید-و-فروخت">خرید و فروخت</div><div class="tag-option" data-value="رسم-و-رواج">رسم و رواج</div><div class="tag-option" data-value="روزہ-کے-مسائل">روزہ کے مسائل</div><div class="tag-option" data-value="زکوۃ-کے-مسائل">زکوۃ کے مسائل</div><div class="tag-option" data-value="زکوۃ-و-صدقہ">زکوۃ و صدقہ</div><div class="tag-option" data-value="سیرت-و-سوانح">سیرت و سوانح</div><div class="tag-option" data-value="صحابہ-و-تابعین">صحابہ و تابعین</div><div class="tag-option" data-value="صلوۃ-و-سلام">صلوۃ و سلام</div><div class="tag-option" data-value="طہارت">طہارت</div><div class="tag-option" data-value="عقیدۂ-اہل-سنت">عقیدۂ اہل سنت</div><div class="tag-option" data-value="قرآن-مقدس">قرآن مقدس</div><div class="tag-option" data-value="uncategorized">متفرقات</div><div class="tag-option" data-value="معمولات-اہل-sنت">معمولات اہل سنت</div><div class="tag-option" data-value="منظومات">منظومات</div><div class="tag-option" data-value="نذر-و-نیاز">نذر و نیاز</div><div class="tag-option" data-value="نکاح-و-طلاق">نکاح و طلاق</div><div class="tag-option" data-value="نماز-کے-مسائل">نماز کے مسائل</div><div class="tag-option" data-value="والدین-کے-حقوق">والدین کے حقوق</div></div>
-                                </div>
-                            </div>
-                        </div>
-                
-                        <div id="inlineLoader" class="pill hidden">لوڈ ہو رہا ہے…</div>
-                    </div>
-                
-                    <!-- Loader -->
-                    <div id="loader" class="mb-8 hidden" style="align-items:center; justify-content:center;">
-                        لوڈ ہو رہا ہے…
-                    </div>
-                
-                    <!-- NEW Card List Design -->
-                    <div id="list" class="list">
-                        
-                        <a href="/fatwa/2778" class="card-link group">
-                            <div class="flex items-center gap-4">
-                                <div class="flex-shrink-0 w-12 h-12 bg-midnight_green text-white rounded-xl flex items-center justify-center font-bold text-2xl gulzartext">۱</div>
-                                <h3 class="heading font-semibold">احوال حضرت ابو بکر صدیق رضی اللہ عنہ</h3>
-                            </div>
-                            <p class="mt-3 mb-4 text-gray-700 line-clamp-2 gulzartext card-excerpt">احوال حضرت ابو بکر صدیق رضی اللہ عنہ</p>
-                            <div class="mt-4 flex justify-between items-center text-sm pt-3 border-t border-gray-100">
-                                <span class="font-bold heading text-green-700 group-hover:underline">
-                                    مکمل جواب پڑھیں
-                                    <i class="fa-solid fa-arrow-left text-xs mr-2 opacity-70 transition-transform group-hover:mr-3"></i>
-                                </span>
-                                <div class="flex items-center text-gray-500 gap-1.5" title="Views">
-                                    <i class="bi bi-eye-fill"></i>
-                                    <span>6014</span>
-                                </div>
-                            </div>
-                        </a>
-                        
-                        <a href="/fatwa/2788" class="card-link group">
-                            <div class="flex items-center gap-4">
-                                <div class="flex-shrink-0 w-12 h-12 bg-air_force_blue text-white rounded-xl flex items-center justify-center font-bold text-2xl gulzartext">۲</div>
-                                <h3 class="heading font-semibold">اس کرم کا کروں شکر کیسے ادا</h3>
-                            </div>
-                            <p class="mt-3 mb-4 text-gray-700 line-clamp-2 gulzartext card-excerpt">اس کرم کا کروں شکر کیسے ادا</p>
-                            <div class="mt-4 flex justify-between items-center text-sm pt-3 border-t border-gray-100">
-                                <span class="font-bold heading text-green-700 group-hover:underline">
-                                    مکمل جواب پڑھیں
-                                    <i class="fa-solid fa-arrow-left text-xs mr-2 opacity-70 transition-transform group-hover:mr-3"></i>
-                                </span>
-                                <div class="flex items-center text-gray-500 gap-1.5" title="Views">
-                                    <i class="bi bi-eye-fill"></i>
-                                    <span>7122</span>
-                                </div>
-                            </div>
-                        </a>
+            <section class="relative max-w-7xl mx-auto py-8" dir="rtl">
 
-                        <a href="/fatwa/2781" class="card-link group">
-                            <div class="flex items-center gap-4">
-                                <div class="flex-shrink-0 w-12 h-12 bg-midnight_green text-white rounded-xl flex items-center justify-center font-bold text-2xl gulzartext">۳</div>
-                                <h3 class="heading font-semibold">جمعہ کی نماز فرض ہے یا نفل ؟ محمد سلمان رضا واحدی امجدی</h3>
-                            </div>
-                            <p class="mt-3 mb-4 text-gray-700 line-clamp-2 gulzartext card-excerpt">جمعہ کی نماز فرض ہے یا نفل ؟ محمد سلمان رضا واحدی امجدی</p>
-                            <div class="mt-4 flex justify-between items-center text-sm pt-3 border-t border-gray-100">
-                                <span class="font-bold heading text-green-700 group-hover:underline">
-                                    مکمل جواب پڑھیں
-                                    <i class="fa-solid fa-arrow-left text-xs mr-2 opacity-70 transition-transform group-hover:mr-3"></i>
-                                </span>
-                                <div class="flex items-center text-gray-500 gap-1.5" title="Views">
-                                    <i class="bi bi-eye-fill"></i>
-                                    <span>6377</span>
-                                </div>
-                            </div>
-                        </a>
-                        
-                        <a href="/fatwa/2793" class="card-link group">
-                            <div class="flex items-center gap-4">
-                                <div class="flex-shrink-0 w-12 h-12 bg-air_force_blue text-white rounded-xl flex items-center justify-center font-bold text-2xl gulzartext">۴</div>
-                                <h3 class="heading font-semibold">حاملہ عورت کو جنات کے شر سے محفوظ رکھنے کے لئے اس کے پاس لوہے یا پیتل کی چیز رکھنا کیسا ہے ؟</h3>
-                            </div>
-                            <p class="mt-3 mb-4 text-gray-700 line-clamp-2 gulzartext card-excerpt">کیا فرماتے ہیں علماء دین و مفتیان شرح متین مسئلہ ذیل میں کہ گورکھپور میں جب کوئی عورت حمل سے ہوتی ہے  تو اسکے پاس کوی لوہے یا پیتل کی چیز کو رکھتے ہیں یا لوہے کا چاقو پہنا دیتے ہیں تاکہ وہ جنات کے شر سے محفوظ رہیں۔ انکا ماننا یہ ہے اس طرح کرنے سے جنات دور رہتے ہیں تو کیا اس طرح نظریہ رکھنا انکا صحیح ہے۔ جواب عنایت فرما کر شکریہ کا موقع دیں ...</p>
-                            <div class="mt-4 flex justify-between items-center text-sm pt-3 border-t border-gray-100">
-                                <span class="font-bold heading text-green-700 group-hover:underline">
-                                    مکمل جواب پڑھیں
-                                    <i class="fa-solid fa-arrow-left text-xs mr-2 opacity-70 transition-transform group-hover:mr-3"></i>
-                                </span>
-                                <div class="flex items-center text-gray-500 gap-1.5" title="Views">
-                                    <i class="bi bi-eye-fill"></i>
-                                    <span>4</span>
-                                </div>
-                            </div>
-                        </a>
-
-                        <a href="/fatwa/2828" class="card-link group">
-                            <div class="flex items-center gap-4">
-                                <div class="flex-shrink-0 w-12 h-12 bg-midnight_green text-white rounded-xl flex items-center justify-center font-bold text-2xl gulzartext">۹</div>
-                                <h3 class="heading font-semibold">غوث پاک نے حضرت عزرائیل سے روح کا تھیلا چھین لیا یہ کہنا کیسا ہے؟</h3>
-                            </div>
-                            <p class="mt-3 mb-4 text-gray-700 line-clamp-2 gulzartext card-excerpt">کیا فرماتے ہیں اہلِ علم اس بارے میں کچھ کتابوں میں غوث اعظم رضی اللہ تعالی عنہ کی ایک کرامت ل khaki جس کا مضمون کچھ یوں ہے کہ غوث پاک کے ایک خادم کی موت ہو گئی موت ہونے کے بعد ان کی بیوی یا بیٹی غوث اعظم کے پاس آ کر فریاد کی...</p>
-                            <div class="mt-4 flex justify-between items-center text-sm pt-3 border-t border-gray-100">
-                                <span class="font-bold heading text-green-700 group-hover:underline">
-                                    مکمل جواب پڑھیں
-                                    <i class="fa-solid fa-arrow-left text-xs mr-2 opacity-70 transition-transform group-hover:mr-3"></i>
-                                </span>
-                                <div class="flex items-center text-gray-500 gap-1.5" title="Views">
-                                    <i class="bi bi-eye-fill"></i>
-                                    <span>2</span>
-                                </div>
-                            </div>
-                        </a>
-                        
-                        <!-- Add more cards as needed following the pattern above -->
-
-                    </div>
+                <h1 class="heading text-3xl lg:text-4xl font-bold text-[#4a7031] mb-6 text-center gulzartext">تمام فتاویٰ</h1>
                 
-                    <!-- Pagination - Correct RTL Order -->
-                    <div class="mt-6 pagination" id="pagination">
-                        <button class="page-btn" id="nextPage">اگلا →</button>
-                        <div id="pageNumbers" class="inline-flex" style="gap:6px;">
-                            <button class="page-btn active">۱</button>
-                            <!-- More page numbers can be added here -->
+                <!-- NEW: Grid Layout Wrapper -->
+                <div class="qa-layout-grid">
+                    
+                    <!-- 1. MAIN CONTENT AREA (Left, wider column) -->
+                    <div class="page-container gulzartext">
+                        
+                        <div class="controls">
+                            <div class="control search-control">
+                                <label for="searchInput" class="sr-only">تلاش:</label>
+                                <div class="control-input-wrapper"> <!-- NEW WRAPPER -->
+                                    <input id="searchInput" type="text" placeholder="عنوان یا سوال لکھیں…" spellcheck="false">
+                                    <i class="bi bi-search search-icon"></i>
+                                </div>
+                            </div>
+                            
+                            <div class="control control-sort">
+                                <label for="sortMode" class="sr-only">ترتیب:</label>
+                                <!-- New wrapper for icon -->
+                                <div class="control-input-wrapper"> <!-- REPLACED old wrapper -->
+                                    <i class="bi bi-arrow-down-up control-icon"></i>
+                                    <select id="sortMode" class="pill">
+                                        <option value="default">معیاری</option>
+                                        <option value="tag">ٹیگز کے لحاظ سے</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <!-- Tag combo (Re-added for mobile use, hidden on desktop via CSS) -->
+                            <div class="control tag-combobox" id="tagBox">
+                                <button type="button" id="tagButton" class="btn tag-button control-input-wrapper"> <!-- ADDED CLASS -->
+                                    <i class="bi bi-tags"></i>
+                                    <span id="tagButtonLabel" class="flex-grow text-right">تمام ٹیگز</span> <!-- ADDED CLASSES -->
+                                    <i class="bi bi-chevron-down text-xs"></i>
+                                </button>
+                                <div id="tagPanel" class="tag-panel hidden" role="listbox" aria-labelledby="tagButton">
+                                    <input id="tagSearchInput" class="tag-search" type="text" placeholder="ٹیگز تلاش کریں…" spellcheck="false">
+                                    <div class="inner">
+                                        <!-- This is now an <a> tag for consistency -->
+                                        <a href="#" class="tag-option" data-value="" aria-selected="true">تمام ٹیگز</a>
+                                        <!-- options injected by JS -->
+                                        <div id="tagOptions"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div id="inlineLoader" class="pill hidden">لوڈ ہو رہا ਹੈ…</div>
                         </div>
-                        <button class="page-btn" id="prevPage" disabled="">← پچھلا</button>
+                        
+                        <!-- Loader -->
+                        <div id="loader" class="mb-8 hidden" style="align-items:center; justify-content:center;">
+                            لوڈ ہو رہا ہے…
+                        </div>
+                        
+                        <!-- Question List -->
+                        <div id="list" class="list">
+                            <!-- Existing hardcoded cards remain to show structure -->
+                            <a href="/fatwa/2778" class="card-link group">
+                                <div class="flex items-center gap-4">
+                                    <div class="flex-shrink-0 w-10 h-10 bg-midnight_green text-white rounded-full flex items-center justify-center font-bold text-lg gulzartext">۱</div>
+                                    <h3 class="heading">احوال حضرت ابو بکر صدیق رضی اللہ عنہ</h3>
+                                </div>
+                                <p class="mt-3 mb-4 text-gray-700 line-clamp-3 gulzartext card-excerpt">احوال حضرت ابو بکر صدیق رضی اللہ عنہ</p>
+                                <div class="mt-4 flex justify-between items-center text-sm pt-3 border-t border-gray-100">
+                                    <span class="bg-[#eaf3df] text-[#4a7031] rounded-full px-4 py-1.5 text-sm font-bold transition-colors group-hover:bg-[#4a7031] group-hover:text-white heading">
+                                        مکمل جواب پڑھیں
+                                        <i class="fa-solid fa-arrow-left text-xs mr-2 opacity-70 transition-transform group-hover:mr-3"></i>
+                                    </span>
+                                    <div class="flex items-center text-gray-500 gap-1.5" title="Views">
+                                        <i class="bi bi-eye-fill"></i>
+                                        <span>6014</span>
+                                    </div>
+                                </div>
+                            </a>
+                            <a href="/fatwa/2788" class="card-link group">
+                                <div class="flex items-center gap-4">
+                                    <div class="flex-shrink-0 w-10 h-10 bg-air_force_blue text-white rounded-full flex items-center justify-center font-bold text-lg gulzartext">۲</div>
+                                    <h3 class="heading">اس کرم کا کروں شکر کیسے ادا</h3>
+                                </div>
+                                <p class="mt-3 mb-4 text-gray-700 line-clamp-3 gulzartext card-excerpt">اس کرم کا کروں شکر کیسے ادا</p>
+                                <div class="mt-4 flex justify-between items-center text-sm pt-3 border-t border-gray-100">
+                                    <span class="bg-[#eaf3df] text-[#4a7031] rounded-full px-4 py-1.5 text-sm font-bold transition-colors group-hover:bg-[#4a7031] group-hover:text-white heading">
+                                        مکمل جواب پڑھیں
+                                        <i class="fa-solid fa-arrow-left text-xs mr-2 opacity-70 transition-transform group-hover:mr-3"></i>
+                                    </span>
+                                    <div class="flex items-center text-gray-500 gap-1.5" title="Views">
+                                        <i class="bi bi-eye-fill"></i>
+                                        <span>7122</span>
+                                    </div>
+                                </div>
+                            </a>
+                            <a href="/fatwa/2781" class="card-link group">
+                                <div class="flex items-center gap-4">
+                                    <div class="flex-shrink-0 w-10 h-10 bg-midnight_green text-white rounded-full flex items-center justify-center font-bold text-lg gulzartext">۳</div>
+                                    <h3 class="heading">جمعہ کی نماز فرض ہے یا نفل ؟ محمد سلمان رضا واحدی امجدی</h3>
+                                </div>
+                                <p class="mt-3 mb-4 text-gray-700 line-clamp-3 gulzartext card-excerpt">جمعہ کی نماز فرض ہے یا نفل ؟ محمد سلمان رضا واحدی امجدی</p>
+                                <div class="mt-4 flex justify-between items-center text-sm pt-3 border-t border-gray-100">
+                                    <span class="bg-[#eaf3df] text-[#4a7031] rounded-full px-4 py-1.5 text-sm font-bold transition-colors group-hover:bg-[#4a7031] group-hover:text-white heading">
+                                        مکمل جواب پڑھیں
+                                        <i class="fa-solid fa-arrow-left text-xs mr-2 opacity-70 transition-transform group-hover:mr-3"></i>
+                                    </span>
+                                    <div class="flex items-center text-gray-500 gap-1.5" title="Views">
+                                        <i class="bi bi-eye-fill"></i>
+                                        <span>6377</span>
+                                    </div>
+                                </div>
+                            </a>
+                            <a href="/fatwa/2793" class="card-link group">
+                                <div class="flex items-center gap-4">
+                                    <div class="flex-shrink-0 w-10 h-10 bg-air_force_blue text-white rounded-full flex items-center justify-center font-bold text-lg gulzartext">۴</div>
+                                    <h3 class="heading">حاملہ عورت کو جنات کے شر سے محفوظ رکھنے کے لئے اس کے پاس لوہے یا پیتل کی چیز رکھنا کیسا ہے ؟</h3>
+                                </div>
+                                <p class="mt-3 mb-4 text-gray-700 line-clamp-3 gulzartext card-excerpt">کیا فرماتے ہیں علماء دین و مفتیان شرح متین مسئلہ ذیل میں کہ گورکھپور میں جب کوئی عورت حمل سے ہوتی ہے  تو اسکے پاس کوی لوہے یا پیتل کی چیز کو رکھتے ہیں یا لوہے کا چاقو پہنا دیتے ہیں تاکہ وہ جنات کے شر سے محفوظ رہیں۔ انکا ماننا یہ ہے اس طرح کرنے سے جنات دور رہتے ہیں تو کیا اس طرح نظریہ رکھنا انکا صحیح ہے۔ جواب عنایت فرما کر شکریہ کا موقع دیں ...</p>
+                                <div class="mt-4 flex justify-between items-center text-sm pt-3 border-t border-gray-100">
+                                    <span class="bg-[#eaf3df] text-[#4a7031] rounded-full px-4 py-1.5 text-sm font-bold transition-colors group-hover:bg-[#4a7031] group-hover:text-white heading">
+                                        مکمل جواب پڑھیں
+                                        <i class="fa-solid fa-arrow-left text-xs mr-2 opacity-70 transition-transform group-hover:mr-3"></i>
+                                    </span>
+                                    <div class="flex items-center text-gray-500 gap-1.5" title="Views">
+                                        <i class="bi bi-eye-fill"></i>
+                                        <span>4</span>
+                                    </div>
+                                </div>
+                            </a>
+                            <a href="/fatwa/2828" class="card-link group">
+                                <div class="flex items-center gap-4">
+                                    <div class="flex-shrink-0 w-10 h-10 bg-midnight_green text-white rounded-full flex items-center justify-center font-bold text-lg gulzartext">۹</div>
+                                    <h3 class="heading">غوث پاک نے حضرت عزرائیل سے روح کا تھیلا چھین لیا یہ کہنا کیسا ہے؟</h3>
+                                </div>
+                                <p class="mt-3 mb-4 text-gray-700 line-clamp-3 gulzartext card-excerpt">کیا فرماتے ہیں اہلِ علم اس بارے میں کچھ کتابوں میں غوث اعظم رضی اللہ تعالی عنہ کی ایک کرامت ل khaki جس کا مضمون کچھ یوں ہے کہ غوث پاک کے ایک خادم کی موت ہو گئی موت ہونے کے بعد ان کی بیوی یا بیٹی غوث اعظم کے پاس آ کر فریاد کی...</p>
+                                <div class="mt-4 flex justify-between items-center text-sm pt-3 border-t border-gray-100">
+                                    <span class="bg-[#eaf3df] text-[#4a7031] rounded-full px-4 py-1.5 text-sm font-bold transition-colors group-hover:bg-[#4a7031] group-hover:text-white heading">
+                                        مکمل جواب پڑھیں
+                                        <i class="fa-solid fa-arrow-left text-xs mr-2 opacity-70 transition-transform group-hover:mr-3"></i>
+                                    </span>
+                                    <div class="flex items-center text-gray-500 gap-1.5" title="Views">
+                                        <i class="bi bi-eye-fill"></i>
+                                        <span>2</span>
+                                    </div>
+                                </div>
+                            </a>
+                            <!-- Add more cards as needed following the pattern above -->
+                        </div>
+                        
+                        <!-- Pagination - Correct RTL Order -->
+                        <div class="mt-6 pagination" id="pagination">
+                            <button class="page-btn" id="nextPage">اگلا →</button>
+                            <div id="pageNumbers" class="inline-flex" style="gap:6px;">
+                                <button class="page-btn active">۱</button>
+                                <!-- More page numbers can be added here -->
+                            </div>
+                            <button class="page-btn" id="prevPage" disabled="">← پچھلا</button>
+                        </div>
                     </div>
+
+                    <!-- 2. RIGHT SIDEBAR (Sticky on Desktop) -->
+                    <aside id="sidebar" class="gulzartext">
+                        <h2 class="sidebar-heading">تمام موضوعات</h2>
+                        <div id="sidebarTagList">
+                            <!-- Tags and Counts will be injected here by JavaScript -->
+                        </div>
+                    </aside>
+                    
                 </div>
-
             </section>
             <!-- === END OF ALL QUESTIONS CONTENT === -->
-
         </main>
     </div>
-
+    
     <!-- Simple Toast Notification -->
     <div id="toast" class="fixed bottom-24 right-6 bg-gray-800 text-white px-5 py-3 rounded-lg shadow-lg opacity-0 transition-opacity duration-300 z-50">
         Link copied to clipboard!
     </div>
-
 
     <!-- Footer -->
     <footer class="bg-[#718e56] text-white mt-16 sm:mt-20 relative z-20"> <!-- Compacted -->
@@ -614,24 +742,111 @@
             <!-- Copyright Bottom Line -->
             <div class="mt-8 pt-5 border-t border-green-400/50 text-center"> <!-- Compacted -->
                  <p class="text-sm text-green-200">
-                     &copy; 2024 - 2025 Design and Develop by
+                     &copy; 2024 - 2025 Design and Develop by 
                      <a href='https://www.AlQalamArts.com/' target="_blank" rel="noopener noreferrer" class="font-medium text-white hover:text-green-100">
-                          www.AlQalamArts.com
+                         www.AlQalamArts.com
                      </a>
                  </p>
             </div>
         </div>
     </footer>
 
-
     <!-- Back To Top Button -->
     <button id="backToTopBtn" class="fixed bottom-6 right-6 bg-[#4a7031] hover:bg-[#3b5a28] text-white w-10 h-10 rounded-full shadow-lg hidden justify-center items-center transition-all duration-300 opacity-0 z-40"> <!-- Compacted -->
         <i class="fas fa-arrow-up"></i>
     </button>
-
+    
     <!-- Inline JavaScript -->
     <script type="module">
         document.addEventListener('DOMContentLoaded', () => {
+            
+            // --- Tag Data (used for both sidebar and combobox) ---
+            const allTags = [
+                { name: "اصلاح معاشرہ", value: "اصلاح-معاشرہ", count: 45 },
+                { name: "اعتراضات مع جوابات", value: "اعتراضات-مع-جوابات", count: 12 },
+                { name: "ترجمہ و تفسیر", value: "ترجمہ-و-تفسیر", count: 28 },
+                { name: "تفسیر قرآن", value: "تفسیر-قرآن", count: 15 },
+                { name: "حج و عمرہ", value: "حج-و-عمرہ", count: 33 },
+                { name: "حدیث", value: "حدیث", count: 21 },
+                { name: "خرید و فروخت", value: "خرید-و-فروخت", count: 9 },
+                { name: "رسم و رواج", value: "رسم-و-رواج", count: 18 },
+                { name: "روزہ کے مسائل", value: "روزہ-کے-مسائل", count: 55 },
+                { name: "زکوۃ کے مسائل", value: "زکوۃ-کے-مسائل", count: 48 },
+                { name: "زکوۃ و صدقہ", value: "زکوۃ-و-صدقہ", count: 37 },
+                { name: "سیرت و سوانح", value: "سیرت-و-سوانح", count: 11 },
+                { name: "صحابہ و تابعین", value: "صحابہ-و-تابعین", count: 14 },
+                { name: "صلوۃ و سلام", value: "صلوۃ-و-سلام", count: 62 },
+                { name: "طہارت", value: "طہارت", count: 25 },
+                { name: "عقیدۂ اہل سنت", value: "عقیدۂ-اہل-سنت", count: 78 },
+                { name: "قرآن مقدس", value: "قرآن-مقدس", count: 19 },
+                { name: "متفرقات", value: "uncategorized", count: 88 },
+                { name: "معمولات اہل سنت", value: "معمولات-اہل-sنت", count: 41 },
+                { name: "منظومات", value: "منظومات", count: 6 },
+                { name: "نذر و نیاز", value: "نذر-و-نیاز", count: 22 },
+                { name: "نکاح و طلاق", value: "نکاح-و-طلاق", count: 51 },
+                { name: "نماز کے مسائل", value: "نماز-کے-مسائل", count: 95 },
+                { name: "والدین کے حقوق", value: "والدین-کے-حقوق", count: 17 }
+            ];
+            
+            const tagOptionsContainer = document.getElementById('tagOptions');
+            const sidebarTagList = document.getElementById('sidebarTagList');
+            
+            // Function to render tags into a container
+            const renderTags = (container, isSidebar = false) => {
+                let html = '';
+                allTags.forEach(tag => {
+                    const classes = isSidebar ? 'tag-list-item' : 'tag-option';
+                    // MODIFIED: Always show the count
+                    const countSpan = `<span class="tag-count">${tag.count}</span>`;
+                    // UPDATED: Now always an <a> tag for semantic consistency
+                    html += `
+                        <a href="#" class="${classes}" data-value="${tag.value}">
+                            <span>${tag.name}</span>
+                            ${countSpan}
+                        </a>
+                    `;
+                });
+                container.innerHTML = html;
+            };
+
+            // Inject into both locations
+            if (sidebarTagList) {
+                // Render the main sidebar list
+                renderTags(sidebarTagList, true);
+                
+                // Add an "All Tags" option at the top of the sidebar for filtering
+                sidebarTagList.insertAdjacentHTML('afterbegin', `
+                    <a href="#" class="tag-list-item font-bold bg-[#e8f0e0] text-[#4a7031] mb-2" data-value="">
+                        <span>تمام ٹیگز</span>
+                        <i class="bi bi-tag-fill"></i>
+                    </a>
+                `);
+
+                // Add event listener for sidebar filtering
+                sidebarTagList.addEventListener('click', (e) => {
+                    let target = e.target.closest('.tag-list-item');
+                    if (target) {
+                        e.preventDefault();
+                        // Logic to apply filter (currently just shows the selected tag)
+                        document.getElementById('tagButtonLabel').textContent = target.querySelector('span').textContent;
+                        // Mock filter action:
+                        console.log(`Filtering by tag: ${target.dataset.value}`);
+
+                        // Update sidebar active state
+                        document.querySelectorAll('#sidebarTagList .tag-list-item').forEach(item => {
+                            item.classList.remove('font-bold', 'bg-[#e8f0e0]', 'text-[#4a7031]');
+                        });
+                        target.classList.add('font-bold', 'bg-[#e8f0e0]', 'text-[#4a7031]');
+                    }
+                });
+            }
+            
+            if (tagOptionsContainer) {
+                // Render the tag combobox options
+                renderTags(tagOptionsContainer, false);
+            }
+            // --- End Tag Data Logic ---
+            
 
             // --- Mobile Menu Toggle ---
             const mobileMenuButton = document.getElementById('mobile-menu-toggle');
@@ -642,7 +857,7 @@
                     mobileMenu.classList.toggle('mobile-menu-visible');
                 });
             }
-
+            
             // --- Back To Top Button ---
             const backToTopBtn = document.getElementById('backToTopBtn');
             if (backToTopBtn) {
@@ -658,25 +873,24 @@
                                 backToTopBtn.classList.add('hidden');
                                 backToTopBtn.classList.remove('flex');
                             }
-                        }, 300); 
+                        }, 300);
                     }
                 });
-
+                
                 backToTopBtn.addEventListener('click', () => {
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                 });
             }
             
-            // --- NEW: Tag Combobox Logic ---
+            // --- Tag Combobox Logic (Re-added for mobile use) ---
             const tagBox = document.getElementById('tagBox');
             if (tagBox) {
                 const tagButton = document.getElementById('tagButton');
                 const tagPanel = document.getElementById('tagPanel');
                 const tagSearchInput = document.getElementById('tagSearchInput');
-                const tagOptionsContainer = document.getElementById('tagOptions');
                 const allTagOptions = Array.from(tagOptionsContainer.querySelectorAll('.tag-option'));
                 const tagButtonLabel = document.getElementById('tagButtonLabel');
-
+                
                 // Toggle panel
                 tagButton.addEventListener('click', (e) => {
                     e.stopPropagation();
@@ -685,39 +899,62 @@
                         tagSearchInput.focus();
                         // Reset search
                         tagSearchInput.value = '';
-                        allTagOptions.forEach(opt => opt.style.display = '');
+                        // Need to re-query all options including dynamic ones
+                        tagPanel.querySelectorAll('.tag-option').forEach(opt => opt.style.display = '');
                     }
                 });
-
+                
                 // Close on click outside
                 document.addEventListener('click', (e) => {
                     if (!tagBox.contains(e.target)) {
                         tagPanel.classList.add('hidden');
                     }
                 });
-
-                // Handle option selection
-                tagOptionsContainer.addEventListener('click', (e) => {
-                    if (e.target.classList.contains('tag-option')) {
+                
+                // Handle option selection from the dynamic container
+                tagPanel.addEventListener('click', (e) => {
+                    // Use .closest() to robustly find the <a> tag
+                    let target = e.target.closest('.tag-option');
+                    if (target) {
+                        e.preventDefault(); // Add preventDefault since it's an <a> tag
+                        
                         // Update styles
-                        allTagOptions.forEach(opt => opt.setAttribute('aria-selected', 'false'));
-                        e.target.setAttribute('aria-selected', 'true');
+                        // First, update all options
+                        tagPanel.querySelectorAll('.tag-option').forEach(opt => {
+                            opt.setAttribute('aria-selected', 'false');
+                        });
+                        // Then set the clicked one to active
+                        target.setAttribute('aria-selected', 'true');
                         
                         // Update button label
-                        tagButtonLabel.textContent = e.target.textContent;
-                        
+                        tagButtonLabel.textContent = target.querySelector('span').textContent;
                         // Close panel
                         tagPanel.classList.add('hidden');
                         
                         // You would typically fire off a search/filter function here
-                        // e.g., filterQuestionsByTag(e.target.dataset.value);
+                        // e.g., filterQuestionsByTag(target.dataset.value);
+                        console.log(`Filtering by tag (combobox): ${target.dataset.value}`);
+
+                        // Sync with sidebar
+                        document.querySelectorAll('#sidebarTagList .tag-list-item').forEach(item => {
+                            item.classList.remove('font-bold', 'bg-[#e8f0e0]', 'text-[#4a7031]');
+                            if(item.dataset.value === target.dataset.value) {
+                                item.classList.add('font-bold', 'bg-[#e8f0e0]', 'text-[#4a7031]');
+                            }
+                        });
                     }
                 });
-
+                
                 // Handle search filtering
                 tagSearchInput.addEventListener('input', () => {
                     const searchTerm = tagSearchInput.value.toLowerCase();
-                    allTagOptions.forEach(option => {
+                    // UPDATED: Now queries all .tag-option elements, including "All Tags"
+                    const allOptionsInPanel = tagPanel.querySelectorAll('.tag-option');
+                    allOptionsInPanel.forEach(option => {
+                        // Don't filter the "All Tags" button
+                        if (option.dataset.value === "") {
+                            return;
+                        }
                         const text = option.textContent.toLowerCase();
                         if (text.includes(searchTerm)) {
                             option.style.display = '';
@@ -726,10 +963,26 @@
                         }
                     });
                 });
+
+                // Listen to sidebar clicks and update the mobile button
+                if (sidebarTagList) {
+                    sidebarTagList.addEventListener('click', (e) => {
+                         let target = e.target.closest('.tag-list-item');
+                         if (target) {
+                            // Update button label
+                            tagButtonLabel.textContent = target.querySelector('span').textContent;
+                            // Update combobox active state
+                            tagPanel.querySelectorAll('.tag-option').forEach(opt => {
+                                opt.setAttribute('aria-selected', 'false');
+                                if(opt.dataset.value === target.dataset.value) {
+                                    opt.setAttribute('aria-selected', 'true');
+                                }
+                            });
+                         }
+                    });
+                }
             }
-            
         });
     </script>
-
 </body>
 </html>
