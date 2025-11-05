@@ -3,40 +3,389 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title><%= title %></title>
-  <meta name="description" content="<%= description %>" />
-  <link rel="icon" href="<%= faviconUrl %>" type="image/x-icon" />
+
+  <!-- ===== Meta (dynamic with sensible fallbacks) ===== -->
+  <title><%= typeof title !== 'undefined' ? title : 'Event Detail | Maula Ali Research Center' %></title>
+  <meta name="keywords" content="<%= typeof keywords !== 'undefined' ? keywords : 'Maula Ali Research Centre, Islamic Events, Islamic Lectures, Muslim Scholars, Minara Masjid Events' %>">
+  <meta name="description" content="<%= typeof description !== 'undefined' ? description : 'Get details about this event at Maula Ali Research Centre. Join us for Islamic knowledge, research, and insights from our dedicated scholars.' %>">
+  <meta name="robots" content="index, follow">
+
+  <meta property="og:title" content="<%= (typeof ogTitle !== 'undefined' && ogTitle) ? ogTitle : ((eventItem && eventItem.title) ? eventItem.title : 'Event Detail | Maula Ali Research Center') %>">
+  <meta property="og:description" content="<%= (typeof ogDescription !== 'undefined' && ogDescription) ? ogDescription : (typeof description !== 'undefined' ? description : 'Get details about this event at Maula Ali Research Centre.') %>">
+  <meta property="og:image" content="<%= (typeof ogImage !== 'undefined' && ogImage) ? ogImage : 'https://placehold.co/1200x630/6a8a4f/white?text=Event+Banner&font=roboto' %>">
+  <meta property="og:type" content="article">
+
+  <meta name="twitter:title" content="<%= (typeof twitterTitle !== 'undefined' && twitterTitle) ? twitterTitle : ((eventItem && eventItem.title) ? eventItem.title : 'Event Detail | Maula Ali Research Center') %>">
+  <meta name="twitter:description" content="<%= (typeof twitterDescription !== 'undefined' && twitterDescription) ? twitterDescription : (typeof description !== 'undefined' ? description : 'Get details about this event at Maula Ali Research Centre.') %>">
+  <meta name="twitter:image" content="<%= (typeof twitterImage !== 'undefined' && twitterImage) ? twitterImage : 'https://placehold.co/1200x630/6a8a4f/white?text=Event+Banner&font=roboto' %>">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- Base Href -->
+  <base href="<%= typeof baseHref !== 'undefined' ? baseHref : 'http://localhost:5000/' %>">
+
+  <!-- Favicon -->
+  <link rel="icon" href="<%= typeof faviconUrl !== 'undefined' ? faviconUrl : 'https://minaramasjid.com/assets/image/logo/favicon.ico' %>" type="image/x-icon" />
+
+  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,400;8..144,500;8..144,700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Gulzar&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"/>
+
+  <style>
+    body { font-family: "Roboto Flex", sans-serif; }
+    .rtl { direction: rtl; }
+    .rounded-4xl { border-radius: 2rem; }
+    .mobile-menu-hidden {
+      max-height: 0; opacity: 0; transition: max-height .3s ease-out, opacity .2s ease-out; overflow: hidden;
+    }
+    .mobile-menu-visible {
+      max-height: 500px; opacity: 1; transition: max-height .4s ease-in, opacity .3s ease-in;
+    }
+    .gulzartext, .heading { font-family: 'Gulzar', serif; }
+    @keyframes fadeInUp { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform: translateY(0); } }
+    .animate-fade-in-up { animation: fadeInUp .6s ease-out forwards; opacity: 0; }
+    /* helper for clamping titles in related cards */
+    .line-clamp-2 { display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+  </style>
 </head>
-<body class="min-h-screen bg-[#e4f0d0] relative">
-  <div class="absolute inset-0 opacity-36 pointer-events-none" style="background-image: url('<%= bgUrl %>');"></div>
+<body class="font-sans bg-[#f0f5e9] text-gray-800 antialiased">
 
-  <div class="max-w-4xl mx-auto p-6">
-    <a href="/events" class="text-green-700 hover:underline">&larr; Back to events</a>
+  <%
+// ---- locals & helpers ----
+const _bg = typeof bgUrl !== 'undefined' && bgUrl ? bgUrl : '/assets/bg-DgzunbF9.png';
+const _title = (eventItem && eventItem.title) ? eventItem.title : '';
+const _date  = (eventItem && (eventItem.date || eventItem.eventDate)) ? (eventItem.date || eventItem.eventDate) : '';
+const _time  = (eventItem && (eventItem.time || eventItem.eventTime)) ? (eventItem.time || eventItem.eventTime) : '';
+const _loc   = (eventItem && (eventItem.location || eventItem.venue)) ? (eventItem.location || eventItem.venue) : '';
+const _org   = (eventItem && (eventItem.organizer || eventItem.organiser || eventItem.host)) ? (eventItem.organizer || eventItem.organiser || eventItem.host) : 'Maula Ali Research Center';
+const _img   = (eventItem && eventItem.id) ? `/api/events/image/${eventItem.id}` : (typeof ogImage !== 'undefined' ? ogImage : 'https://placehold.co/600x800/6a8a4f/white?text=Event+Poster&font=roboto');
 
-    <div class="bg-white rounded-2xl shadow p-6 mt-4">
-      <h1 class="text-3xl font-bold text-green-800 mb-4"><%= eventItem.title || '' %></h1>
-      <div class="rounded-xl overflow-hidden mb-6">
-        <img src="/api/events/image/<%= eventItem.id %>" alt="<%= eventItem.title || '' %>" class="w-full h-[300px] object-cover" />
-      </div>
-      <div class="prose max-w-none">
-        <%- (eventItem.content || '') %>
-      </div>
-    </div>
+// server-side slugify in case one isn’t provided
+const slugify = (typeof locals !== 'undefined' && typeof locals.slugify === 'function')
+  ? locals.slugify
+  : (t)=> String(t||'').toLowerCase().trim()
+      .replace(/[\u0600-\u06FF]+/g,'')         // strip Arabic script for URL
+      .replace(/\s+/g,'-')
+      .replace(/[.,\/#!$%\^&\*;:{}=\_`~()؟"’’“”]/g,'')
+      .replace(/-+/g,'-').replace(/^-+|-+$/g,'');
+  %>
 
-    <div class="mt-10">
-      <h2 class="text-2xl font-bold text-green-800 mb-4">Related</h2>
-      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <% related.forEach(function(r){ %>
-          <a href="/newsandevent/<%= r.id %>/<%= slugify(r.title || ('event-' + r.id)) %>" class="block bg-white rounded-xl p-4 shadow hover:shadow-md transition">
-            <div class="h-40 rounded-lg overflow-hidden mb-3">
-              <img src="/api/events/image/<%= r.id %>" alt="<%= r.title || '' %>" class="w-full h-full object-cover" />
-            </div>
-            <div class="font-semibold text-green-800 line-clamp-2"><%= r.title || '' %></div>
+  <!-- BG overlay -->
+  <div class="absolute inset-0 bg-cover bg-no-repeat opacity-70" style="background-image:url('<%= _bg %>'); background-position:center center; z-index:-1;"></div>
+
+  <!-- Header -->
+  <header class="bg-[#718e56] sticky top-0 z-50 shadow-md border-b border-green-100">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center py-4 relative">
+        <!-- Left nav -->
+        <nav class="hidden md:flex gap-6 text-md font-semibold text-white tracking-wide">
+          <a href="index" class="hover:text-green-100 transition-colors">Home</a>
+          <a href="about.html" class="hover:text-green-100 transition-colors">About</a>
+          <a href="events" class="text-white font-bold" aria-current="page">News & Event</a>
+          <a href="books" class="hover:text-green-100 transition-colors">Books</a>
+        </nav>
+
+        <!-- Center logo -->
+        <div class="absolute left-1/2 transform -translate-x-1/2 -bottom-7 bg-white rounded-full p-1 shadow-lg border border-green-100 z-10">
+          <a href="index">
+            <img src="https://minaramasjid.com/assets/image/logo/marc.png" alt="Logo" class="w-16 h-16 rounded-full object-contain">
           </a>
-        <% }) %>
+        </div>
+
+        <!-- Right nav -->
+        <nav class="hidden md:flex gap-6 text-md font-semibold text-white tracking-wide">
+          <a href="articles.html" class="hover:text-green-100 transition-colors">Articles</a>
+          <a href="all-faq" class="hover:text-green-100 transition-colors">Question Answer</a>
+          <a href="book-request" class="hover:text-green-100 transition-colors">Request a Book</a>
+          <a href="contact.html" class="hover:text-green-100 transition-colors">Contact</a>
+        </nav>
+
+        <!-- Mobile -->
+        <div class="md:hidden flex-1"></div>
+        <div class="md:hidden flex-1 flex justify-center">
+          <a href="index">
+            <img src="https://minaramasjid.com/assets/image/logo/marc.png" alt="Logo" class="w-12 h-12 rounded-full object-contain">
+          </a>
+        </div>
+        <div class="md:hidden flex-1 flex justify-end">
+          <button id="mobile-menu-toggle" class="text-white focus:outline-none">
+            <i class="fas fa-bars w-7 h-7"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile dropdown -->
+      <div id="mobile-menu" class="md:hidden mobile-menu-hidden">
+        <div class="flex flex-col gap-3 py-4 px-2 text-white bg-[#5a7544] rounded-b-xl">
+          <a href="index" class="hover:bg-[#4f6639] px-4 py-2 rounded">Home</a>
+          <a href="about.html" class="hover:bg-[#4f6639] px-4 py-2 rounded">About</a>
+          <a href="events" class="bg-[#4f6639] px-4 py-2 rounded" aria-current="page">News & Event</a>
+          <a href="books" class="hover:bg-[#4f6639] px-4 py-2 rounded">Books</a>
+          <a href="articles.html" class="hover:bg-[#4f6639] px-4 py-2 rounded">Articles</a>
+          <a href="all-faq" class="hover:bg-[#4f6639] px-4 py-2 rounded">Question Answer</a>
+          <a href="book-request" class="hover:bg-[#4f6639] px-4 py-2 rounded">Request a Book</a>
+          <a href="contact.html" class="hover:bg-[#4f6639] px-4 py-2 rounded">Contact</a>
+        </div>
       </div>
     </div>
+  </header>
+
+  <!-- Main -->
+  <main class="relative z-10 pt-16 sm:pt-20">
+
+    <section class="relative max-w-6xl mx-auto px-4 py-12">
+      <!-- Event block -->
+      <div class="bg-white p-8 md:p-12 rounded-3xl mb-12 shadow-xl animate-fade-in-up">
+        <div class="flex flex-col md:flex-row gap-10 lg:gap-16 items-start">
+          <!-- Image -->
+          <div class="md:w-1/3 flex justify-center md:justify-start">
+            <div class="relative w-64 lg:w-72">
+              <img src="<%= _img %>" alt="<%= _title %>" class="w-full rounded-xl shadow-xl border-4 border-white">
+            </div>
+          </div>
+          <!-- Text -->
+          <div class="md:w-2/3 ltr text-left">
+            <h1 class="heading text-4xl lg:text-5xl font-bold text-[#4a7031] mb-4"><%= _title %></h1>
+
+            <% if (eventItem && eventItem.summary) { %>
+              <p class="text-gray-700 text-lg leading-relaxed mb-6"><%= eventItem.summary %></p>
+            <% } %>
+
+            <div class="grid grid-cols-2 gap-x-4 gap-y-6 mb-8">
+              <div>
+                <p class="text-sm text-gray-500 font-semibold mb-1 flex items-center">
+                  <i class="fas fa-calendar-day w-5 mr-2 text-gray-400"></i>Date
+                </p>
+                <p class="text-lg lg:text-xl font-bold text-gray-900"><%= _date || '—' %></p>
+              </div>
+              <div>
+                <p class="text-sm text-gray-500 font-semibold mb-1 flex items-center">
+                  <i class="fas fa-clock w-5 mr-2 text-gray-400"></i>Time
+                </p>
+                <p class="text-lg lg:text-xl font-bold text-gray-900"><%= _time || '—' %></p>
+              </div>
+              <div>
+                <p class="text-sm text-gray-500 font-semibold mb-1 flex items-center">
+                  <i class="fas fa-map-marker-alt w-5 mr-2 text-gray-400"></i>Location
+                </p>
+                <p class="text-lg lg:text-xl font-bold text-gray-900"><%= _loc || '—' %></p>
+              </div>
+              <div>
+                <p class="text-sm text-gray-500 font-semibold mb-1 flex items-center">
+                  <i class="fas fa-user-tie w-5 mr-2 text-gray-400"></i>Organizer
+                </p>
+                <p class="text-lg lg:text-xl font-bold text-gray-900"><%= _org || '—' %></p>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-4">
+              <a href="/events" class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#e8f0e0] text-[#4a7031] hover:bg-[#d6e5c4] transition duration-300 shadow-sm">
+                <i class="fa-solid fa-arrow-left"></i>
+                Back to Events
+              </a>
+              <button id="shareBtn" title="Share event" class="inline-flex items-center justify-center w-12 h-12 bg-[#e8f0e0] text-[#4a7031] rounded-full hover:bg-[#d6e5c4] transition duration-300 shadow-sm">
+                <i class="fas fa-share-alt"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Event details (rich content) -->
+      <div class="bg-white p-8 md:p-12 rounded-3xl shadow-xl mb-16 animate-fade-in-up" style="animation-delay:150ms;">
+        <div class="ltr text-left">
+          <h2 class="heading text-3xl font-bold text-[#4a7031] mb-4">Event Details</h2>
+          <div class="prose max-w-none text-gray-700 leading-relaxed text-base">
+            <style>.prose p { margin-bottom: 1em; }</style>
+            <%- (eventItem && eventItem.content) ? eventItem.content : '' %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gallery (optional stub; replace with real images if available) -->
+      <div class="bg-white p-8 md:p-12 rounded-3xl shadow-xl mb-16 animate-fade-in-up" style="animation-delay:300ms;">
+        <h2 class="heading text-3xl font-bold text-[#4a7031] mb-8 ltr text-left">Event Gallery</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <% if (eventItem && Array.isArray(eventItem.gallery) && eventItem.gallery.length) { %>
+            <% eventItem.gallery.forEach(function(gUrl){ %>
+              <div class="rounded-xl overflow-hidden shadow-md">
+                <img src="<%= gUrl %>" alt="Event Gallery" class="w-full h-full object-cover transition-transform duration-300 hover:scale-105">
+              </div>
+            <% }) %>
+          <% } else { %>
+            <!-- placeholders -->
+            <div class="rounded-xl overflow-hidden shadow-md">
+              <img src="https://placehold.co/600x400/a9bca4/ffffff?text=Gallery+Image+1" alt="" class="w-full h-full object-cover transition-transform duration-300 hover:scale-105">
+            </div>
+            <div class="rounded-xl overflow-hidden shadow-md">
+              <img src="https://placehold.co/600x400/a9bca4/ffffff?text=Gallery+Image+2" alt="" class="w-full h-full object-cover transition-transform duration-300 hover:scale-105">
+            </div>
+            <div class="rounded-xl overflow-hidden shadow-md">
+              <img src="https://placehold.co/600x400/a9bca4/ffffff?text=Gallery+Image+3" alt="" class="w-full h-full object-cover transition-transform duration-300 hover:scale-105">
+            </div>
+            <div class="rounded-xl overflow-hidden shadow-md">
+              <img src="https://placehold.co/600x400/a9bca4/ffffff?text=Gallery+Image+4" alt="" class="w-full h-full object-cover transition-transform duration-300 hover:scale-105">
+            </div>
+            <div class="rounded-xl overflow-hidden shadow-md">
+              <img src="https://placehold.co/600x400/a9bca4/ffffff?text=Gallery+Image+5" alt="" class="w-full h-full object-cover transition-transform duration-300 hover:scale-105">
+            </div>
+            <div class="rounded-xl overflow-hidden shadow-md">
+              <img src="https://placehold.co/600x400/a9bca4/ffffff?text=Gallery+Image+6" alt="" class="w-full h-full object-cover transition-transform duration-300 hover:scale-105">
+            </div>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- Related -->
+      <div class="animate-fade-in-up" style="animation-delay:450ms;">
+        <div class="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
+          <h2 class="heading text-3xl font-bold text-[#4a7031] ltr text-left">Related Events</h2>
+          <a href="/events" class="bg-white border border-[#4a7031] text-[#4a7031] rounded-full px-5 py-2 text-sm font-medium hover:bg-[#eaf3df] transition-colors duration-300 shadow-sm flex-shrink-0">View All Events</a>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <% if (Array.isArray(related) && related.length) { %>
+            <% related.forEach(function(r){ %>
+              <div class="bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
+                <a href="/events/<%= r.id %>/<%= slugify(r.title || ('event-' + r.id)) %>" class="block">
+                  <div class="relative h-72">
+                    <img src="/api/events/image/<%= r.id %>" alt="<%= r.title || '' %>" class="absolute inset-0 w-full h-full object-cover">
+                  </div>
+                  <div class="p-5 ltr text-left">
+                    <h3 class="heading text-[#4a7031] text-xl font-bold mb-2 line-clamp-2"><%= r.title || '' %></h3>
+                    <span class="text-sm font-semibold text-green-600 hover:text-green-800 inline-flex items-center group">
+                      Learn More
+                      <i class="fa-solid fa-arrow-right ml-2 transition-transform group-hover:translate-x-1"></i>
+                    </span>
+                  </div>
+                </a>
+              </div>
+            <% }) %>
+          <% } else { %>
+            <!-- Optional: no related state -->
+            <p class="text-gray-600">No related events right now.</p>
+          <% } %>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Toast -->
+  <div id="toast" class="fixed bottom-24 right-6 bg-gray-800 text-white px-5 py-3 rounded-lg shadow-lg opacity-0 transition-opacity duration-300 z-50">
+    Link copied to clipboard!
   </div>
+
+  <!-- Footer -->
+  <footer class="bg-[#718e56] text-white mt-20 sm:mt-28 relative z-20">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8 py-10">
+      <div class="flex flex-col items-center">
+        <a href="index" class="flex items-center space-x-3 mb-6">
+          <img class="h-14 w-auto bg-white rounded-full p-1" src="https://minaramasjid.com/assets/image/logo/marc.png" alt="Maula Ali Research Center Logo">
+          <span class="text-xl font-bold text-white">Maula Ali Research Center</span>
+        </a>
+        <div class="flex space-x-6">
+          <a href="#" class="text-green-200 hover:text-white transition-colors" aria-label="Facebook"><i class="fab fa-facebook-f fa-lg"></i></a>
+          <a href="#" class="text-green-200 hover:text-white transition-colors" aria-label="Twitter"><i class="fab fa-twitter fa-lg"></i></a>
+          <a href="#" class="text-green-200 hover:text-white transition-colors" aria-label="Instagram"><i class="fab fa-instagram fa-lg"></i></a>
+          <a href="#" class="text-green-200 hover:text-white transition-colors" aria-label="LinkedIn"><i class="fab fa-linkedin-in fa-lg"></i></a>
+        </div>
+      </div>
+      <div class="mt-10 pt-6 border-t border-green-400/50 text-center">
+        <p class="text-sm text-green-200">
+          &copy; 2024 - 2025 Design and Develop by
+          <a href="https://www.AlQalamArts.com/" target="_blank" rel="noopener noreferrer" class="font-medium text-white hover:text-green-100">www.AlQalamArts.com</a>
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Back To Top -->
+  <button id="backToTopBtn" class="fixed bottom-6 right-6 bg-[#4a7031] hover:bg-[#3b5a28] text-white w-12 h-12 rounded-full shadow-lg hidden justify-center items-center transition-all duration-300 opacity-0 z-40">
+    <i class="fas fa-arrow-up"></i>
+  </button>
+
+  <!-- Inline JS -->
+  <script type="module">
+    document.addEventListener('DOMContentLoaded', () => {
+      // Mobile menu
+      const mobileMenuButton = document.getElementById('mobile-menu-toggle');
+      const mobileMenu = document.getElementById('mobile-menu');
+      if (mobileMenuButton && mobileMenu) {
+        mobileMenuButton.addEventListener('click', () => {
+          mobileMenu.classList.toggle('mobile-menu-hidden');
+          mobileMenu.classList.toggle('mobile-menu-visible');
+        });
+      }
+
+      // Back to top
+      const backToTopBtn = document.getElementById('backToTopBtn');
+      if (backToTopBtn) {
+        window.addEventListener('scroll', () => {
+          if (window.scrollY > 300) {
+            backToTopBtn.classList.remove('hidden');
+            backToTopBtn.classList.add('flex');
+            backToTopBtn.classList.remove('opacity-0');
+          } else {
+            backToTopBtn.classList.add('opacity-0');
+            setTimeout(() => {
+              if (window.scrollY <= 300) {
+                backToTopBtn.classList.add('hidden');
+                backToTopBtn.classList.remove('flex');
+              }
+            }, 300);
+          }
+        });
+
+        backToTopBtn.addEventListener('click', () => {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+      }
+
+      // Share
+      const shareBtn = document.getElementById('shareBtn');
+      const toast = document.getElementById('toast');
+      if (shareBtn && toast) {
+        shareBtn.addEventListener('click', async () => {
+          const metaDesc = document.querySelector('meta[name="description"]');
+          const shareData = {
+            title: document.title,
+            text: metaDesc ? metaDesc.content : '',
+            url: window.location.href
+          };
+
+          try {
+            if (navigator.share) {
+              await navigator.share(shareData);
+            } else {
+              const textArea = document.createElement('textarea');
+              textArea.value = window.location.href;
+              textArea.style.position = 'fixed';
+              textArea.style.left = '-9999px';
+              document.body.appendChild(textArea);
+              textArea.focus();
+              textArea.select();
+              let success = false;
+              try { success = document.execCommand('copy'); } catch (err) {}
+              document.body.removeChild(textArea);
+
+              if (success) {
+                toast.classList.remove('opacity-0');
+                setTimeout(() => { toast.classList.add('opacity-0'); }, 2000);
+              }
+            }
+          } catch (err) {
+            console.error('Error sharing:', err);
+          }
+        });
+      }
+    });
+  </script>
 </body>
 </html>

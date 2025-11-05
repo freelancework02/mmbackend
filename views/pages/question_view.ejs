@@ -40,20 +40,14 @@
   }
   </script>
 
-  <!-- Base Href (kept; make sure your relative links expect it) -->
+  <!-- Base Href (dynamic, no hardcoded localhost) -->
   <% if (typeof baseHref !== 'undefined' && baseHref) { %>
     <base href="<%= baseHref %>">
-  <% } else { %>
-    <base href="localhost:5000/">
   <% } %>
 
   <link rel="icon" href="https://minaramasjid.com/assets/image/logo/favicon.ico" type="image/x-icon">
 
-  <!-- Tailwind (CDN) -->
-  <script>
-    /* If you later need theme overrides, set tailwind.config here before the CDN script */
-    // tailwind.config = { theme: { extend: { /* … */ } } }
-  </script>
+  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
 
   <!-- Fonts -->
@@ -66,7 +60,6 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
 
   <style>
-    /* Urdu display font */
     @font-face {
       font-family: 'NaatFont';
       src: url('https://res.cloudinary.com/awescreative/raw/upload/v1749150996/Awes/naatfont.ttf') format('truetype');
@@ -74,74 +67,55 @@
       font-style: normal;
       font-display: swap;
     }
-
     body { font-family: "Roboto Flex", sans-serif; }
-
     .rtl { direction: rtl; }
     .rounded-4xl { border-radius: 2rem; }
-
     .mobile-menu-hidden { max-height: 0; opacity: 0; transition: max-height .3s ease-out, opacity .2s ease-out; overflow: hidden; }
     .mobile-menu-visible { max-height: 500px; opacity: 1; transition: max-height .4s ease-in, opacity .3s ease-in; }
-
     .gulzartext, .heading, .prose-rtl { font-family: 'NaatFont', 'Gulzar', serif; }
-
     .prose { color:#333; }
     .prose p { margin-bottom: 1em; }
     .prose-rtl { direction: rtl; text-align: right; }
     .prose-ltr { direction: ltr; text-align: left; }
-
     @keyframes fadeInUp { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform: translateY(0);} }
     .animate-fade-in-up { animation: fadeInUp .6s ease-out forwards; opacity:0; }
   </style>
 </head>
 
 <body class="font-sans bg-[#f0f5e9] text-gray-800 antialiased">
-  <!-- Background Image Overlay -->
+  <!-- Background -->
   <div class="absolute inset-0 bg-cover bg-no-repeat opacity-70" style="background-image: url('/assets/bg-DgzunbF9.png'); background-position: center center; z-index: -1;"></div>
 
-  <!-- ===== Header ===== -->
+  <!-- Header -->
   <header class="bg-[#718e56] sticky top-0 z-50 shadow-md border-b border-green-100">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between items-center py-3 relative">
-        <!-- Left desktop nav -->
         <nav class="hidden md:flex gap-5 text-md font-semibold text-white tracking-wide">
           <a href="/index" class="hover:text-green-100 transition-colors">Home</a>
           <a href="/about.html" class="hover:text-green-100 transition-colors">About</a>
           <a href="/events" class="hover:text-green-100 transition-colors">News & Event</a>
           <a href="/books" class="hover:text-green-100 transition-colors">Books</a>
         </nav>
-
-        <!-- Center logo -->
         <div class="absolute left-1/2 transform -translate-x-1/2 -bottom-7 bg-white rounded-full p-1 shadow-lg border border-green-100 z-10">
           <a href="/index">
             <img src="https://minaramasjid.com/assets/image/logo/marc.png" alt="Logo" class="w-16 h-16 rounded-full object-contain">
           </a>
         </div>
-
-        <!-- Right desktop nav -->
         <nav class="hidden md:flex gap-5 text-md font-semibold text-white tracking-wide">
           <a href="/articles.html" class="hover:text-green-100 transition-colors">Articles</a>
           <a href="/all-faq" class="text-white font-bold" aria-current="page">Question Answer</a>
           <a href="/book-request" class="hover:text-green-100 transition-colors">Request a Book</a>
           <a href="/contact.html" class="hover:text-green-100 transition-colors">Contact</a>
         </nav>
-
-        <!-- Mobile center logo -->
         <div class="md:hidden flex-1 flex justify-center">
-          <a href="/index">
-            <img src="https://minaramasjid.com/assets/image/logo/marc.png" alt="Logo" class="w-12 h-12 rounded-full object-contain">
-          </a>
+          <a href="/index"><img src="https://minaramasjid.com/assets/image/logo/marc.png" alt="Logo" class="w-12 h-12 rounded-full object-contain"></a>
         </div>
-
-        <!-- Mobile menu button -->
         <div class="md:hidden flex-1 flex justify-end">
           <button id="mobile-menu-toggle" class="text-white focus:outline-none" aria-label="Open menu">
             <i class="fas fa-bars w-7 h-7"></i>
           </button>
         </div>
       </div>
-
-      <!-- Mobile dropdown -->
       <div id="mobile-menu" class="md:hidden mobile-menu-hidden">
         <div class="flex flex-col gap-2 py-3 px-2 text-white bg-[#5a7544] rounded-b-xl">
           <a href="/index" class="hover:bg-[#4f6639] px-4 py-2 rounded">Home</a>
@@ -157,16 +131,14 @@
     </div>
   </header>
 
-  <!-- ===== Main ===== -->
+  <!-- Main -->
   <main class="relative z-10 pt-12 sm:pt-16">
     <section class="relative max-w-7xl mx-auto px-4 py-8">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-        <!-- ===== Main Column (right on lg) ===== -->
+        <!-- Main Column -->
         <div class="lg:col-span-2 lg:order-2">
           <div class="bg-white p-6 md:p-8 rounded-3xl mb-8 shadow-xl animate-fade-in-up">
             <div class="rtl text-right">
-              <!-- Title -->
               <h1 class="heading text-2xl lg:text-4xl font-bold text-[#4a7031] mb-3" lang="ur">
                 <%= stripTags(
                       question.titleUrdu ||
@@ -177,7 +149,6 @@
                     ) %>
               </h1>
 
-              <!-- Meta info -->
               <div class="mb-4 pb-4 border-b border-gray-200">
                 <p class="gulzartext text-md text-gray-700">
                   پوچھنے والا: <%= stripTags(question.asker || 'نامعلوم') %>
@@ -193,7 +164,6 @@
                 </p>
               </div>
 
-              <!-- Stats & Share -->
               <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
                 <div class="flex items-center gap-2 text-gray-500">
                   <i class="fas fa-eye w-4 text-gray-400" aria-hidden="true"></i>
@@ -212,7 +182,6 @@
 
             <!-- Language Switcher -->
             <div class="flex rounded-full overflow-hidden border border-[#d6e5c4] mb-6">
-              <!-- Default active: show Urdu if present, else English, else Roman -->
               <% const hasUr = !!(question.questionUrdu || question.titleUrdu || questionHTML);
                  const hasEn = !!(question.questionEnglish || question.titleEnglish || question.answerEnglish);
                  const hasRo = !!(question.romanUrdu || question.questionRoman || question.answerRoman);
@@ -223,7 +192,7 @@
               <button id="lang-en" class="lang-btn flex-1 text-center py-2 text-sm cursor-pointer <%= initialLang==='en' ? 'bg-[#c1d9a3] text-[#4a7031] font-semibold' : 'bg-[#e8f0e0] hover:bg-[#d6e5c4] text-gray-700 font-medium' %>">English</button>
             </div>
 
-            <!-- ===== Content: Urdu ===== -->
+            <!-- Urdu -->
             <div id="content-ur" class="lang-content prose prose-rtl max-w-none gulzartext text-lg leading-relaxed <%= initialLang==='ur' ? '' : 'hidden' %>">
               <h2 class="heading text-2xl font-bold text-[#4a7031] mb-3">سوال:</h2>
               <div id="fatwa-question" dir="<%= detectDirection(stripTags(question.questionUrdu || question.questionEnglish || '')) %>">
@@ -244,7 +213,6 @@
                   <p><%= stripTags(question.answerUrdu || question.answerEnglish || '') %></p>
                 <% } %>
 
-                <!-- Signature block -->
                 <% if (question.mufti || question.madrasa || question.city || question.dateHijri || question.dateG || question.sealImage){ %>
                   <div class="mt-8 pt-5 border-t border-dashed border-green-200 rtl text-right text-[15px] text-[#2b2b2b]">
                     <% if (question.mufti) { %><div><strong>المفتی:</strong> <%= stripTags(question.mufti) %></div><% } %>
@@ -264,7 +232,7 @@
               </div>
             </div>
 
-            <!-- ===== Content: Roman Urdu ===== -->
+            <!-- Roman Urdu -->
             <div id="content-ro" class="lang-content prose prose-ltr max-w-none text-md leading-relaxed <%= initialLang==='ro' ? '' : 'hidden' %>">
               <h2 class="text-2xl font-bold text-[#4a7031] mb-3">Sawaal:</h2>
               <p><%= stripTags(question.questionRoman || question.romanUrdu || '') %></p>
@@ -273,7 +241,7 @@
               <p><%= stripTags(question.answerRoman || '') %></p>
             </div>
 
-            <!-- ===== Content: English ===== -->
+            <!-- English -->
             <div id="content-en" class="lang-content prose prose-ltr max-w-none text-md leading-relaxed <%= initialLang==='en' ? '' : 'hidden' %>">
               <h2 class="text-2xl font-bold text-[#4a7031] mb-3">Question:</h2>
               <p><%= stripTags(question.questionEnglish || '') %></p>
@@ -283,7 +251,7 @@
             </div>
           </div>
 
-          <!-- ===== Related (mobile) ===== -->
+          <!-- Related (mobile) -->
           <div class="animate-fade-in-up lg:hidden" style="animation-delay: 300ms;">
             <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4 rtl text-right">
               <h2 class="heading text-2xl font-bold text-[#4a7031]">تازہ ترین فتاویٰ</h2>
@@ -320,7 +288,7 @@
           </div>
         </div>
 
-        <!-- ===== Sidebar (left on lg) ===== -->
+        <!-- Sidebar -->
         <aside class="hidden lg:block lg:col-span-1 space-y-6 animate-fade-in-up lg:order-1" style="animation-delay: 150ms;">
           <div class="sticky top-24">
             <h3 class="heading text-2xl font-bold text-[#4a7031] mb-4 rtl text-right">متعلقہ سوالات</h3>
@@ -387,10 +355,9 @@
     <i class="fas fa-arrow-up"></i>
   </button>
 
-  <!-- ===== Inline JS ===== -->
+  <!-- JS -->
   <script type="module">
     document.addEventListener('DOMContentLoaded', () => {
-      // Mobile Menu Toggle
       const mobileMenuButton = document.getElementById('mobile-menu-toggle');
       const mobileMenu = document.getElementById('mobile-menu');
       if (mobileMenuButton && mobileMenu) {
@@ -400,7 +367,6 @@
         });
       }
 
-      // Back To Top
       const backToTopBtn = document.getElementById('backToTopBtn');
       if (backToTopBtn) {
         window.addEventListener('scroll', () => {
@@ -420,27 +386,23 @@
         backToTopBtn.addEventListener('click', () => window.scrollTo({ top:0, behavior:'smooth' }));
       }
 
-      // Language Switcher
       const langButtons = document.querySelectorAll('.lang-btn');
       const langContents = document.querySelectorAll('.lang-content');
       if (langButtons.length && langContents.length) {
         langButtons.forEach(button => {
           button.addEventListener('click', () => {
-            const lang = button.id.split('-')[1]; // ur / ro / en
-            // Buttons
+            const lang = button.id.split('-')[1];
             langButtons.forEach(btn => {
               btn.classList.remove('bg-[#c1d9a3]','text-[#4a7031]','font-semibold');
               btn.classList.add('bg-[#e8f0e0]','text-gray-700','font-medium');
             });
             button.classList.add('bg-[#c1d9a3]','text-[#4a7031]','font-semibold');
             button.classList.remove('bg-[#e8f0e0]','text-gray-700','font-medium');
-            // Panels
             langContents.forEach(c => c.classList.toggle('hidden', c.id !== `content-${lang}`));
           });
         });
       }
 
-      // Share Button (Web Share API with clipboard fallback)
       const shareBtn = document.getElementById('shareBtn');
       const toast = document.getElementById('toast');
       if (shareBtn && toast) {
