@@ -17,7 +17,7 @@ router.get("/", newQuestionController.getAllNewQuestions);
 router.post("/", upload.single("image"), newQuestionController.createNewQuestion);
 
 // Single (must be AFTER specific routes)
-router.get("/:id", newQuestionController.getNewQuestionById);
+router.get("/:id", newQuestionController.getQuestionByID);
 router.patch("/:id", upload.single("image"), newQuestionController.updateNewQuestion);
 router.delete("/:id", newQuestionController.deleteNewQuestion);
 

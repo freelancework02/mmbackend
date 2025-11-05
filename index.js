@@ -139,7 +139,7 @@ async function getHomeData(API_BASE) {
     return { articles: [], events: [], books: [], writers: [] };
   }
 }
-
+ 
 // ---- API Routes (existing JSON + image endpoints) ----
 app.use("/api/articles", require("./routes/articleRoutes"));
 app.use("/api/books", require("./routes/bookRoutes"));
@@ -176,6 +176,7 @@ app.get("/book", (req, res) => res.render("pages/book"));
 app.get("/about", (req, res) => res.render("pages/about"));
 app.get("/contact", (req, res) => res.render("pages/contact"));
 
+
 /** ----------------- QA LIST (SSR) /qa ----------------- */
 app.get("/qa", async (req, res) => {
   const LOCAL_API_BASE = apiBaseFromReq(req);
@@ -206,6 +207,8 @@ app.get("/qa", async (req, res) => {
     });
   }
 });
+
+
 
 /** ----------------- BOOK DETAIL (SSR) /bookdetail/:id/:slug ----------------- */
 app.get("/bookdetail/:id/:slug", async (req, res) => {
@@ -250,7 +253,7 @@ app.get("/bookdetail/:id/:slug", async (req, res) => {
       "Read details about this book on Maula Ali Research Centre.";
     const metaImage = `${req.protocol}://${req.get("host")}/api/books/cover/${book.id}`;
     const pageUrl = `${req.protocol}://${req.get("host")}${req.originalUrl}`;
-    const baseHref =
+    const baseHref = 
       process.env.PUBLIC_BASE_HREF ||
       `${req.protocol}://${req.get("host")}/`;
 
@@ -289,7 +292,7 @@ app.get("/article/:id/:slug", async (req, res) => {
     }
 
     const allArticles = await fetchJSON(`${API_BASE}/articles`);
-
+ 
     const related = (Array.isArray(allArticles) ? allArticles : [])
       .filter((a) => a.id !== article.id)
       .sort((a, b) => (b?.views ?? 0) - (a?.views ?? 0))

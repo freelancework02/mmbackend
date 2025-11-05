@@ -46,38 +46,55 @@ exports.getAllNewQuestions = (req, res) => {
   });
 };
 
-/* =========================================
-   GET: One by ID
-========================================= */
-exports.getNewQuestionById = (req, res) => {
-  const { id } = req.params;
-  if (!id) return res.status(400).send("Question ID is required.");
 
-  const sql = `
-    SELECT
-      id,
-      image,
-      imageName,
-      slug,
-      questionEnglish, answerEnglish,
-      questionUrdu,   answerUrdu,
-      questionRoman,  answerRoman,
-      questionHindi,  answerHindi,
-      writer, date, tags, language, topic, translator,
-      answeredStatus,
-      createdOn, isPublished, modifiedOn, isDeleted
-    FROM New_Question_Table
-    WHERE id = ? AND isDeleted = 0
-  `;
-  db.query(sql, [id], (err, results) => {
-    if (err) {
-      console.error("Error fetching new question:", err);
-      return res.status(500).send("Error fetching new question");
+/* =========================================
+   GET: One by ID (FAST + FIXED)
+========================================= */
+exports.getQuestionByID = async (req, res) => {
+  try {
+    const id = Number(req.params.id || 0);
+    if (!id) return res.status(400).json({ message: "Invalid ID" });
+
+    // ✅ Wrap db.query in a promise because db.query does NOT support await
+    const getOne = () =>
+      new Promise((resolve, reject) => {
+        db.query(
+          "SELECT id, imageName, slug, questionEnglish, answerEnglish, questionUrdu, answerUrdu, questionRoman, answerRoman, questionHindi, answerHindi, writer, date, tags, language, topic, translator, answeredStatus, createdOn, isPublished, modifiedOn FROM New_Question_Table WHERE id = ? LIMIT 1",
+          [id],
+          (err, rows) => {
+            if (err) return reject(err);
+            resolve(rows);
+          }
+        );
+      });
+
+    const rows = await getOne(); // ✅ Now safe to use await
+
+    if (!rows || rows.length === 0) {
+      return res.status(404).json({ message: "Question not found" });
     }
-    if (results.length === 0) return res.status(404).send("Question not found.");
-    res.json(results[0]);
-  });
+
+    const specificQuestion = rows[0];
+
+    // ✅ Fix image URL only if image exists
+    if (specificQuestion.image) {
+      specificQuestion.image = `${process.env.API_STATIC_BASE}/uploads/questions/${specificQuestion.image}`;
+    } else {
+      specificQuestion.image = null;
+    }
+
+    return res.status(200).json({
+      message: "success",
+      data: specificQuestion,
+    });
+
+  } catch (err) {
+    console.error("Error in getQuestionByID:", err);
+    res.status(500).send("Server Error");
+  }
 };
+
+
 
 /* =========================================
    GET: Image
