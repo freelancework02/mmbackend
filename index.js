@@ -13,7 +13,7 @@ const PORT = process.env.PORT || 5000;
  * API base used by SSR routes.
  * Always prefer the same process host so it works locally and on Render.
  */
-const apiBaseFromReq = (req) => `${req.protocol}://${req.get("host")}/api`;
+const apiBaseFromReq = (req) => `https://minaramasjid-backend.onrender.com/api`;
 
 // ---- View engine ----
 app.set("views", path.join(__dirname, "views"));
