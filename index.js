@@ -198,7 +198,7 @@ app.get("/", async (req, res) => {
     articles: data.articles.slice(0, 4),
     writers: data.writers.slice(0, 3),
   });
-});
+}); 
 
 app.get("/article", (req, res) => res.render("pages/article"));
 app.get("/book", (req, res) => res.render("pages/book"));
@@ -624,7 +624,7 @@ async function handleWriter(req, res) {
       pickFirst,
     },
   });
-}
+}  
 
 app.get("/writer/:id", handleWriter);
 app.get("/writer/:id/:slug", handleWriter);
