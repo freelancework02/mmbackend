@@ -14,7 +14,7 @@ const PORT = process.env.PORT || 5000;
  * Always prefer the same process host so it works locally and on Render.
  * IMPORTANT: This returns the full API root (already includes /api).
  */
-const apiBaseFromReq = (req) => `https://minaramasjid-backend.onrender.com/api`;
+const apiBaseFromReq = (req) => `https://demo.minaramasjid.com/api`;
 
 // ---- View engine ----
 app.set("views", path.join(__dirname, "views"));
@@ -463,7 +463,7 @@ app.get("/events", async (req, res) => {
 
     res.render("pages/news_and_event", {
       title: "Events | Maula Ali Research Center",
-      description: "minaramasjid.com",
+      description: "demo.minaramasjid.com",
       pageUrl,
       bgUrl: "/images/newbg.png",
       centerLogo: "/images/marclogo.png",
