@@ -80,7 +80,7 @@
 
           <div class="md:hidden flex-1"></div>
           <div class="md:hidden flex-1 flex justify-center">
-            <a href="/"><img src="https://minaramasjid.com/assets/image/logo/marc.png" alt="Logo" class="w-12 h-12 rounded-full object-contain"></a>
+            <!-- <a href="/"><img src="https://minaramasjid.com/assets/image/logo/marc.png" alt="Logo" class="w-12 h-12 rounded-full object-contain"></a> -->
           </div>
           <div class="md:hidden flex-1 flex justify-end">
             <button id="mobile-menu-toggle" class="text-white focus:outline-none"><i class="fas fa-bars w-7 h-7"></i></button>
@@ -299,6 +299,29 @@
   <button id="backToTopBtn" class="fixed bottom-24 right-6 bg-[#4a7031] hover:bg-[#3b5a28] text-white w-12 h-12 rounded-full shadow-lg hidden justify-center items-center transition-all duration-300 opacity-0 z-40">
     <i class="fas fa-arrow-up"></i>
   </button>
+
+
+    <!-- Mobile Bottom Navigation Bar -->
+  <div id="mobile-navbar"
+       class="fixed bottom-0 left-0 right-0 bg-white shadow-xl z-40 lg:hidden rounded-t-2xl border-t border-gray-200">
+    <nav class="flex justify-around items-center h-16 text-gray-400">
+      <a href="/" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm hover:text-[var(--primary-dark)] transition-colors duration-200">
+        <i class="fas fa-home text-lg mobile-nav-icon"></i><span class="mt-1 mobile-nav-text">Home</span>
+      </a>
+      <a href="/about" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm hover:text-[var(--primary-dark)] transition-colors duration-200">
+        <i class="fas fa-info-circle text-lg mobile-nav-icon"></i><span class="mt-1 mobile-nav-text">About</span>
+      </a>
+      <a href="/book" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm hover:text-[var(--primary-dark)] transition-colors duration-200">
+        <i class="fas fa-book text-lg mobile-nav-icon"></i><span class="mt-1 mobile-nav-text">Books</span>
+      </a>
+      <a href="/articles" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm hover:text-[var(--primary-dark)] transition-colors duration-200">
+        <i class="fas fa-newspaper text-lg mobile-nav-icon"></i><span class="mt-1 mobile-nav-text">Articles</span>
+      </a>
+      <a href="/contact" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm hover:text-[var(--primary-dark)] transition-colors duration-200">
+        <i class="fas fa-user-graduate text-lg mobile-nav-icon"></i><span class="mt-1 mobile-nav-text">Contact</span>
+      </a>
+    </nav>
+  </div>
 
   <script type="module">
     document.addEventListener('DOMContentLoaded', () => {
