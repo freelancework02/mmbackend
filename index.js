@@ -302,57 +302,140 @@ app.get("/bookdetail/:id/:slug", async (req, res) => {
 });
 
 /** ----------------- ARTICLE DETAIL (SSR) /article/:id/:slug ----------------- */
+// ----------------- ARTICLE DETAIL (SSR) /article/:id/:slug -----------------
 app.get("/article/:id/:slug", async (req, res) => {
   const { id, slug } = req.params;
   const API_BASE = apiBaseFromReq(req);
 
+  // ---- helpers ----
+  const normalize = (s) => {
+    const str = String(s || "").toLowerCase().trim();
+    // strip diacritics/accents
+    const noAccents = str.normalize("NFKD").replace(/[\u0300-\u036f]/g, "");
+    // remove punctuation-like, collapse spaces
+    return noAccents
+      .replace(/[.,\/#!$%\^&\*;:{}=\_`~()“”"’'؟،]/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+  };
+
+  async function fetchWriterById(writerId) {
+    try {
+      if (!writerId) return null;
+      const w = await fetchJSON(`${API_BASE}/writers/${encodeURIComponent(writerId)}`);
+      return (w && w.id) ? w : null;
+    } catch {
+      return null;
+    }
+  }
+
+  async function fetchAllWriters() {
+    try {
+      const list = await fetchJSON(`${API_BASE}/writers`);
+      return Array.isArray(list) ? list : [];
+    } catch {
+      return [];
+    }
+  }
+
+  async function matchWriterByName(nameRaw) {
+    const target = normalize(nameRaw);
+    if (!target) return null;
+
+    const writers = await fetchAllWriters();
+
+    // 1) exact normalized match
+    let hit =
+      writers.find((w) => normalize(w.name) === target) ||
+      null;
+
+    // 2) startsWith / includes fallback (handles “Maulana …” prefixes etc.)
+    if (!hit) {
+      hit =
+        writers.find((w) => normalize(w.name).startsWith(target)) ||
+        writers.find((w) => normalize(w.name).includes(target)) ||
+        null;
+    }
+
+    return hit;
+  }
+
   try {
-    const article = await fetchJSON(`${API_BASE}/articles/${id}`);
+    // 1) Article
+    const article = await fetchJSON(`${API_BASE}/articles/${encodeURIComponent(id)}`);
     if (!article || !article.title) {
       return res.status(404).send("Article not found");
     }
 
+    // 2) Canonical slug enforcement
     const actualSlug = slugify(article.title);
     if (slug !== actualSlug) {
       return res.redirect(301, `/article/${article.id}/${actualSlug}`);
     }
 
+    // 3) Base list for related / highlights
     const allArticles = await fetchJSON(`${API_BASE}/articles`);
+    const list = Array.isArray(allArticles) ? allArticles : [];
 
-    const related = (Array.isArray(allArticles) ? allArticles : [])
+    const related = list
       .filter((a) => a.id !== article.id)
       .sort((a, b) => (b?.views ?? 0) - (a?.views ?? 0))
       .slice(0, 3);
 
-    const wantedWriter = (article.writers || article.writer || "")
-      .toLowerCase()
-      .trim();
+    // 4) Resolve writer (prefer id if present on article, else match by name)
+    const writerId =
+      article.writerId ||
+      article.writersId ||
+      article.authorId ||
+      null;
 
-    let writerHighlights = (Array.isArray(allArticles) ? allArticles : [])
-      .filter(
-        (a) =>
-          a.id !== article.id &&
-          (a.writers || a.writer || "").toLowerCase().trim() === wantedWriter
-      )
+    const writerNameRaw =
+      article.writers ||
+      article.writer ||
+      ""; // article JSON often has "writers" as a string
+
+    let writer = null;
+
+    if (writerId) {
+      writer = await fetchWriterById(writerId);
+    }
+    if (!writer && writerNameRaw) {
+      writer = await matchWriterByName(writerNameRaw);
+    }
+
+    // 5) Writer Highlights (prefer ID, else by normalized name)
+    const targetNorm = normalize(writer ? writer.name : writerNameRaw);
+
+    let writerHighlights = list
+      .filter((a) => a.id !== article.id)
+      .filter((a) => {
+        if (writer && (a.writerId || a.writersId || a.authorId)) {
+          const aid = a.writerId || a.writersId || a.authorId;
+          return String(aid) === String(writer.id);
+        }
+        const aName = normalize(a.writers || a.writer || "");
+        return targetNorm && aName === targetNorm;
+      })
       .slice(0, 3);
 
     if (!writerHighlights.length) {
-      writerHighlights = (Array.isArray(allArticles) ? allArticles : [])
+      writerHighlights = list
         .filter((a) => a.id !== article.id)
         .sort((a, b) => (b?.views ?? 0) - (a?.views ?? 0))
         .slice(0, 3);
     }
 
+    // 6) Meta
     const metaTitle = `Article Detail | ${article.title} | Maula Ali Research Center`;
     const metaDesc =
       stripHTML(article.englishDescription || article.urduDescription || "") ||
       "Read the full article on Maula Ali Research Centre.";
     const metaImage = `${req.protocol}://${req.get("host")}/api/articles/image/${article.id}`;
     const pageUrl = `${req.protocol}://${req.get("host")}${req.originalUrl}`;
-    const baseHref =
-      process.env.PUBLIC_BASE_HREF || `${req.protocol}://${req.get("host")}/`;
+    const baseHref = process.env.PUBLIC_BASE_HREF || `${req.protocol}://${req.get("host")}/`;
 
-    res.render("pages/article_view", {
+    // 7) Render
+    return res.render("pages/article_view", {
       baseHref,
       pageUrl,
       metaTitle,
@@ -361,14 +444,17 @@ app.get("/article/:id/:slug", async (req, res) => {
       article,
       related,
       writerHighlights,
+      writer,     // <-- used by EJS
       slugify,
       stripHTML,
     });
   } catch (err) {
     console.error("Article detail error:", err?.response?.status, err?.message);
-    res.status(500).send("Something went wrong");
+    return res.status(500).send("Something went wrong");
   }
 });
+
+
 
 /** ----------------- QUESTION DETAIL (SSR) /question/:id/:slug ----------------- */
 const absUrl = (req, p) => `${req.protocol}://${req.get("host")}${p.startsWith("/") ? "" : "/"}${p}`;
