@@ -7,34 +7,73 @@
     content="width=device-width, initial-scale=1.0, user-scalable=no, shrink-to-fit=no"
   />
 
-  <title><%= title %></title>
-  <meta name="description" content="<%= description %>" />
+  <% /* ---------- SAFE DEFAULTS FOR UNDEFINED LOCALS ---------- */ %>
+  <% 
+    const _val = (v, d='') => (typeof v !== 'undefined' && v !== null ? v : d);
+    const _TITLE      = _val(title, 'News & Events');
+    const _DESC       = _val(description, '');
+    const _PAGE_URL   = _val(pageUrl, '');
+    const _FAVICON    = _val(faviconUrl, '/favicon.ico');
+    const _OG_IMAGE   = _val(typeof ogImage !== 'undefined' ? ogImage : '', '');
+    const _BG_URL     = _val(bgUrl, '');
+    const _CENTER_LOGO= _val(centerLogo, '/logo.png');
+  %>
+
+  <title><%= _TITLE %></title>
+  <meta name="description" content="<%= _DESC %>" />
 
   <!-- Favicon -->
-  <link rel="icon" href="<%= faviconUrl %>" type="image/x-icon" />
+  <link rel="icon" href="<%= _FAVICON %>" type="image/x-icon" />
 
   <!-- Open Graph -->
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="<%= pageUrl %>" />
-  <meta property="og:title" content="<%= title %>" />
-  <meta property="og:description" content="<%= description %>" />
+  <meta property="og:url" content="<%= _PAGE_URL %>" />
+  <meta property="og:title" content="<%= _TITLE %>" />
+  <meta property="og:description" content="<%= _DESC %>" />
+  <meta property="og:image" content="<%= _OG_IMAGE %>"/>
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:url" content="<%= pageUrl %>" />
-  <meta name="twitter:title" content="<%= title %>" />
-  <meta name="twitter:description" content="<%= description %>" />
+  <meta name="twitter:url" content="<%= _PAGE_URL %>" />
+  <meta name="twitter:title" content="<%= _TITLE %>" />
+  <meta name="twitter:description" content="<%= _DESC %>" />
+  <meta name="twitter:image" content="<%= _OG_IMAGE %>"/>
 
   <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    .title-line-clamp-2 { display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+    .line-clamp-1 { display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden; }
+    .line-clamp-2 { display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+    .rtl { direction: rtl; }
+  </style>
+
+  <% /* ---------- EJS helpers (server-side) ---------- */ %>
+  <% 
+    const _str = s => String(s || "");
+    const stripHtml = s => _str(s).replace(/<[^>]*>/g, "");
+    const slugify = (t) => _str(t)
+      .toLowerCase()
+      .trim()
+      .replace(/[\u0600-\u06FF]+/g,"")   // drop Arabic script for ASCII-only slugs
+      .replace(/\s+/g,"-")
+      .replace(/[.,\/#!$%\^&\*;:{}=\_`~()؟"’’“”]/g,"")
+      .replace(/-+/g,"-")
+      .replace(/^-+|-+$/g,"") || "event";
+    const eventUrl = (ev) => `/events/${ev.id}/${slugify(ev.title || ("event-" + ev.id))}`;
+    const eventImg = (ev) => ev.imageSrc ? ev.imageSrc : `/api/events/image/${ev.id}`;
+    const safeText = (ev) => stripHtml(ev.content || ev.safeText || "");
+  %>
 </head>
-<body class="min-h-screen bg-[#e4f0d0] relative">
+
+<body >
   <!-- Background -->
   <div
     class="absolute inset-0 opacity-36 pointer-events-none"
-    style="background-image: url('<%= bgUrl %>');"
+    style="background-image: url('<%= _BG_URL %>');"
   ></div>
 
   <!-- Header -->
@@ -52,7 +91,7 @@
         <!-- Center logo -->
         <div class="absolute left-1/2 transform -translate-x-1/2 -bottom-7 bg-white rounded-full p-1 shadow-lg border border-green-100 z-10">
           <img
-            src="<%= centerLogo %>"
+            src="<%= _CENTER_LOGO %>"
             alt="Logo"
             class="w-16 h-16 rounded-full object-contain"
           />
@@ -97,89 +136,47 @@
     </div>
   </header>
 
-  <!-- Page title band -->
-  <div class="flex items-center justify-center h-[200px] w-full bg-[#C0D7AA]/80 rounded-b-4xl">
-    <h1 class="gulzartext text-3xl md:text-4xl font-bold text-[#4a7031] text-center rtl px-4">
-      News and Events
-    </h1>
-  </div>
 
-  <!-- List section -->
-  <section class="w-full py-10 px-4">
-    <div class="max-w-7xl mx-auto bg-gradient-to-b from-white rounded-3xl shadow-md px-6 py-8 relative">
-      <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl md:text-3xl font-bold text-green-800">News & Events</h2>
+  <!-- ========= Grid section ========= -->
+  <section id="news" class="py-16 md:py-24 bg-gray-100">
+    <div class="container mx-auto px-4">
+      <div class="text-center mb-16">
+        <h2 class="text-4xl md:text-5xl font-extrabold mb-2 text-[var(--primary-dark)] fade-in fade-in-1">
+          News & Events
+        </h2>
+        <p class="text-xl text-[var(--secondary-brown)] font-light fade-in fade-in-2">
+          Stay up-to-date with our latest happenings.
+        </p>
       </div>
 
-      <!-- Arrows -->
-      <div class="absolute left-4 top-[50%] -translate-y-1/2 z-10">
-        <button
-          id="arrow-left"
-          class="bg-[#e2f0d0] rounded-full p-2 hover:bg-[#d2e3bc] transition"
-          aria-label="Scroll left"
-        >
-          <!-- same look as ChevronRight rotated -->
-          <svg class="h-5 w-5 text-green-700 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
-      </div>
-      <div class="absolute right-4 top-[50%] -translate-y-1/2 z-10">
-        <button
-          id="arrow-right"
-          class="bg-[#e2f0d0] rounded-full p-2 hover:bg-[#d2e3bc] transition"
-          aria-label="Scroll right"
-        >
-          <svg class="h-5 w-5 text-green-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
-      </div>
-
-      <!-- Scrollable row -->
-      <div
-        id="scroll-row"
-        class="flex overflow-x-auto gap-6 scroll-smooth cursor-pointer"
-        style="scrollbar-width: none; -ms-overflow-style: none;"
-      >
-        <% events.forEach(function(ev){ %>
-          <div
-            class="w-[90%] sm:w-[47%] md:w-[47%] lg:w-[23%] mb-2 flex-shrink-0 bg-gradient-to-b from-[#f6fbf1] rounded-2xl p-4 shadow-md"
-          >
-            <a href="/events/<%= ev.id %>/<%= slugify(ev.title || ('event-' + ev.id)) %>">
-              <div class="overflow-hidden rounded-xl mb-4">
-                <img
-                  src="/api/events/image/<%= ev.id %>"
-                  alt="<%= ev.title || '' %>"
-                  class="w-full h-[160px] object-cover rounded-xl"
-                />
+      <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+        <% if (events && events.length) { events.forEach(function(ev, idx){ %>
+          <a href="<%= eventUrl(ev) %>"
+             class="group bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 ease-in-out flex flex-col <%= idx<3 ? 'fade-in fade-in-'+(3+idx) : '' %>">
+            <div class="relative h-48 w-full overflow-hidden">
+              <img src="<%= eventImg(ev) %>" alt="<%= _str(ev.title) %>"
+                   class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 ease-in-out"
+                   onerror="this.onerror=null;this.src='https://minaramasjid.com/assets/image/default/articles.jpeg';"/>
+              <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
+              <div class="absolute bottom-0 left-0 right-0 p-3 text-white">
+                <h3 class="font-bold text-lg leading-tight title-line-clamp-2"><%= _str(ev.title) %></h3>
+                <p class="text-xs opacity-90 mt-1"><%= ev.date || '' %></p>
               </div>
-            </a>
-
-            <h3 class="gulzartext text-green-800 text-lg font-bold mb-1">
-              <%= ev.title || '' %>
-            </h3>
-            <p class="text-gray-700 text-sm mb-4 gulzartext line-clamp-1">
-              <%= (ev.content || '').replace(/<[^>]*>/g, '') %>
-            </p>
-
-            <div class="flex justify-between items-center">
-              <a
-                href="/events/<%= ev.id %>/<%= slugify(ev.title || ('event-' + ev.id)) %>"
-                class="flex items-center text-sm text-yellow-700 bg-yellow-50 px-3 py-1.5 rounded-full hover:bg-yellow-100 transition"
-              >
-                Read More
-                <svg class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M9 5l7 7-7 7" />
-                </svg>
-              </a>
-              <span class="text-sm text-gray-500">View <%= ev.views || 0 %></span>
             </div>
-          </div>
-        <% }) %>
+            <div class="p-4 flex-1 flex flex-col justify-between overflow-hidden">
+              <p class="text-sm text-gray-600 line-clamp-2"><%= safeText(ev) %></p>
+              <div class="mt-3 pt-3 border-t border-slate-200 flex justify-between items-center text-gray-500 text-sm">
+                <span class="inline-block text-[var(--secondary-brown)] font-semibold group-hover:underline">
+                  Read More
+                  <i class="fa-solid fa-angle-right ml-1 transition-transform duration-300 group-hover:translate-x-1"></i>
+                </span>
+                <span><i class="fas fa-eye mr-1"></i><%= ev.views || 0 %></span>
+              </div>
+            </div>
+          </a>
+        <% }) } else { %>
+          <div class="col-span-4 text-center text-gray-500">No events available.</div>
+        <% } %>
       </div>
     </div>
   </section>
@@ -199,6 +196,7 @@
       });
     }
 
+    // horizontal scroll controls
     const row = document.getElementById('scroll-row');
     const leftBtn = document.getElementById('arrow-left');
     const rightBtn = document.getElementById('arrow-right');
@@ -232,7 +230,7 @@
     }
     startAuto();
 
-    // pause on hover (optional UX nicety)
+    // pause on hover
     if (row) {
       row.addEventListener('mouseenter', stopAuto);
       row.addEventListener('mouseleave', startAuto);

@@ -12,6 +12,7 @@ const PORT = process.env.PORT || 5000;
 /**
  * API base used by SSR routes.
  * Always prefer the same process host so it works locally and on Render.
+ * IMPORTANT: This returns the full API root (already includes /api).
  */
 const apiBaseFromReq = (req) => `https://minaramasjid-backend.onrender.com/api`;
 
@@ -139,7 +140,35 @@ async function getHomeData(API_BASE) {
     return { articles: [], events: [], books: [], writers: [] };
   }
 }
- 
+
+// ===== Extra helpers your writer route expects =====
+const toLower = (s) => String(s || "").trim().toLowerCase();
+const isUrdu = (text = "") =>
+  /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]/.test(text);
+const urlEncodePath = (s = "") => encodeURIComponent(String(s || "").trim());
+const pickFirst = (...vals) =>
+  vals.find((v) => v && String(v).trim().length) || "";
+const decodeHtmlEntities = (text = "") =>
+  String(text || "")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&amp;/g, "&")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&nbsp;/g, " ");
+const safeText = (htmlLike) => {
+  const stripped = stripTags(String(htmlLike || ""));
+  return decodeHtmlEntities(stripped);
+};
+
+// Helpers that need API base in scope
+const makeUrlHelpers = (API_BASE) => ({
+  makeWriterImageUrl: (id) => `${API_BASE}/writers/image/${id}`,
+  makeBookCoverUrl: (id) => `${API_BASE}/books/cover/${id}`,
+  makeBookDownloadUrl: (id) => `${API_BASE}/books/attachment/${id}`, // PDF endpoint
+  makeArticleImageUrl: (id) => `${API_BASE}/articles/image/${id}`,
+});
+
 // ---- API Routes (existing JSON + image endpoints) ----
 app.use("/api/articles", require("./routes/articleRoutes"));
 app.use("/api/books", require("./routes/bookRoutes"));
@@ -176,7 +205,6 @@ app.get("/book", (req, res) => res.render("pages/book"));
 app.get("/about", (req, res) => res.render("pages/about"));
 app.get("/contact", (req, res) => res.render("pages/contact"));
 
-
 /** ----------------- QA LIST (SSR) /qa ----------------- */
 app.get("/qa", async (req, res) => {
   const LOCAL_API_BASE = apiBaseFromReq(req);
@@ -207,8 +235,6 @@ app.get("/qa", async (req, res) => {
     });
   }
 });
-
-
 
 /** ----------------- BOOK DETAIL (SSR) /bookdetail/:id/:slug ----------------- */
 app.get("/bookdetail/:id/:slug", async (req, res) => {
@@ -253,7 +279,7 @@ app.get("/bookdetail/:id/:slug", async (req, res) => {
       "Read details about this book on Maula Ali Research Centre.";
     const metaImage = `${req.protocol}://${req.get("host")}/api/books/cover/${book.id}`;
     const pageUrl = `${req.protocol}://${req.get("host")}${req.originalUrl}`;
-    const baseHref = 
+    const baseHref =
       process.env.PUBLIC_BASE_HREF ||
       `${req.protocol}://${req.get("host")}/`;
 
@@ -292,7 +318,7 @@ app.get("/article/:id/:slug", async (req, res) => {
     }
 
     const allArticles = await fetchJSON(`${API_BASE}/articles`);
- 
+
     const related = (Array.isArray(allArticles) ? allArticles : [])
       .filter((a) => a.id !== article.id)
       .sort((a, b) => (b?.views ?? 0) - (a?.views ?? 0))
@@ -345,22 +371,18 @@ app.get("/article/:id/:slug", async (req, res) => {
 });
 
 /** ----------------- QUESTION DETAIL (SSR) /question/:id/:slug ----------------- */
-// helper to build abs urls (kept local to this section)
 const absUrl = (req, p) => `${req.protocol}://${req.get("host")}${p.startsWith("/") ? "" : "/"}${p}`;
 
-// Single reusable handler that works for both /question/:id and /question/:id/:slug
 async function handleQuestionDetail(req, res) {
   const { id, slug } = req.params;
   const LOCAL_API_BASE = apiBaseFromReq(req);
 
   try {
-    // 1) Fetch by ID (works regardless of slug)
     const qRes = await axios.get(
       `${LOCAL_API_BASE}/questions/${encodeURIComponent(id)}`,
       { timeout: 15000 }
     );
 
-    // Accept plain object or { data: {...} }
     const raw = qRes.data;
     const question =
       (raw && raw.id && raw) ||
@@ -371,7 +393,6 @@ async function handleQuestionDetail(req, res) {
       return res.status(404).send("Question not found");
     }
 
-    // 2) Compute canonical slug
     const canonicalBase =
       (question.slug && String(question.slug).trim()) ||
       question.questionEnglish ||
@@ -379,12 +400,10 @@ async function handleQuestionDetail(req, res) {
       `question-${question.id}`;
     const actualSlug = slugify(canonicalBase);
 
-    // 3) If slug is missing OR wrong, 301 to canonical
     if (!slug || slug !== actualSlug) {
       return res.redirect(301, `/question/${question.id}/${actualSlug}`);
     }
 
-    // 4) Sidebar / related
     const allRes = await axios.get(`${LOCAL_API_BASE}/questions`, { timeout: 15000 });
     const all = Array.isArray(allRes.data)
       ? allRes.data
@@ -394,7 +413,6 @@ async function handleQuestionDetail(req, res) {
     const sidebar = others.slice(0, 5);
     const related = others.slice(0, 13);
 
-    // 5) SEO/meta
     const pageUrl = absUrl(req, req.originalUrl);
     const titleText = stripTags(question.questionEnglish || question.questionUrdu || "").trim();
 
@@ -410,11 +428,9 @@ async function handleQuestionDetail(req, res) {
     const metaDesc = clamp(rawDesc, 300);
     const metaImage = absUrl(req, "/assets/og-default.png");
 
-    // 6) Safe HTML blocks
     const questionHTML = sanitizeHtml(String(question.questionEnglish || question.questionUrdu || ""));
     const answerHTML = sanitizeHtml(String(question.answerUrdu || question.answerEnglish || ""));
 
-    // 7) Render
     res.render("pages/question_view", {
       metaTitle,
       metaDesc,
@@ -435,11 +451,8 @@ async function handleQuestionDetail(req, res) {
   }
 }
 
-// Register BOTH routes (no inline ? to keep path-to-regexp happy)
 app.get("/question/:id", handleQuestionDetail);
 app.get("/question/:id/:slug", handleQuestionDetail);
-
-
 
 /** ----------------- EVENTS LIST ----------------- */
 app.get("/events", async (req, res) => {
@@ -470,7 +483,6 @@ app.get("/events/:id/:slug", async (req, res) => {
   const API_BASE = apiBaseFromReq(req);
 
   try {
-    // FIX: correct localhost spelling + always use local API base
     const ev = await fetchJSON(`${API_BASE}/events/${encodeURIComponent(id)}`);
     if (!ev || !ev.id) return res.status(404).send("Event not found");
 
@@ -500,6 +512,122 @@ app.get("/events/:id/:slug", async (req, res) => {
     res.status(500).send("Something went wrong");
   }
 });
+
+// -------- Writer helpers & filters (logic preserved) --------
+const articleMatchesWriter = (article, writerName) => {
+  const name = toLower(writerName);
+  if (!name) return false;
+
+  const writers = article?.writers ?? [];
+  const arr = Array.isArray(writers) ? writers : [writers].filter(Boolean);
+
+  const matchArr = arr.some((w) => toLower(w?.name) === name);
+  const matchFlat = typeof article?.writers === "string" && toLower(article.writers) === name;
+  const matchTranslator = typeof article?.translator === "string" && toLower(article.translator) === name;
+
+  return matchArr || matchFlat || matchTranslator;
+};
+
+const bookMatchesWriter = (book, writerName) => {
+  const name = toLower(writerName);
+  if (!name) return false;
+  // match author OR translator to show more results
+  return toLower(book?.author) === name || toLower(book?.translator) === name || toLower(book?.writer) === name;
+};
+
+const questionMatchesWriter = (q, writerName) => {
+  const name = toLower(writerName);
+  if (!name) return false;
+  if (toLower(q?.writer) === name) return true;
+  if (toLower(q?.author) === name) return true;
+  if (Array.isArray(q?.writers) && q.writers.some((w) => toLower(w?.name) === name)) return true;
+  return false;
+};
+
+// Single handler for /writer/:id and /writer/:id/:slug
+async function handleWriter(req, res) {
+  const { id } = req.params;
+  const API_BASE = apiBaseFromReq(req); // ends with /api
+  const urls = makeUrlHelpers(API_BASE);
+
+  // Fetch all required data in parallel
+  const [writer, allBooks, allArticles, allQuestions] = await Promise.all([
+    fetchJSON(`${API_BASE}/writers/${id}`),
+    fetchJSON(`${API_BASE}/books`),
+    fetchJSON(`${API_BASE}/articles`),
+    fetchJSON(`${API_BASE}/questions`),
+  ]);
+
+  if (!writer || !writer.id) {
+    return res.status(404).render("pages/writer_profile", {
+      meta: {
+        title: "Writer Profile | Maula Ali Research Center",
+        description: "Writer not found.",
+        ogImage: "https://placehold.co/1200x630/e8f0e0/4a7031?text=Writer+Profile",
+        baseHref: "https://demo.minaramasjid.com/",
+      },
+      data: {
+        writer: null,
+        books: [],
+        articles: [],
+        questions: [],
+      },
+      helpers: {
+        ...urls,
+        isUrdu,
+        slugify,
+        urlEncodePath,
+        safeText,
+        pickFirst,
+      },
+    });
+  }
+
+  const writerName = writer.name || "";
+
+  // Filtered datasets (be inclusive so books appear)
+  const books = (Array.isArray(allBooks) ? allBooks : []).filter((b) => bookMatchesWriter(b, writerName));
+  const articles = (Array.isArray(allArticles) ? allArticles : []).filter((a) => articleMatchesWriter(a, writerName));
+  const relatedQuestions = (Array.isArray(allQuestions) ? allQuestions : []).filter((q) =>
+    questionMatchesWriter(q, writerName)
+  );
+
+  const questions = (relatedQuestions.length ? relatedQuestions : (Array.isArray(allQuestions) ? allQuestions : [])).slice(0, 8);
+
+  const pageTitle = `Writer Profile | ${writerName || "Maula Ali Research Center"}`;
+
+  const meta = {
+    title: pageTitle,
+    description:
+      safeText(pickFirst(writer?.englishDescription, writer?.urduDescription)) ||
+      `Profile page for ${writerName}, detailing books, articles, and fatwas on Maula Ali Research Center.`,
+    keywords: `Writer Profile, Maula Ali Research Centre, Islamic Scholars, ${writerName}`,
+    ogImage: urls.makeWriterImageUrl(writer.id),
+    baseHref: "https://demo.minaramasjid.com/",
+    writerName,
+  };
+
+  res.render("pages/writer_profile", {
+    meta,
+    data: {
+      writer,
+      books,
+      articles,
+      questions,
+    },
+    helpers: {
+      ...urls,
+      isUrdu,
+      slugify,
+      urlEncodePath,
+      safeText,
+      pickFirst,
+    },
+  });
+}
+
+app.get("/writer/:id", handleWriter);
+app.get("/writer/:id/:slug", handleWriter);
 
 // Health checks
 app.get("/healthz", (req, res) => res.status(200).send("ok"));
@@ -539,3 +667,4 @@ app.listen(PORT, () => {
     }
   });
 });
+ 

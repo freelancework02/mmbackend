@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Meta Tags for Writer Profile Page -->
+    <title>Writer Profile | Maula Ali Research Center</title>
+    <meta name="keywords" content="Writer Profile, Maula Ali Research Centre, Islamic Scholars, Tauhid Ahmad Tarablusi">
+    <meta name="description" content="Profile page for Tauhid Ahmad Tarablusi, detailing books, articles, and fatwas on Maula Ali Research Centre.">
+    <meta name="robots" content="index, follow">
+    
+    <meta property="og:title" content="Writer Profile | Maula Ali Research Center">
+    <meta property="og:description" content="Profile page for Tauhid Ahmad Tarablusi, detailing books, articles, and fatwas.">
+    <meta property="og:image" content="https://placehold.co/1200x630/6a8a4f/white?text=Writer+Profile&font=roboto">
+    <meta property="og:type" content="website">
+    
+    <meta name="twitter:title" content="Writer Profile | Maula Ali Research Center">
+    <meta property="og:description" content="Profile page for Tauhid Ahmad Tarablusi, detailing books, articles, and fatwas.">
+    <meta name="twitter:image" content="https://placehold.co/1200x630/6a8a4f/white?text=Writer+Profile&font=roboto">
+    <meta name="twitter:card" content="summary_large_image">
+    
+    
+    <!-- Base Href (Preserved) -->
+    <base href="https://minaramasjid.com/">
+    
+    <link rel="icon" href="https://minaramasjid.com/assets/image/logo/favicon.ico" type="image/x-icon">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Fonts (Roboto Flex and Gulzar) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,400;8..144,500;8..144,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Gulzar&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
+    
+    <!-- Bootstrap Icons (for new controls) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" />
+    
+    <!-- Swiper.js CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+
+    <style>
+        /* Define new custom font for Urdu */
+        @font-face {
+            font-family: 'NaatFont';
+            src: url('https://res.cloudinary.com/awescreative/raw/upload/v1749150996/Awes/naatfont.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        /* Set default font */
+        body {
+            font-family: "Roboto Flex", sans-serif;
+            background-color: #f0f5e9;
+        }
+
+        /* Custom styles from original page */
+        .rtl {
+            direction: rtl;
+        }
+        .mobile-menu-hidden {
+            max-height: 0;
+            opacity: 0;
+            transition: max-height 0.3s ease-out, opacity 0.2s ease-out;
+            overflow: hidden;
+        }
+        .mobile-menu-visible {
+            max-height: 500px;
+            opacity: 1;
+            transition: max-height 0.4s ease-in, opacity 0.3s ease-in;
+        }
+
+        /* Apply new font to Urdu specific elements */
+        .gulzartext, .heading {
+            font-family: 'NaatFont', 'Gulzar', serif;
+        }
+        
+        /* === NEW Tab Styles === */
+        #writer-tablist {
+            background-color: #f3f4f6; /* bg-gray-100 */
+            padding: 0.5rem;
+            border-radius: 1.25rem 1.25rem 0 0; /* rounded-t-2xl */
+        }
+        
+        .tab-btn {
+            padding: 0.6rem 1.25rem; /* Adjusted padding */
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #4b5563; /* text-gray-600 */
+            text-align: center;
+            border-radius: 0.75rem; /* rounded-xl */
+            transition: all 0.3s ease;
+            border: none; /* Removed border */
+        }
+        .tab-btn:hover:not(.active) {
+            background-color: #e5e7eb; /* bg-gray-200 */
+            color: #4a7031;
+        }
+        .tab-btn.active {
+            background-color: white;
+            color: #4a7031;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-md */
+        }
+        
+        .tab-pane {
+            display: none;
+        }
+        .tab-pane.active {
+            display: block;
+        }
+        
+        /* === NEW Swiper Navigation Styles === */
+        .swiper-button-next,
+        .swiper-button-prev {
+            color: #4a7031;
+            background-color: rgba(255, 255, 255, 0.9);
+            border: 1px solid #f3f4f6;
+            border-radius: 9999px;
+            width: 2.5rem;  /* w-10 */
+            height: 2.5rem; /* h-10 */
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: all 0.2s ease;
+        }
+        .swiper-button-next:hover,
+        .swiper-button-prev:hover {
+            background-color: white;
+            color: #3b5a28;
+            transform: scale(1.05);
+        }
+        .swiper-button-next:after,
+        .swiper-button-prev:after {
+            font-size: 1rem; /* Smaller icon */
+            font-weight: 700;
+        }
+        
+        /* Book/Article Card Styles (adapted from user's code) */
+        .book-card {
+            background-color: white;
+            border-radius: 1rem; /* rounded-2xl */
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s ease;
+        }
+        .book-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.07), 0 8px 10px -6px rgba(0,0,0,0.07);
+        }
+        .book-card .card-img {
+            aspect-ratio: 3 / 4;
+            position: relative;
+            overflow: hidden;
+        }
+        .book-card .card-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease; /* Added for zoom effect */
+        }
+        .book-card:hover .card-img img {
+            transform: scale(1.05); /* Zoom effect on hover */
+        }
+        .book-card .badge {
+            position: absolute;
+            top: 0.75rem;
+            right: 0.75rem;
+            background-color: #4a7031;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        .book-card .card-content {
+            padding: 1rem 1.25rem;
+        }
+        .book-card .writer, .book-card .translator {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        .book-card .writer li:first-child,
+        .book-card .translator li:first-child {
+            font-weight: 600;
+            color: #1f2937;
+        }
+        
+        /* Article Card Styles (adapted from all-questions) */
+        .article-card {
+            display: block;
+            background-color: white;
+            padding: 1.25rem; /* p-5 */
+            border-radius: 1.25rem; /* rounded-2xl */
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            transition: all 0.3s ease-in-out;
+            border: 1px solid white; /* Lighter border */
+            height: 100%; /* Make cards in slider same height */
+            display: flex;
+            flex-direction: column;
+        }
+        .article-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 28px -5px rgba(0,0,0,0.08), 0 8px 10px -6px rgba(0,0,0,0.05);
+            border-color: #e8f0e0;
+        }
+        .article-card .article-card-img { /* Added wrapper */
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            border-radius: 0.75rem; /* rounded-xl */
+            margin-bottom: 1rem;
+            overflow: hidden; /* For zoom effect */
+        }
+        .article-card .article-card-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease; /* Added for zoom effect */
+        }
+        .article-card:hover .article-card-img img {
+            transform: scale(1.05); /* Zoom effect on hover */
+        }
+        .article-card-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .article-card h3 {
+             transition: color 0.3s;
+             font-size: 1.25rem; /* text-xl */
+             font-weight: 700;
+             color: #1f2937;
+             line-height: 1.6;
+        }
+        .article-card:hover h3 {
+             color: #4a7031;
+        }
+        .article-card-bottom {
+            margin-top: auto; /* Pushes to bottom */
+            padding-top: 1rem;
+            border-top: 1px solid #f3f4f6;
+        }
+        .read-more-btn {
+            background-color: #eaf3df;
+            color: #4a7031;
+            border-radius: 9999px;
+            padding: 0.4rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+        .article-card:hover .read-more-btn {
+            background-color: #4a7031;
+            color: white;
+            transform: scale(1.03); /* Subtle button grow */
+        }
+        .article-view {
+            color: #6b7280;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+    </style>
+</head>
+<body class="bg-[#f0f5e9] text-gray-800 antialiased">
+
+    <!-- Main Wrapper -->
+    <div class="min-h-screen z-10">
+        <!-- Background Image Overlay -->
+        <div class="absolute inset-0 bg-cover bg-no-repeat opacity-70" style="background-image: url('/assets/bg-DgzunbF9.png'); background-position: center center; z-index: -1;"></div>
+
+        <!-- Header (Fixed) -->
+        <header class="bg-[#718e56] sticky top-0 z-50 shadow-md border-b border-green-100">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center py-3 relative"> <!-- Compacted header -->
+                    <!-- Desktop Nav Left -->
+                    <nav class="hidden md:flex gap-5 text-md font-semibold text-white tracking-wide"> <!-- Compacted gap -->
+                        <a href="index.html" class="hover:text-green-100 transition-colors">Home</a>
+                        <a href="about.html" class="hover:text-green-100 transition-colors">About</a>
+                        <a href="events.html" class="hover:text-green-100 transition-colors">News & Event</a>
+                        <a href="books.html" class="hover:text-green-100 transition-colors">Books</a>
+                    </nav>
+
+                    <!-- Center Logo -->
+                    <div class="absolute left-1/2 transform -translate-x-1/2 -bottom-7 bg-white rounded-full p-1 shadow-lg border border-green-100 z-10">
+                        <a href="index.html">
+                            <img src="https://minaramasjid.com/assets/image/logo/marc.png" alt="Logo" class="w-16 h-16 rounded-full object-contain">
+                        </a>
+                    </div>
+
+                    <!-- Desktop Nav Right -->
+                    <nav class="hidden md:flex gap-5 text-md font-semibold text-white tracking-wide"> <!-- Compacted gap -->
+                        <a href="articles.html" class="hover:text-green-100 transition-colors">Articles</a>
+                        <a href="all-questions.html" class="hover:text-green-100 transition-colors">Question Answer</a>
+                        <a href="book-request.html" class="hover:text-green-100 transition-colors">Request a Book</a>
+                        <a href="contact.html" class="hover:text-green-100 transition-colors">Contact</a>
+                    </nav>
+
+                    <!-- Mobile Logo (hidden) -->
+                    <div class="md:hidden flex-1">
+                        <!-- This space is taken by the mobile menu button -->
+                    </div>
+                     <div class="md:hidden flex-1 flex justify-center">
+                         <a href="index.html">
+                             <img src="https://minaramasjid.com/assets/image/logo/marc.png" alt="Logo" class="w-12 h-12 rounded-full object-contain">
+                         </a>
+                     </div>
+
+                    <!-- Mobile Menu Button -->
+                    <div class="md:hidden flex-1 flex justify-end">
+                        <button id="mobile-menu-toggle" class="text-white focus:outline-none">
+                            <i class="fas fa-bars w-7 h-7"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Mobile Menu Dropdown -->
+                <div id="mobile-menu" class="md:hidden mobile-menu-hidden">
+                    <div class="flex flex-col gap-2 py-3 px-2 text-white bg-[#5a7544] rounded-b-xl"> <!-- Compacted -->
+                        <a href="index.html" class="hover:bg-[#4f6639] px-4 py-2 rounded">Home</a>
+                        <a href="about.html" class="hover:bg-[#4f6639] px-4 py-2 rounded">About</a>
+                        <a href="events.html" class="hover:bg-[#4f6639] px-4 py-2 rounded">News & Event</a>
+                        <a href="books.html" class="hover:bg-[#4f6639] px-4 py-2 rounded">Books</a>
+                        <a href="articles.html" class="hover:bg-[#4f6639] px-4 py-2 rounded">Articles</a>
+                        <a href="all-questions.html" class="hover:bg-[#4f6639] px-4 py-2 rounded">Question Answer</a>
+                        <a href="book-request.html" class="hover:bg-[#4f6639] px-4 py-2 rounded">Request a Book</a>
+                        <a href="contact.html" class="hover:bg-[#4f6639] px-4 py-2 rounded">Contact</a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="relative z-10 pt-12 sm:pt-16">
+            
+            <!-- === WRITER PROFILE CONTENT === -->
+            <section class="py-5 m-0 relative" dir="rtl">
+                
+                <!-- Profile Header -->
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <!-- === NEW Profile Card Style === -->
+                    <div class="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-lg p-6 lg:p-8 border border-gray-200/50">
+                        <div class="flex flex-col lg:flex-row-reverse items-center gap-6">
+                            <!-- Image Column -->
+                            <div class="w-full lg:w-2/12 flex justify-center">
+                                <div class="flex-shrink-0">
+                                    <img loading="lazy" 
+                                         src="https://minaramasjid.com/assets/storage/writers/writer-profilePic-1735986114.webp" 
+                                         alt="Tauhid Ahmad Tarablusi" 
+                                         class="w-32 h-32 lg:w-40 lg:h-40 rounded-full object-cover border-4 border-white shadow-xl" 
+                                         onerror="this.onerror=null;this.src='https://placehold.co/160x160/e8f0e0/4a7031?text=Writer&font=roboto'">
+                                </div>
+                            </div>
+                            <!-- Details Column -->
+                            <div class="w-full lg:w-10/12 text-center lg:text-right">
+                                <div class="flex flex-col lg:flex-row-reverse items-center justify-center lg:justify-end gap-3">
+                                    <h1 class="gulzartext text-3xl lg:text-4xl font-bold text-[#4a7031]">Tauhid Ahmad Tarablusi</h1>
+                                    <span class="text-xs font-bold text-[#4a7031] bg-[#eaf3df] px-3 py-1 rounded-full">Writer</span>
+                                </div>
+                                <p class="gulzartext text-xl text-gray-600 mt-2">
+                                    About
+                                </p>
+                                <p class="gulzartext text-lg text-gray-500 mt-2">
+                                    <!-- Placeholder for writer bio -->
+                                    مصنف کے بارے میں مختصر تفصیل یہاں ظاہر ہوگی۔
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabbed Content -->
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+                    <div class="bg-white rounded-2xl shadow-lg">
+                        <!-- Tab Headers -->
+                        <!-- === NEW Tab List Style === -->
+                        <div class="flex justify-center" id="writer-tablist" role="tablist">
+                            <button class="tab-btn gulzartext active" id="writer-tab-1" data-tab-target="#writer-tabs-1" role="tab" aria-controls="writer-tabs-1" aria-selected="true">کتابیں</button>
+                            <button class="tab-btn gulzartext" id="writer-tab-2" data-tab-target="#writer-tabs-2" role="tab" aria-controls="writer-tabs-2" aria-selected="false">مضامین</button>
+                            <button class="tab-btn gulzartext" id="writer-tab-3" data-tab-target="#writer-tabs-3" role="tab" aria-controls="writer-tabs-3" aria-selected="false">سوال و جواب</button>
+                        </div>
+
+                        <!-- Tab Panels -->
+                        <div class="p-4 md:p-8">
+                            <!-- Books Tab -->
+                            <div class="tab-pane active" id="writer-tabs-1" role="tabpanel" aria-labelledby="writer-tab-1">
+                                <div class="heading text-center mb-6">
+                                    <h2 class="gulzartext text-3xl font-bold text-gray-800 tracking-wide">مصنف کی کتابیں۔</h2>
+                                    <p class="gulzartext text-lg text-gray-500">Discover, Research, and Connect with Books</p>
+                                </div>
+                                <!-- Swiper for Books -->
+                                <div class="swiper books-slider relative py-4 px-2">
+                                    <div class="swiper-wrapper">
+                                        <!-- Book Card 1 -->
+                                        <div class="swiper-slide h-auto">
+                                            <div class="card book-card h-full">
+                                                <a href="https://minaramasjid.com/book-detail/غازی" class="flex flex-col h-full">
+                                                    <div class="card-img">
+                                                        <img loading="lazy" src="https://minaramasjid.com/assets/storage/books/books-image-1736773106.webp" alt="غازی" onerror="this.onerror=null;this.src='https://placehold.co/300x400/e8f0e0/4a7031?text=Book&font=roboto'">
+                                                        <span class="badge">New</span>
+                                                    </div>
+                                                    <div class="card-content flex flex-col flex-grow">
+                                                        <p class="m-0 mt-2 mb-2 gulzartext text-xl font-bold text-gray-800 truncate">غازی</p>
+                                                        <p class="gulzartext text-gray-600 line-clamp-2 flex-grow">حضرت سید سالارمسعود غازی کی مجاہدانہ زندگی پر ایک نادر تحریر</p>
+                                                        <ul class="list-unstyled m-0 writer mb-2 mt-3">
+                                                            <li>Writer</li>
+                                                            <li class="gulzartext truncate">Tauhid Ahmad Tarablusi</li>
+                                                        </ul>
+                                                    </div>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <!-- Book Card 2 -->
+                                        <div class="swiper-slide h-auto">
+                                            <div class="card book-card h-full">
+                                                <a href="https://minaramasjid.com/book-detail/اللغۃ-العربیۃ-بین-الاصالۃ-والتجدد" class="flex flex-col h-full">
+                                                    <div class="card-img">
+                                                        <img loading="lazy" src="https://minaramasjid.com/assets/storage/books/books-image-1736594918.webp" alt="اللغۃ العربیۃ بین الاصالۃ والتجدد" onerror="this.onerror=null;this.src='https://placehold.co/300x400/e8f0e0/4a7031?text=Book&font=roboto'">
+                                                        <span class="badge">New</span>
+                                                    </div>
+                                                    <div class="card-content flex flex-col flex-grow">
+                                                        <p class="m-0 mt-2 mb-2 gulzartext text-xl font-bold text-gray-800 truncate">اللغۃ العربیۃ بین الاصالۃ والتجدد</p>
+                                                        <p class="gulzartext text-gray-600 line-clamp-2 flex-grow">ھذہ المقالة على أصالة اللغة العربية وتجديدها، وهي مقالة رائعة جدا</p>
+                                                        <ul class="list-unstyled m-0 writer mb-2 mt-3">
+                                                            <li>Writer</li>
+                                                            <li class="gulzartext truncate">Tauhid Ahmad Tarablusi</li>
+                                                        </ul>
+                                                    </div>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <!-- Book Card 3 -->
+                                        <div class="swiper-slide h-auto">
+                                            <div class="card book-card h-full">
+                                                <a href="https://minaramasjid.com/book-detail/قرآن-کریم-اور-گلہ-بانی" class="flex flex-col h-full">
+                                                    <div class="card-img">
+                                                        <img loading="lazy" src="https://minaramasjid.com/assets/storage/books/books-image-1736594095.webp" alt="قرآن کریم اور گلہ بانی" onerror="this.onerror=null;this.src='https://placehold.co/300x400/e8f0e0/4a7031?text=Book&font=roboto'">
+                                                        <span class="badge">New</span>
+                                                    </div>
+                                                    <div class="card-content flex flex-col flex-grow">
+                                                        <p class="m-0 mt-2 mb-2 gulzartext text-xl font-bold text-gray-800 truncate">قرآن کریم اور گلہ بانی</p>
+                                                        <p class="gulzartext text-gray-600 line-clamp-2 flex-grow">گلہ بانی کی اہمیت اور افآدیت کو قرآنِ کریم سے بہترین انداز میں ثآبت کیا گیا ہے</p>
+                                                        <ul class="list-unstyled m-0 writer mb-2 mt-3">
+                                                            <li>Writer</li>
+                                                            <li class="gulzartext truncate">Tauhid Ahmad Tarablusi</li>
+                                                        </ul>
+                                                    </div>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <!-- Book Card 4 -->
+                                        <div class="swiper-slide h-auto">
+                                            <div class="card book-card h-full">
+                                                <a href="https://minaramasjid.com/book-detail/فتح-مبین" class="flex flex-col h-full">
+                                                    <div class="card-img">
+                                                        <img loading="lazy" src="https://minaramasjid.com/assets/storage/books/books-image-1736593648.webp" alt="فتح مبین" onerror="this.onerror=null;this.src='https://placehold.co/300x400/e8f0e0/4a7031?text=Book&font=roboto'">
+                                                        <span class="badge">New</span>
+                                                    </div>
+                                                    <div class="card-content flex flex-col flex-grow">
+                                                        <p class="m-0 mt-2 mb-2 gulzartext text-xl font-bold text-gray-800 truncate">فتح مبین</p>
+                                                        <p class="gulzartext text-gray-600 line-clamp-2 flex-grow">غزوۂ بدرسے متعلق انشائی انداز میں لکھی گئی ایک منفرد تحریر</p>
+                                                        <ul class="list-unstyled m-0 writer mb-2 mt-3">
+                                                            <li>Writer</li>
+                                                            <li class="gulzartext truncate">Tauhid Ahmad Tarablusi</li>
+                                                        </ul>
+                                                    </div>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Swiper Navigation -->
+                                    <div class="swiper-button-next"></div>
+                                    <div class="swiper-button-prev"></div>
+                                </div>
+                            </div>
+                            
+                            <!-- Articles Tab -->
+                            <div class="tab-pane" id="writer-tabs-2" role="tabpanel" aria-labelledby="writer-tab-2">
+                                <div class="heading text-center mb-6">
+                                    <h2 class="gulzartext text-3xl font-bold text-gray-800 tracking-wide">مصنف کے مضامین</h2>
+                                    <p class="gulzartext text-lg text-gray-500">Discover Insights and Knowledge Meet Our Authors</p>
+                                </div>
+                                <!-- Swiper for Articles -->
+                                <div class="swiper article-slider relative py-4 px-2">
+                                    <div class="swiper-wrapper">
+                                        <!-- Article Card 1 -->
+                                        <div class="swiper-slide h-auto">
+                                            <a href="https://minaramasjid.com/article-detail/طلب-شفاعت-کے-متعلق-ایک-اہم-فتوی" class="article-card group">
+                                                <div class="article-card-img">
+                                                    <img loading="lazy" src="https://placehold.co/400x225/e8f0e0/4a7031?text=Article&font=roboto" alt="طلبِ شفاعت کے متعلق ایک اہم فتویٰ" class="img-fluid rounded-9" onerror="this.onerror=null;this.src='https://placehold.co/400x225/e8f0e0/4a7031?text=Article&font=roboto'">
+                                                </div>
+                                                <div class="article-card-content">
+                                                    <h3 class="heading gulzartext">طلبِ شفاعت کے متعلق ایک اہم فتویٰ</h3>
+                                                    <p class="mt-2 text-gray-600 gulzartext line-clamp-3">فتویٰ: ڈاکٹر علی جمعہ محمد مفتی اعظم مصر ترجمہ، تحقیق، تخریج: فہیم احمد ثقلینی ازہری سوال: آیت کریمہ ’’ولو انہم اذ ظلموا انفسہم...</p>
+                                                    <div class="mt-4 flex justify-between items-center article-card-bottom">
+                                                        <span class="read-more-btn heading">
+                                                            Read More <i class="fa-solid fa-angle-right text-xs"></i>
+                                                        </span>
+                                                        <span class="article-view">254 <i class="bi bi-eye-fill"></i></span>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </div>
+                                        <!-- Article Card 2 -->
+                                        <div class="swiper-slide h-auto">
+                                            <a href="https://minaramasjid.com/article-detail/اسلوب-دعوت-اورداعی-کانصاب" class="article-card group">
+                                                <div class="article-card-img">
+                                                    <img loading="lazy" src="https://placehold.co/400x225/e8f0e0/4a7031?text=Article&font=roboto" alt="اسلوبِ دعوت اورداعی کانصاب" class="img-fluid rounded-9" onerror="this.onerror=null;this.src='https://placehold.co/400x225/e8f0e0/4a7031?text=Article&font=roboto'">
+                                                </div>
+                                                <div class="article-card-content">
+                                                    <h3 class="heading gulzartext">اسلوبِ دعوت اورداعی کانصاب</h3>
+                                                    <p class="mt-2 text-gray-600 gulzartext line-clamp-3">ازقلم : طاہرحمید کسی بھی چیزکی موثریت میں لوگوں کے سامنے اس کی پیشگی کا اسلوب بڑافعال کردار ادا کرتا ہے۔ دعوت ایک نظام ہے...</p>
+                                                    <div class="mt-4 flex justify-between items-center article-card-bottom">
+                                                        <span class="read-more-btn heading">
+                                                            Read More <i class="fa-solid fa-angle-right text-xs"></i>
+                                                        </span>
+                                                        <span class="article-view">75 <i class="bi bi-eye-fill"></i></span>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </div>
+                                        <!-- Article Card 3 -->
+                                        <div class="swiper-slide h-auto">
+                                            <a href="https://minaramasjid.com/article-detail/ماہ-محرم-الحرام-اور-یوم-عاشوراء-کے-روزہ-پر-ایک-نظر" class="article-card group">
+                                                <div class="article-card-img">
+                                                    <img loading="lazy" src="https://placehold.co/400x225/e8f0e0/4a7031?text=Article&font=roboto" alt="ماہ محرم الحرام" class="img-fluid rounded-9" onerror="this.onerror=null;this.src='https://placehold.co/400x225/e8f0e0/4a7031?text=Article&font=roboto'">
+                                                </div>
+                                                <div class="article-card-content">
+                                                    <h3 class="heading gulzartext">ماہ محرم الحرام اور یوم عاشوراء کے روزہ پر ایک نظر</h3>
+                                                    <p class="mt-2 text-gray-600 gulzartext line-clamp-3">مقدمہ: الحمد لله رب العالمين، والصلاة والسلام على اشرف الانبياء والمرسلين، وعلى آله وأصحابه إلى يوم الدين...</p>
+                                                    <div class="mt-4 flex justify-between items-center article-card-bottom">
+                                                        <span class="read-more-btn heading">
+                                                            Read More <i class="fa-solid fa-angle-right text-xs"></i>
+                                                        </span>
+                                                        <span class="article-view">70 <i class="bi bi-eye-fill"></i></span>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </div>
+                                        <!-- More slides... -->
+                                    </div>
+                                    <!-- Swiper Navigation -->
+                                    <div class="swiper-button-next"></div>
+                                    <div class="swiper-button-prev"></div>
+                                </div>
+                            </div>
+                            
+                            <!-- Q&A Tab -->
+                            <div class="tab-pane" id="writer-tabs-3" role="tabpanel" aria-labelledby="writer-tab-3">
+                                <div class="heading text-center mb-6">
+                                    <h2 class="gulzartext text-3xl font-bold text-gray-800 tracking-wide">مصنف کے سوال و جواب</h2>
+                                </div>
+                                <!-- Swiper for Q&A -->
+                                <div class="swiper qa-slider relative py-4 px-2">
+                                    <div class="swiper-wrapper">
+                                        <!-- Q&A Card 1 (Using Article Card style) -->
+                                        <div class="swiper-slide h-auto">
+                                            <a href="/fatwa/2778" class="article-card group">
+                                                <div class="article-card-content">
+                                                    <h3 class="heading gulzartext">احوال حضرت ابو بکر صدیق رضی اللہ عنہ</h3>
+                                                    <p class="mt-2 text-gray-600 gulzartext line-clamp-3">احوال حضرت ابو بکر صدیق رضی اللہ عنہ</p>
+                                                    <div class="mt-4 flex justify-between items-center article-card-bottom">
+                                                        <span class="read-more-btn heading">
+                                                            مکمل جواب پڑھیں <i class="fa-solid fa-arrow-left text-xs"></i>
+                                                        </span>
+                                                        <span class="article-view">6014 <i class="bi bi-eye-fill"></i></span>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </div>
+                                        <!-- Q&A Card 2 -->
+                                        <div class="swiper-slide h-auto">
+                                            <a href="/fatwa/2788" class="article-card group">
+                                                <div class="article-card-content">
+                                                    <h3 class="heading gulzartext">اس کرم کا کروں شکر کیسے ادا</h3>
+                                                    <p class="mt-2 text-gray-600 gulzartext line-clamp-3">اس کرم کا کروں شکر کیسے ادا</p>
+                                                    <div class="mt-4 flex justify-between items-center article-card-bottom">
+                                                        <span class="read-more-btn heading">
+                                                            مکمل جواب پڑھیں <i class="fa-solid fa-arrow-left text-xs"></i>
+                                                        </span>
+                                                        <span class="article-view">7122 <i class="bi bi-eye-fill"></i></span>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </div>
+                                        <!-- Add more Q&A cards as needed -->
+                                    </div>
+                                    <!-- Swiper Navigation -->
+                                    <div class="swiper-button-next"></div>
+                                    <div class="swiper-button-prev"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- === END OF WRITER PROFILE CONTENT === -->
+        </main>
+    </div>
+    
+    <!-- Simple Toast Notification -->
+    <div id="toast" class="fixed bottom-24 right-6 bg-gray-800 text-white px-5 py-3 rounded-lg shadow-lg opacity-0 transition-opacity duration-300 z-50">
+        Link copied to clipboard!
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-[#718e56] text-white mt-16 sm:mt-20 relative z-20"> <!-- Compacted -->
+        <div class="max-w-7xl mx-auto px-6 lg:px-8 py-8"> <!-- Compacted -->
+            
+            <!-- Logo and Socials (Horizontal/Centered) -->
+            <div class="flex flex-col items-center">
+                <!-- Logo -->
+                <a href="index.html" class="flex items-center space-x-3 mb-5"> <!-- Compacted -->
+                    <img class="h-12 w-auto bg-white rounded-full p-1" src="https://minaramasjid.com/assets/image/logo/marc.png" alt="Maula Ali Research Center Logo"> <!-- Compacted -->
+                    <span class="text-lg font-bold text-white">Maula Ali Research Center</span> <!-- Compacted -->
+                </a>
+                
+                <!-- Social Media Icons -->
+                <div class="flex space-x-5"> <!-- Compacted -->
+                    <a href="#" class="text-green-200 hover:text-white transition-colors" aria-label="Facebook">
+                        <i class="fab fa-facebook-f fa-lg"></i>
+                    </a>
+                    <a href="#" class="text-green-200 hover:text-white transition-colors" aria-label="Twitter">
+                        <i class="fab fa-twitter fa-lg"></i>
+                    </a>
+                    <a href="#" class="text-green-200 hover:text-white transition-colors" aria-label="Instagram">
+                        <i class="fab fa-instagram fa-lg"></i>
+                    </a>
+                    <a href="#" class="text-green-200 hover:text-white transition-colors" aria-label="LinkedIn">
+                        <i class="fab fa-linkedin-in fa-lg"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Copyright Bottom Line -->
+            <div class="mt-8 pt-5 border-t border-green-400/50 text-center"> <!-- Compacted -->
+                 <p class="text-sm text-green-200">
+                     &copy; 2024 - 2025 Design and Develop by 
+                     <a href='https://www.AlQalamArts.com/' target="_blank" rel="noopener noreferrer" class="font-medium text-white hover:text-green-100">
+                         www.AlQalamArts.com
+                     </a>
+                 </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back To Top Button -->
+    <button id="backToTopBtn" class="fixed bottom-6 right-6 bg-[#4a7031] hover:bg-[#3b5a28] text-white w-10 h-10 rounded-full shadow-lg hidden justify-center items-center transition-all duration-300 opacity-0 z-40"> <!-- Compacted -->
+        <i class="fas fa-arrow-up"></i>
+    </button>
+    
+    <!-- Swiper.js JS -->
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+
+    <!-- Inline JavaScript -->
+    <script type="module">
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // --- Mobile Menu Toggle ---
+            const mobileMenuButton = document.getElementById('mobile-menu-toggle');
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (mobileMenuButton && mobileMenu) {
+                mobileMenuButton.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('mobile-menu-hidden');
+                    mobileMenu.classList.toggle('mobile-menu-visible');
+                });
+            }
+            
+            // --- Back To Top Button ---
+            const backToTopBtn = document.getElementById('backToTopBtn');
+            if (backToTopBtn) {
+                window.addEventListener('scroll', () => {
+                    if (window.scrollY > 300) {
+                        backToTopBtn.classList.remove('hidden');
+                        backToTopBtn.classList.add('flex');
+                        backToTopBtn.classList.remove('opacity-0');
+                    } else {
+                        backToTopBtn.classList.add('opacity-0');
+                        setTimeout(() => {
+                            if (window.scrollY <= 300) {
+                                backToTopBtn.classList.add('hidden');
+                                backToTopBtn.classList.remove('flex');
+                            }
+                        }, 300);
+                    }
+                });
+                
+                backToTopBtn.addEventListener('click', () => {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+            }
+            
+            // --- Tabbed Interface ---
+            const tablist = document.getElementById('writer-tablist');
+            if (tablist) {
+                const tabs = tablist.querySelectorAll('.tab-btn');
+                const panes = document.querySelectorAll('.tab-pane');
+
+                tabs.forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        // Deactivate all tabs
+                        tabs.forEach(t => {
+                            t.classList.remove('active');
+                            t.setAttribute('aria-selected', 'false');
+                        });
+                        
+                        // Deactivate all panes
+                        panes.forEach(p => p.classList.remove('active'));
+                        
+                        // Activate clicked tab
+                        tab.classList.add('active');
+                        tab.setAttribute('aria-selected', 'true');
+                        
+                        // Activate corresponding pane
+                        const targetPane = document.querySelector(tab.dataset.tabTarget);
+                        if (targetPane) {
+                            targetPane.classList.add('active');
+                        }
+                    });
+                });
+            }
+            
+            // --- Swiper Initializations ---
+            const swiperOptions = {
+                direction: 'horizontal',
+                loop: false,
+                slidesPerView: 1,
+                spaceBetween: 20,
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                },
+                breakpoints: {
+                    // when window width is >= 640px
+                    640: {
+                        slidesPerView: 2,
+                        spaceBetween: 20
+                    },
+                    // when window width is >= 1024px
+                    1024: {
+                        slidesPerView: 4,
+                        spaceBetween: 30
+                    }
+                }
+            };
+            
+            // Article slider has different breakpoint
+            const articleSwiperOptions = {
+                ...swiperOptions, // Inherit common options
+                breakpoints: {
+                    640: {
+                        slidesPerView: 2,
+                        spaceBetween: 20
+                    },
+                    1024: {
+                        slidesPerView: 3, // Show 3 articles on desktop
+                        spaceBetween: 30
+                    }
+                }
+            };
+
+            const booksSlider = new Swiper('.books-slider', swiperOptions);
+            const articleSlider = new Swiper('.article-slider', articleSwiperOptions);
+            const qaSlider = new Swiper('.qa-slider', articleSwiperOptions); // Use same options as articles
+
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <% 
+    // ---- Safe META defaults (avoid inline complex EJS in attributes) ----
+    const META          = typeof meta === 'object' && meta ? meta : {};
+    const title         = META.title       || "Writer Profile | Maula Ali Research Center";
+    const description   = META.description || "Profile page for writer, detailing books, articles, and fatwas on Maula Ali Research Center.";
+    const keywords      = META.keywords    || "Writer Profile, Maula Ali Research Centre, Islamic Scholars";
+    const ogImage       = META.ogImage     || "https://placehold.co/1200x630/e8f0e0/4a7031?text=Writer+Profile";
+    const baseHrefRaw   = META.baseHref    || "https://demo.minaramasjid.com/";
+    const baseHref      = String(baseHrefRaw).trim();
+    const writerName    = META.writerName  || (data && data.writer && data.writer.name) || "Writer";
+  %>
+
+  <!-- Meta (SSR-safe defaults) -->
+  <title><%= title %></title>
+  <meta name="keywords" content="<%= keywords %>">
+  <meta name="description" content="<%= description %>">
+  <meta name="robots" content="index, follow">
+
+  <meta property="og:title" content="<%= title %>">
+  <meta property="og:description" content="<%= description %>">
+  <meta property="og:image" content="<%= ogImage %>">
+  <meta property="og:type" content="website">
+
+  <meta name="twitter:title" content="<%= title %>">
+  <meta name="twitter:description" content="<%= description %>">
+  <meta name="twitter:image" content="<%= ogImage %>">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- Base Href (Preserved) -->
+  <base href="<%= baseHref %>">
+
+  <link rel="icon" href="https://minaramasjid.com/assets/image/logo/favicon.ico" type="image/x-icon">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Fonts (Roboto Flex and Gulzar) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,400;8..144,500;8..144,700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Gulzar&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome + Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" />
+
+  <!-- Swiper.js CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+
+  <style>
+    @font-face {
+      font-family: 'NaatFont';
+      src: url('https://res.cloudinary.com/awescreative/raw/upload/v1749150996/Awes/naatfont.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
+    body { font-family: "Roboto Flex", sans-serif; background-color: #f0f5e9; }
+    .rtl { direction: rtl; }
+    .mobile-menu-hidden { max-height: 0; opacity: 0; transition: max-height 0.3s ease-out, opacity 0.2s ease-out; overflow: hidden; }
+    .mobile-menu-visible { max-height: 500px; opacity: 1; transition: max-height 0.4s ease-in, opacity 0.3s ease-in; }
+
+    .gulzartext, .heading { font-family: 'NaatFont', 'Gulzar', serif; }
+
+    /* Clamp helpers */
+    .line-clamp-1 { display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden; }
+    .line-clamp-2 { display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+    .line-clamp-3 { display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+
+    #writer-tablist { background-color: #f3f4f6; padding: 0.5rem; border-radius: 1.25rem 1.25rem 0 0; }
+    .tab-btn { padding: 0.5rem 1rem; font-size: 1rem; font-weight: 600; color: #4b5563; text-align: center; border-radius: 0.75rem; transition: all 0.3s ease; border: none; }
+    .tab-btn:hover:not(.active){ background-color:#e5e7eb; color:#4a7031; }
+    .tab-btn.active { background-color:#fff; color:#4a7031; box-shadow:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -1px rgba(0,0,0,.06); }
+    .tab-pane{ display:none; }
+    .tab-pane.active{ display:block; }
+
+    .swiper-button-next, .swiper-button-prev {
+      color:#4a7031; background-color:rgba(255,255,255,.9); border:1px solid #f3f4f6; border-radius:9999px; width:2.25rem; height:2.25rem;
+      box-shadow:0 4px 12px rgba(0,0,0,.1); transition:all .2s ease;
+    }
+    .swiper-button-next:hover, .swiper-button-prev:hover { background-color:#fff; color:#3b5a28; transform:scale(1.05); }
+    .swiper-button-next:after, .swiper-button-prev:after { font-size:.9rem; font-weight:700; }
+
+    .book-card { background:#fff; border-radius:0.875rem; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,.05); border:1px solid #e5e7eb; transition:all .3s ease; }
+    .book-card:hover { transform:translateY(-3px); box-shadow:0 10px 25px -5px rgba(0,0,0,.07), 0 8px 10px -6px rgba(0,0,0,.07); }
+    .book-card .card-img { aspect-ratio:3/4; position:relative; overflow:hidden; }
+    .book-card .card-img img { width:100%; height:100%; object-fit:cover; transition:transform .3s ease; }
+    .book-card:hover .card-img img { transform:scale(1.03); }
+    .book-card .badge { position:absolute; top:.5rem; right:.5rem; background:#4a7031; color:#fff; padding:.2rem .6rem; border-radius:9999px; font-size:.75rem; font-weight:600; }
+    .book-card .card-content { padding:0.75rem 0.9rem; }
+
+    .book-title { font-size:1.05rem; line-height:1.5rem; font-weight:800; }
+    .book-desc  { font-size:.95rem; line-height:1.5rem; color:#374151; }
+    .book-meta  { font-size:.9rem;  line-height:1.35rem; color:#1f2937; }
+
+    .article-card { display:block; background:#fff; padding:1rem; border-radius:1rem; box-shadow:0 4px 12px rgba(0,0,0,.05); transition:all .3s ease-in-out; border:1px solid #fff; height:100%; display:flex; flex-direction:column; }
+    .article-card:hover { transform:translateY(-3px); box-shadow:0 12px 28px -5px rgba(0,0,0,.08), 0 8px 10px -6px rgba(0,0,0,.05); border-color:#e8f0e0; }
+    .article-card .article-card-img { width:100%; aspect-ratio:16/9; border-radius:.75rem; margin-bottom:.75rem; overflow:hidden; }
+    .article-card .article-card-img img { width:100%; height:100%; object-fit:cover; transition:transform .3s ease; }
+    .article-card:hover .article-card-img img { transform:scale(1.03); }
+    .article-card-content { flex-grow:1; display:flex; flex-direction:column; }
+    .article-card h3 { transition:color .3s; font-size:1.1rem; font-weight:700; color:#1f2937; line-height:1.5; }
+    .article-card:hover h3 { color:#4a7031; }
+    .article-card-bottom { margin-top:auto; padding-top:.75rem; border-top:1px solid #f3f4f6; }
+    .read-more-btn { background:#eaf3df; color:#4a7031; border-radius:9999px; padding:.45rem .85rem; font-size:.9rem; font-weight:700; transition:all .3s ease; }
+    .article-card:hover .read-more-btn { background:#4a7031; color:#fff; transform:scale(1.02); }
+    .article-view { color:#6b7280; font-size:.9rem; display:flex; align-items:center; gap:.25rem; }
+  </style>
+</head>
+<body class="bg-[#f0f5e9] text-gray-800 antialiased">
+
+  <!-- Main Wrapper -->
+  <div class="min-h-screen z-10">
+    <div class="absolute inset-0 bg-cover bg-no-repeat opacity-70" style="background-image:url('/assets/bg-DgzunbF9.png'); background-position:center center; z-index:-1;"></div>
+
+    <!-- Header -->
+    <header class="bg-[#718e56] sticky top-0 z-50 shadow-md border-b border-green-100">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center py-3 relative">
+          <nav class="hidden md:flex gap-5 text-md font-semibold text-white tracking-wide">
+            <a href="/" class="hover:text-green-100 transition-colors">Home</a>
+            <a href="/about" class="hover:text-green-100 transition-colors">About</a>
+            <a href="/events" class="hover:text-green-100 transition-colors">News & Event</a>
+            <a href="/book" class="hover:text-green-100 transition-colors">Books</a>
+          </nav>
+
+          <div class="absolute left-1/2 transform -translate-x-1/2 -bottom-7 bg-white rounded-full p-1 shadow-lg border border-green-100 z-10">
+            <a href="/">
+              <img src="https://minaramasjid.com/assets/image/logo/marc.png" alt="Logo" class="w-16 h-16 rounded-full object-contain">
+            </a>
+          </div>
+
+          <nav class="hidden md:flex gap-5 text-md font-semibold text-white tracking-wide">
+            <a href="/article" class="hover:text-green-100 transition-colors">Articles</a>
+            <a href="/qa" class="hover:text-green-100 transition-colors">Question Answer</a>
+            <!-- <a href="/book-request" class="hover:text-green-100 transition-colors">Request a Book</a> -->
+            <a href="/contact" class="hover:text-green-100 transition-colors">Contact</a>
+          </nav>
+
+          <div class="md:hidden flex-1"></div>
+          <div class="md:hidden flex-1 flex justify-center">
+            <!-- <a href="/"><img src="https://minaramasjid.com/assets/image/logo/marc.png" alt="Logo" class="w-12 h-12 rounded-full object-contain"></a> -->
+          </div>
+          <div class="md:hidden flex-1 flex justify-end">
+            <button id="mobile-menu-toggle" class="text-white focus:outline-none">
+              <i class="fas fa-bars w-7 h-7"></i>
+            </button>
+          </div>
+        </div>
+
+        <div id="mobile-menu" class="md:hidden mobile-menu-hidden">
+          <div class="flex flex-col gap-2 py-3 px-2 text-white bg-[#5a7544] rounded-b-xl">
+            <a href="/" class="hover:bg-[#4f6639] px-4 py-2 rounded">Home</a>
+            <a href="/about" class="hover:bg-[#4f6639] px-4 py-2 rounded">About</a>
+            <a href="/events" class="hover:bg-[#4f6639] px-4 py-2 rounded">News & Event</a>
+            <a href="/book" class="hover:bg-[#4f6639] px-4 py-2 rounded">Books</a>
+            <a href="/article" class="hover:bg-[#4f6639] px-4 py-2 rounded">Articles</a>
+            <a href="/qa" class="hover:bg-[#4f6639] px-4 py-2 rounded">Question Answer</a>
+            <!-- <a href="/book-request" class="hover:bg-[#4f6639] px-4 py-2 rounded">Request a Book</a> -->
+            <a href="/contact" class="hover:bg-[#4f6639] px-4 py-2 rounded">Contact</a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main -->
+    <main class="relative z-10 pt-12 sm:pt-16">
+      <section class="py-5 m-0 relative" dir="rtl">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-lg p-6 lg:p-8 border border-gray-200/50">
+            <div class="flex flex-col lg:flex-row-reverse items-center gap-6">
+              <div class="w-full lg:w-2/12 flex justify-center">
+                <div class="flex-shrink-0">
+                  <% if (data && data.writer) { %>
+                    <img loading="lazy"
+                      src="<%= helpers.makeWriterImageUrl(data.writer.id) %>"
+                      alt="<%= data.writer.name %>"
+                      class="w-32 h-32 lg:w-40 lg:h-40 rounded-full object-cover border-4 border-white shadow-xl"
+                      onerror="this.onerror=null;this.src='https://placehold.co/160x160/e8f0e0/4a7031?text=Writer&font=roboto'">
+                  <% } else { %>
+                    <img loading="lazy"
+                      src="https://placehold.co/160x160/e8f0e0/4a7031?text=Writer&font=roboto"
+                      alt="Writer"
+                      class="w-32 h-32 lg:w-40 lg:h-40 rounded-full object-cover border-4 border-white shadow-xl">
+                  <% } %>
+                </div>
+              </div>
+              <div class="w-full lg:w-10/12 text-center lg:text-right">
+                <div class="flex flex-col lg:flex-row-reverse items-center justify-center lg:justify-end gap-3">
+                  <h1 class="gulzartext text-3xl lg:text-4xl font-bold text-[#4a7031]"><%= writerName %></h1>
+                  <span class="text-xs font-bold text-[#4a7031] bg-[#eaf3df] px-3 py-1 rounded-full">Writer</span>
+                </div>
+                <p class="gulzartext text-xl text-gray-700 mt-3">About</p>
+                <p class="gulzartext text-[1.05rem] text-gray-600 mt-2 leading-7">
+                  <%= helpers.safeText(helpers.pickFirst(
+                        data && data.writer && data.writer.urduDescription,
+                        data && data.writer && data.writer.englishDescription,
+                        "مصنف کے بارے میں مختصر تفصیل یہاں ظاہر ہوگی۔"
+                  )) %>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+          <div class="bg-white rounded-2xl shadow-lg">
+            <div class="flex justify-center" id="writer-tablist" role="tablist">
+              <button class="tab-btn gulzartext active" id="writer-tab-1" data-tab-target="#writer-tabs-1" role="tab" aria-controls="writer-tabs-1" aria-selected="true">کتابیں</button>
+              <button class="tab-btn gulzartext" id="writer-tab-2" data-tab-target="#writer-tabs-2" role="tab" aria-controls="writer-tabs-2" aria-selected="false">مضامین</button>
+              <button class="tab-btn gulzartext" id="writer-tab-3" data-tab-target="#writer-tabs-3" role="tab" aria-controls="writer-tabs-3" aria-selected="false">سوال و جواب</button>
+            </div>
+
+            <div class="p-4 md:p-8">
+              <!-- Books -->
+              <div class="tab-pane active" id="writer-tabs-1" role="tabpanel" aria-labelledby="writer-tab-1">
+                <div class="heading text-center mb-6">
+                  <h2 class="gulzartext text-2xl font-bold text-gray-800 tracking-wide">مصنف کی کتابیں۔</h2>
+                  <p class="gulzartext text-base text-gray-500">Discover, Research, and Connect with Books</p>
+                </div>
+
+                <div class="swiper books-slider relative py-2 px-1">
+                  <div class="swiper-wrapper">
+                    <% if (!Array.isArray(data && data.books) || (data.books || []).length === 0) { %>
+                      <div class="swiper-slide h-auto">
+                        <div class="p-6 text-center text-gray-500">No books found for this writer.</div>
+                      </div>
+                    <% } %>
+
+                    <% (data.books || []).forEach(function(book){ 
+                         const isUrduTitle = helpers.isUrdu ? helpers.isUrdu(book.title || "") : false;
+                         const bookSlug    = (helpers.slugify ? helpers.slugify(book.title || "") : encodeURIComponent(book.title || ""));
+                         const authorName  = helpers.pickFirst(book && book.author, book && book.writer, writerName, "Unknown");
+                         const descRaw     = helpers.pickFirst(
+                           book && book.description,
+                           book && book.subTitle,
+                           book && book.englishDescription,
+                           book && book.urduDescription,
+                           ""
+                         );
+                         const isUrduDesc  = helpers.isUrdu ? helpers.isUrdu(descRaw || "") : false;
+                    %>
+                      <div class="swiper-slide h-auto">
+                        <div class="card book-card h-full">
+                          <div class="flex flex-col h-full">
+                            <div class="card-img">
+                              <a href="/bookdetail/<%= book.id %>/<%= bookSlug %>">
+                                <img loading="lazy"
+                                     src="<%= helpers.makeBookCoverUrl(book.id) %>"
+                                     alt="<%= book.title %>"
+                                     onerror="this.onerror=null;this.src='https://placehold.co/300x400/e8f0e0/4a7031?text=Book&font=roboto'">
+                                <% if (book && book.category) { %>
+                                  <span class="badge"><%= book.category %></span>
+                                <% } %>
+                              </a>
+                            </div>
+
+                            <div class="card-content flex flex-col flex-grow">
+                              <!-- Title -->
+                              <a href="/bookdetail/<%= book.id %>/<%= bookSlug %>">
+                                <p class="m-0 mt-2 text-black gulzartext book-title <%= isUrduTitle ? 'rtl text-right' : '' %>">
+                                  <%= book.title || 'Untitled' %>
+                                </p>
+                              </a>
+
+                              <!-- Writer / Translator -->
+                              <div class="mt-2 space-y-0.5">
+                                <div class="book-meta">
+                                  <span class="font-semibold">Writer:</span>
+                                  <span class="gulzartext"><%= authorName %></span>
+                                </div>
+                                <% if (book && book.translator) { %>
+                                  <div class="book-meta">
+                                    <span class="font-semibold">Translator:</span>
+                                    <span class="gulzartext"><%= book.translator %></span>
+                                  </div>
+                                <% } %>
+                              </div>
+
+                              <!-- Description -->
+                              <p class="mt-2 gulzartext book-desc line-clamp-3 <%= isUrduDesc ? 'rtl text-right' : '' %>">
+                                <%= helpers.safeText(descRaw || "No description available.") %>
+                              </p>
+
+                              <!-- Actions -->
+                              <div class="mt-3 flex gap-2 flex-wrap">
+                                <a href="/bookdetail/<%= book.id %>/<%= bookSlug %>"
+                                   class="cursor-pointer border inline-flex items-center text-xs text-yellow-700 bg-white px-3 py-1.5 rounded-full hover:bg-yellow-200 transition">
+                                  Read More <i class="fa-solid fa-angle-right text-xs ml-1"></i>
+                                </a>
+
+                                <a href="<%= helpers.makeBookDownloadUrl(book.id) %>"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="cursor-pointer text-[#4A7C3A] border border-[#4A7C3A] hover:bg-[#4A7C3A] hover:text-white px-3 py-1 rounded inline-flex items-center text-xs">
+                                  Download PDF <i class="bi bi-arrow-down-circle ml-1 text-sm"></i>
+                                </a>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    <% }) %>
+                  </div>
+                  <div class="swiper-button-next"></div>
+                  <div class="swiper-button-prev"></div>
+                </div>
+              </div>
+
+              <!-- Articles -->
+              <div class="tab-pane" id="writer-tabs-2" role="tabpanel" aria-labelledby="writer-tab-2">
+                <div class="heading text-center mb-6">
+                  <h2 class="gulzartext text-2xl font-bold text-gray-800 tracking-wide">مصنف کے مضامین</h2>
+                  <p class="gulzartext text-base text-gray-500">Discover Insights and Knowledge Meet Our Authors</p>
+                </div>
+
+                <div class="swiper article-slider relative py-2 px-1">
+                  <div class="swiper-wrapper">
+                    <% if (!Array.isArray(data && data.articles) || (data.articles || []).length === 0) { %>
+                      <div class="swiper-slide h-auto">
+                        <div class="p-6 text-center text-gray-500">No articles found for this writer.</div>
+                      </div>
+                    <% } %>
+
+                    <% (data.articles || []).forEach(function(article){
+                         const aSlug = (helpers.slugify ? helpers.slugify(article.title || "") : encodeURIComponent(article.title || ""));
+                    %>
+                      <div class="swiper-slide h-auto">
+                        <a href="/article/<%= article.id %>/<%= aSlug %>" class="article-card group">
+                          <div class="article-card-img">
+                            <img loading="lazy"
+                              src="<%= helpers.makeArticleImageUrl(article.id) %>"
+                              alt="<%= article.title %>"
+                              onerror="this.onerror=null;this.src='https://placehold.co/400x225/e8f0e0/4a7031?text=Article&font=roboto'">
+                          </div>
+                          <div class="article-card-content">
+                            <h3 class="heading gulzartext <%= helpers.isUrdu && helpers.isUrdu(article.title || '') ? 'rtl text-right' : '' %>">
+                              <%= article.title %>
+                            </h3>
+                            <p class="mt-2 text-gray-700 gulzartext line-clamp-3 text-[.98rem] leading-6 <%= helpers.isUrdu && helpers.isUrdu(article.urduDescription || '') ? 'rtl text-right' : '' %>">
+                              <%= helpers.safeText(helpers.pickFirst(article && article.englishDescription, article && article.urduDescription, "")) %>
+                            </p>
+                            <div class="mt-4 flex justify-between items-center article-card-bottom">
+                              <span class="read-more-btn heading">Read More <i class="fa-solid fa-angle-right text-xs"></i></span>
+                              <span class="article-view"><%= (article && article.views) || 0 %> <i class="bi bi-eye-fill"></i></span>
+                            </div>
+                          </div>
+                        </a>
+                      </div>
+                    <% }) %>
+                  </div>
+                  <div class="swiper-button-next"></div>
+                  <div class="swiper-button-prev"></div>
+                </div>
+              </div>
+
+              <!-- Q&A -->
+              <div class="tab-pane" id="writer-tabs-3" role="tabpanel" aria-labelledby="writer-tab-3">
+                <div class="heading text-center mb-6">
+                  <h2 class="gulzartext text-2xl font-bold text-gray-800 tracking-wide">مصنف کے سوال و جواب</h2>
+                </div>
+
+                <div class="swiper qa-slider relative py-2 px-1">
+                  <div class="swiper-wrapper">
+                    <% if (!Array.isArray(data && data.questions) || (data.questions || []).length === 0) { %>
+                      <div class="swiper-slide h-auto">
+                        <div class="p-6 text-center text-gray-500">No questions found.</div>
+                      </div>
+                    <% } %>
+
+                    <% (data.questions || []).forEach(function(q){
+                         const qTitle = helpers.pickFirst(q && q.questionEnglish, q && q.questionUrdu, "question");
+                         const qSlug  = (helpers.slugify ? helpers.slugify(qTitle) : encodeURIComponent(qTitle));
+                    %>
+                      <div class="swiper-slide h-auto">
+                        <a href="/question/<%= (q && q.id) || '' %>/<%= qSlug %>" class="article-card group">
+                          <div class="article-card-content">
+                            <h3 class="heading gulzartext text-[1.02rem] leading-6 <%= helpers.isUrdu && helpers.isUrdu((q && q.questionUrdu) || '') ? 'rtl text-right' : '' %>">
+                              <%= helpers.safeText((q && q.questionUrdu) || (q && q.questionEnglish) || "سوال") %>
+                            </h3>
+                            <p class="mt-2 text-gray-700 gulzartext line-clamp-3 text-[.98rem] leading-6 <%= helpers.isUrdu && helpers.isUrdu((q && q.questionUrdu) || '') ? 'rtl text-right' : '' %>">
+                              <%= helpers.safeText((q && q.questionUrdu) || (q && q.questionEnglish) || "") %>
+                            </p>
+                            <div class="mt-4 flex justify-between items-center article-card-bottom">
+                              <span class="read-more-btn heading">مکمل جواب پڑھیں <i class="fa-solid fa-arrow-left text-xs"></i></span>
+                              <span class="article-view"><%= (q && q.views) || 0 %> <i class="bi bi-eye-fill"></i></span>
+                            </div>
+                          </div>
+                        </a>
+                      </div>
+                    <% }) %>
+                  </div>
+                  <div class="swiper-button-next"></div>
+                  <div class="swiper-button-prev"></div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Simple Toast -->
+  <div id="toast" class="fixed bottom-24 right-6 bg-gray-800 text-white px-5 py-3 rounded-lg shadow-lg opacity-0 transition-opacity duration-300 z-50">
+    Link copied to clipboard!
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-[#718e56] text-white mt-16 sm:mt-20 relative z-20">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8 py-8">
+      <div class="flex flex-col items-center">
+        <a href="/" class="flex items-center space-x-3 mb-5">
+          <img class="h-12 w-auto bg-white rounded-full p-1" src="https://minaramasjid.com/assets/image/logo/marc.png" alt="Maula Ali Research Center Logo">
+          <span class="text-lg font-bold text-white">Maula Ali Research Center</span>
+        </a>
+        <div class="flex space-x-5">
+          <a href="#" class="text-green-200 hover:text-white transition-colors" aria-label="Facebook"><i class="fab fa-facebook-f fa-lg"></i></a>
+          <a href="#" class="text-green-200 hover:text-white transition-colors" aria-label="Twitter"><i class="fab fa-twitter fa-lg"></i></a>
+          <a href="#" class="text-green-200 hover:text-white transition-colors" aria-label="Instagram"><i class="fab fa-instagram fa-lg"></i></a>
+          <a href="#" class="text-green-200 hover:text-white transition-colors" aria-label="LinkedIn"><i class="fab fa-linkedin-in fa-lg"></i></a>
+        </div>
+      </div>
+      <div class="mt-8 pt-5 border-t border-green-400/50 text-center">
+        <p class="text-sm text-green-200">
+          &copy; 2024 - 2025 Design and Develop by
+          <a href="https://www.AlQalamArts.com/" target="_blank" rel="noopener noreferrer" class="font-medium text-white hover:text-green-100">
+            www.AlQalamArts.com
+          </a>
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <button id="backToTopBtn" class="cursor-pointer fixed bottom-6 right-6 bg-[#4a7031] hover:bg-[#3b5a28] text-white w-10 h-10 rounded-full shadow-lg hidden justify-center items-center transition-all duration-300 opacity-0 z-40">
+    <i class="fas fa-arrow-up"></i>
+  </button>
+
+
+   <div id="mobile-navbar"
+       class="fixed bottom-0 left-0 right-0 bg-white shadow-xl z-40 lg:hidden rounded-t-2xl border-t border-gray-200">
+    <nav class="flex justify-around items-center h-16 text-gray-400">
+      <a href="/" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm hover:text-[var(--primary-dark)] transition-colors duration-200">
+        <i class="fas fa-home text-lg mobile-nav-icon"></i><span class="mt-1 mobile-nav-text">Home</span>
+      </a>
+      <a href="/about" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm hover:text-[var(--primary-dark)] transition-colors duration-200">
+        <i class="fas fa-info-circle text-lg mobile-nav-icon"></i><span class="mt-1 mobile-nav-text">About</span>
+      </a>
+      <a href="/book" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm hover:text-[var(--primary-dark)] transition-colors duration-200">
+        <i class="fas fa-book text-lg mobile-nav-icon"></i><span class="mt-1 mobile-nav-text">Books</span>
+      </a>
+      <a href="/articles" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm hover:text-[var(--primary-dark)] transition-colors duration-200">
+        <i class="fas fa-newspaper text-lg mobile-nav-icon"></i><span class="mt-1 mobile-nav-text">Articles</span>
+      </a>
+      <a href="/contact" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm hover:text-[var(--primary-dark)] transition-colors duration-200">
+        <i class="fas fa-user-graduate text-lg mobile-nav-icon"></i><span class="mt-1 mobile-nav-text">Contact</span>
+      </a>
+    </nav>
+  </div>
+
+  <!-- Swiper.js -->
+  <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+
+  <!-- Inline JS -->
+  <script type="module">
+    document.addEventListener('DOMContentLoaded', () => {
+      const mobileMenuButton = document.getElementById('mobile-menu-toggle');
+      const mobileMenu = document.getElementById('mobile-menu');
+      if (mobileMenuButton && mobileMenu) {
+        mobileMenuButton.addEventListener('click', () => {
+          mobileMenu.classList.toggle('mobile-menu-hidden');
+          mobileMenu.classList.toggle('mobile-menu-visible');
+        });
+      }
+
+      const backToTopBtn = document.getElementById('backToTopBtn');
+      if (backToTopBtn) {
+        window.addEventListener('scroll', () => {
+          if (window.scrollY > 300) {
+            backToTopBtn.classList.remove('hidden');
+            backToTopBtn.classList.add('flex');
+            backToTopBtn.classList.remove('opacity-0');
+          } else {
+            backToTopBtn.classList.add('opacity-0');
+            setTimeout(() => {
+              if (window.scrollY <= 300) {
+                backToTopBtn.classList.add('hidden');
+                backToTopBtn.classList.remove('flex');
+              }
+            }, 300);
+          }
+        });
+        backToTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+      }
+
+      const tablist = document.getElementById('writer-tablist');
+      if (tablist) {
+        const tabs = tablist.querySelectorAll('.tab-btn');
+        const panes = document.querySelectorAll('.tab-pane');
+        tabs.forEach(tab => {
+          tab.addEventListener('click', () => {
+            tabs.forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected','false'); });
+            panes.forEach(p => p.classList.remove('active'));
+            tab.classList.add('active'); tab.setAttribute('aria-selected','true');
+            const targetPane = document.querySelector(tab.dataset.tabTarget);
+            if (targetPane) targetPane.classList.add('active');
+          });
+        });
+      }
+
+      const swiperOptions = {
+        direction: 'horizontal',
+        loop: false,
+        slidesPerView: 1,
+        spaceBetween: 16,
+        navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
+        breakpoints: {
+          640: { slidesPerView: 2, spaceBetween: 16 },
+          1024: { slidesPerView: 3, spaceBetween: 18 }
+        }
+      };
+
+      const articleSwiperOptions = {
+        ...swiperOptions,
+        breakpoints: {
+          640: { slidesPerView: 2, spaceBetween: 16 },
+          1024: { slidesPerView: 3, spaceBetween: 18 }
+        }
+      };
+
+      new Swiper('.books-slider', swiperOptions);
+      new Swiper('.article-slider', articleSwiperOptions);
+      new Swiper('.qa-slider', articleSwiperOptions);
+    });
+  </script>
+</body>
+</html>
