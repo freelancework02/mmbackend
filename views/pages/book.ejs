@@ -273,7 +273,7 @@
     const slugify = (text) => String(text || "")
       .toLowerCase().trim()
       .replace(/\s+/g, '-')
-      .replace(/[.,\/#!$%\^&\*;:{}=\_`~()؟"']/g, '')
+      .replace(/[.,\/#!$%\^&\*;:{}=\_`~()؟"’”’']/g, '')
       .replace(/-+/g, '-');
 
     const isUrdu = (text) => /[\u0600-\u06FF]/.test(String(text || ""));
@@ -293,7 +293,7 @@
     }
 
     function escapeHtml(str) {
-      return String(str)
+      return String(str ?? '')
         .replace(/&/g, "&amp;").replace(/</g, "&lt;")
         .replace(/>/g, "&gt;").replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
@@ -365,7 +365,7 @@
       }
       if (filters.translator) {
         const t = filters.translator.trim().toLowerCase();
-        out = out.filter(b => String((b.translator && b.translator.name) || "").toLowerCase() === t);
+        out = out.filter(b => String((b.translator && b.translator.name) || b.translator || "").toLowerCase() === t);
       }
       if (filters.language) {
         const l = filters.language.trim().toLowerCase();
@@ -411,7 +411,23 @@
           <div class="mb-4">
             <span class="text-xs bg-amber-100 text-amber-700 border border-amber-200 px-2.5 py-0.5 rounded-full font-medium">${langBadge}</span>
           </div>
-          <div class="mt-auto flex gap-2">
+
+          <!-- Writer / Translator block added, with fallbacks to 'testingaaaa' -->
+          <div class="text-gray-500 text-sm space-y-2 mt-2">
+            <p>
+              <i class="fas fa-pen-nib mr-2"></i>
+              <strong class="font-bold">Writer:</strong>
+              ${escapeHtml(book.author || 'testingaaaa')}
+            </p>
+            <p>
+              <i class="fas fa-language mr-2"></i>
+              <strong class="font-bold">Translator:</strong>
+              ${escapeHtml((book.translator && book.translator.name) || book.translator || 'testingaaaa')}
+            </p>
+          </div>
+
+          <!-- Keep your buttons exactly as-is -->
+          <div class="mt-auto flex gap-2 pt-4">
             <button class="cursor-pointer bg-green-600 text-white px-2.5 py-1 rounded-full text-xs">Read More</button>
             <a href="${API.attachment(book.id)}" target="_blank" rel="noopener noreferrer"
                class="cursor-pointer bg-amber-400 text-gray-800 px-2.5 py-1 rounded-full text-xs"
