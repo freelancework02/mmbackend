@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title><%= meta?.title || "Our Gallery | Maula Ali Research Center" %></title>
+  <meta name="keywords" content="Gallery, Maula Ali Research Centre, Islamic Events, Photos">
+  <meta name="description" content="<%= meta?.description || "Browse photo galleries from events and archives at Maula Ali Research Centre." %>">
+  <meta name="robots" content="index, follow">
+
+  <meta property="og:title" content="<%= meta?.title || "Our Gallery | Maula Ali Research Center" %>">
+  <meta property="og:description" content="<%= meta?.description || "Browse photo galleries from events and archives at Maula Ali Research Centre." %>">
+  <meta property="og:image" content="<%= meta?.ogImage || "https://placehold.co/1200x630/6a8a4f/white?text=Our+Gallery&font=roboto" %>">
+  <meta property="og:type" content="website">
+
+  <meta name="twitter:title" content="<%= meta?.title || "Our Gallery | Maula Ali Research Center" %>">
+  <meta name="twitter:description" content="<%= meta?.description || "Browse photo galleries from events and archives at Maula Ali Research Centre." %>">
+  <meta name="twitter:image" content="<%= meta?.ogImage || "https://placehold.co/1200x630/6a8a4f/white?text=Our+Gallery&font=roboto" %>">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <% if (meta?.baseHref) { %>
+    <base href="<%= meta.baseHref %>">
+  <% } %>
+
+  <link rel="icon" href="https://minaramasjid.com/assets/image/logo/favicon.ico" type="image/x-icon">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,400;8..144,500;8..144,700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Gulzar&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" />
+
+  <style>
+    @font-face {
+      font-family: 'NaatFont';
+      src: url('https://res.cloudinary.com/awescreative/raw/upload/v1749150996/Awes/naatfont.ttf') format('truetype');
+      font-weight: normal; font-style: normal;
+    }
+    body { font-family: "Roboto Flex", sans-serif; background-color: #f0f5e9; }
+    .rtl { direction: rtl; }
+
+    .mobile-menu-hidden { max-height: 0; opacity: 0; transition: max-height .3s ease-out, opacity .2s ease-out; overflow: hidden; }
+    .mobile-menu-visible { max-height: 500px; opacity: 1; transition: max-height .4s ease-in, opacity .3s ease-in; }
+
+    .gulzartext, .heading { font-family: 'NaatFont', 'Gulzar', serif; }
+
+    .gallery-card { background:#fff; border-radius:1rem; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,.05); border:1px solid #e5e7eb; transition:all .3s ease; display:flex; flex-direction:column; }
+    .gallery-card:hover { transform:translateY(-4px); box-shadow:0 10px 25px -5px rgba(0,0,0,.07), 0 8px 10px -6px rgba(0,0,0,.07); }
+    .gallery-card .card-img { aspect-ratio: 16 / 10; position:relative; overflow:hidden; }
+    .gallery-card .card-img img { width:100%; height:100%; object-fit:cover; transition: transform .3s ease; }
+    .gallery-card:hover .card-img img { transform:scale(1.05); }
+    .gallery-card .card-content { padding:1rem 1.25rem; flex-grow:1; display:flex; flex-direction:column; }
+  </style>
+</head>
+<body class="bg-[#f0f5e9] text-gray-800 antialiased">
+  <div class="min-h-screen z-10">
+    <div class="absolute inset-0 bg-cover bg-no-repeat opacity-70" style="background-image:url('/assets/bg-DgzunbF9.png'); background-position:center; z-index:-1;"></div>
+
+    <header class="bg-[#718e56] sticky top-0 z-50 shadow-md border-b border-green-100">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center py-3 relative">
+          <nav class="hidden md:flex gap-5 text-md font-semibold text-white tracking-wide">
+            <a href="/" class="hover:text-green-100 transition-colors">Home</a>
+            <a href="/about" class="hover:text-green-100 transition-colors">About</a>
+            <a href="/events" class="hover:text-green-100 transition-colors">News & Event</a>
+            <a href="/gallery" class="text-white font-bold" aria-current="page">Gallery</a>
+          </nav>
+
+          <div class="absolute left-1/2 transform -translate-x-1/2 -bottom-7 bg-white rounded-full p-1 shadow-lg border border-green-100 z-10">
+            <a href="/"><img src="https://minaramasjid.com/assets/image/logo/marc.png" alt="Logo" class="w-16 h-16 rounded-full object-contain"></a>
+          </div>
+
+          <nav class="hidden md:flex gap-5 text-md font-semibold text-white tracking-wide">
+            <a href="/book" class="hover:text-green-100 transition-colors">Books</a>
+            <a href="/article" class="hover:text-green-100 transition-colors">Articles</a>
+            <a href="/qa" class="hover:text-green-100 transition-colors">Question Answer</a>
+            <a href="/request-book" class="hover:text-green-100 transition-colors">Request a Book</a>
+            <a href="/contact" class="hover:text-green-100 transition-colors">Contact</a>
+          </nav>
+
+          <div class="md:hidden flex-1"></div>
+          <div class="md:hidden flex-1 flex justify-center">
+            <a href="/"><img src="https://minaramasjid.com/assets/image/logo/marc.png" alt="Logo" class="w-12 h-12 rounded-full object-contain"></a>
+          </div>
+          <div class="md:hidden flex-1 flex justify-end">
+            <button id="mobile-menu-toggle" class="text-white focus:outline-none">
+              <i class="fas fa-bars w-7 h-7"></i>
+            </button>
+          </div>
+        </div>
+
+        <div id="mobile-menu" class="md:hidden mobile-menu-hidden">
+          <div class="flex flex-col gap-2 py-3 px-2 text-white bg-[#5a7544] rounded-b-xl">
+            <a href="/" class="hover:bg-[#4f6639] px-4 py-2 rounded">Home</a>
+            <a href="/about" class="hover:bg-[#4f6639] px-4 py-2 rounded">About</a>
+            <a href="/events" class="hover:bg-[#4f6639] px-4 py-2 rounded">News & Event</a>
+            <a href="/gallery" class="bg-[#4f6639] px-4 py-2 rounded" aria-current="page">Gallery</a>
+            <a href="/book" class="hover:bg-[#4f6639] px-4 py-2 rounded">Books</a>
+            <a href="/article" class="hover:bg-[#4f6639] px-4 py-2 rounded">Articles</a>
+            <a href="/qa" class="hover:bg-[#4f6639] px-4 py-2 rounded">Question Answer</a>
+            <a href="/request-book" class="hover:bg-[#4f6639] px-4 py-2 rounded">Request a Book</a>
+            <a href="/contact" class="hover:bg-[#4f6639] px-4 py-2 rounded">Contact</a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="relative z-10 pt-12 sm:pt-16">
+      <section class="py-5 m-0 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h1 class="heading text-3xl lg:text-4xl font-bold text-[#4a7031] mb-8 text-center gulzartext">ہماری گیلری</h1>
+
+          <div id="galleryContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+            <% if (Array.isArray(galleries) && galleries.length) { %>
+              <% galleries.forEach(function(g) { %>
+                <a href="/gallery/<%= g.id %>" class="gallery-card h-full cursor-pointer group">
+                  <div class="card-img">
+                    <img
+                      src="<%= g.coverUrl %>"
+                      alt="Cover of <%= g.title || 'Gallery' %>"
+                      onerror="this.onerror=null;this.src='https://placehold.co/800x500/e8f0e0/4a7031?text=Gallery+Cover&font=roboto'"
+                      loading="lazy"
+                    >
+                  </div>
+                  <div class="card-content">
+                    <h3 class="m-0 mb-2 text-xl font-bold text-gray-800 group-hover:text-[#4a7031] transition-colors">
+                      <%= g.title || 'Untitled Gallery' %>
+                    </h3>
+                    <p class="m-0 mb-3 text-sm text-gray-500 flex-grow">
+                      <% if (g.description) { %>
+                        <%= g.description.length > 160 ? (g.description.slice(0,159) + '…') : g.description %>
+                      <% } else { %>
+                        &nbsp;
+                      <% } %>
+                    </p>
+                    <div class="mt-auto flex justify-between items-center pt-3 border-t border-gray-100">
+                      <span class="text-sm font-medium text-gray-600">
+                        <i class="bi bi-images mr-1.5"></i>
+                        <%= (typeof g.photoCount === "number") ? (g.photoCount + " Photos") : "View Photos" %>
+                      </span>
+                      <span class="text-xs text-gray-400">View Gallery <i class="bi bi-arrow-right-short"></i></span>
+                    </div>
+                  </div>
+                </a>
+              <% }) %>
+            <% } else { %>
+              <div class="col-span-full">
+                <div class="bg-white border border-green-100 rounded-xl p-8 text-center shadow-sm">
+                  <p class="text-gray-600">No galleries found yet.</p>
+                </div>
+              </div>
+            <% } %>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="toast" class="fixed bottom-24 right-6 bg-gray-800 text-white px-5 py-3 rounded-lg shadow-lg opacity-0 transition-opacity duration-300 z-50">
+    Link copied to clipboard!
+  </div>
+
+  <footer class="bg-[#718e56] text-white mt-16 sm:mt-20 relative z-20">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8 py-8">
+      <div class="flex flex-col items-center">
+        <a href="/" class="flex items-center space-x-3 mb-5">
+          <img class="h-12 w-auto bg-white rounded-full p-1" src="https://minaramasjid.com/assets/image/logo/marc.png" alt="Maula Ali Research Center Logo">
+          <span class="text-lg font-bold text-white">Maula Ali Research Center</span>
+        </a>
+        <div class="flex space-x-5">
+          <a href="#" class="text-green-200 hover:text-white transition-colors" aria-label="Facebook"><i class="fab fa-facebook-f fa-lg"></i></a>
+          <a href="#" class="text-green-200 hover:text-white transition-colors" aria-label="Twitter"><i class="fab fa-twitter fa-lg"></i></a>
+          <a href="#" class="text-green-200 hover:text-white transition-colors" aria-label="Instagram"><i class="fab fa-instagram fa-lg"></i></a>
+          <a href="#" class="text-green-200 hover:text-white transition-colors" aria-label="LinkedIn"><i class="fab fa-linkedin-in fa-lg"></i></a>
+        </div>
+      </div>
+      <div class="mt-8 pt-5 border-t border-green-400/50 text-center">
+        <p class="text-sm text-green-200">
+          &copy; 2024 - 2025 Design and Develop by
+          <a href="https://www.AlQalamArts.com/" target="_blank" rel="noopener noreferrer" class="font-medium text-white hover:text-green-100">www.AlQalamArts.com</a>
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <button id="backToTopBtn" class="fixed bottom-6 right-6 bg-[#4a7031] hover:bg-[#3b5a28] text-white w-10 h-10 rounded-full shadow-lg hidden justify-center items-center transition-all duration-300 opacity-0 z-40">
+    <i class="fas fa-arrow-up"></i>
+  </button>
+
+  <script type="module">
+    document.addEventListener('DOMContentLoaded', () => {
+      const mobileMenuButton = document.getElementById('mobile-menu-toggle');
+      const mobileMenu = document.getElementById('mobile-menu');
+      if (mobileMenuButton && mobileMenu) {
+        mobileMenuButton.addEventListener('click', () => {
+          mobileMenu.classList.toggle('mobile-menu-hidden');
+          mobileMenu.classList.toggle('mobile-menu-visible');
+        });
+      }
+
+      const backToTopBtn = document.getElementById('backToTopBtn');
+      if (backToTopBtn) {
+        window.addEventListener('scroll', () => {
+          if (window.scrollY > 300) {
+            backToTopBtn.classList.remove('hidden');
+            backToTopBtn.classList.add('flex');
+            backToTopBtn.classList.remove('opacity-0');
+          } else {
+            backToTopBtn.classList.add('opacity-0');
+            setTimeout(() => {
+              if (window.scrollY <= 300) {
+                backToTopBtn.classList.add('hidden');
+                backToTopBtn.classList.remove('flex');
+              }
+            }, 300);
+          }
+        });
+
+        backToTopBtn.addEventListener('click', () => {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+      }
+    });
+  </script>
+</body>
+</html>

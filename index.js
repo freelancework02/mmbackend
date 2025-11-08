@@ -715,8 +715,198 @@ async function handleWriter(req, res) {
 app.get("/writer/:id", handleWriter);
 app.get("/writer/:id/:slug", handleWriter);
 
+// ===================== GALLERY (SSR) =====================
+function gallerySlugify(text = "") {
+  return String(text)
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/[.,\/#!$%\^&\*;:{}=\_`~()“”"’'؟،]/g, "")
+    .replace(/-+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function plainText(html = "") {
+  return String(html).replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+}
+
+function firstImageIdFrom(g) {
+  // Accepts: coverImageId OR images:[{id}] OR images:[id]
+  if (g?.coverImageId) return g.coverImageId;
+
+  const arr = Array.isArray(g?.images) ? g.images : [];
+  if (!arr.length) return null;
+
+  const first = arr[0];
+  if (typeof first === "object" && first && ("id" in first)) return first.id;
+  if (typeof first === "number" || typeof first === "string") return first;
+  return null;
+}
+
+function photoCountFrom(g) {
+  if (typeof g?.photoCount === "number") return g.photoCount;
+  if (Array.isArray(g?.images)) return g.images.length;
+  return 0;
+}
+
+/** ----------- LIST PAGE: /gallery ----------- */
+/** ----------- LIST PAGE: /gallery ----------- */
+app.get("/gallery", async (req, res) => {
+  const API_BASE = apiBaseFromReq(req); // keep using your helper
+
+  // small helper (safe get)
+  const safeGet = async (url) => {
+    try {
+      const { data } = await axios.get(url, { timeout: 15000 });
+      return data;
+    } catch {
+      return null;
+    }
+  };
+
+  try {
+    // 1) base list (meta) — unchanged
+    const list = await safeGet(`${API_BASE}/galleries`);
+    const baseRows = Array.isArray(list) ? list : [];
+
+    // 2) fetch details for each gallery in parallel to get images[]
+    const details = await Promise.all(
+      baseRows.map((g) => safeGet(`${API_BASE}/galleries/${encodeURIComponent(g.id)}`))
+    );
+
+    // 3) normalize into what the EJS wants
+    const normalized = baseRows.map((g, i) => {
+      const id = g.id ?? g._id ?? g.galleryId;
+      const title = g.title || g.name || `Gallery ${id}`;
+      const slug = g.slug || gallerySlugify(title);
+      const detail = details[i] || {};
+      const images = Array.isArray(detail.images) ? detail.images : [];
+
+      const firstId = images[0]?.id || null;
+      const coverUrl = firstId
+        ? `${API_BASE}/galleries/image/${firstId}`
+        : "https://placehold.co/800x500/e8f0e0/4a7031?text=Gallery+Cover&font=roboto";
+
+      const description = g.description
+        ? plainText(g.description)
+        : (g.about ? plainText(g.about) : "");
+
+      const photoCount = images.length;
+
+      return {
+        id,
+        title,
+        slug,
+        coverUrl,      // <-- what your EJS uses for the <img>
+        description,
+        photoCount,    // <-- what your EJS shows next to the images icon
+      };
+    });
+
+    const meta = {
+      title: "Our Gallery | Maula Ali Research Center",
+      description: "Browse photo galleries from events and archives at Maula Ali Research Centre.",
+      ogImage: "https://placehold.co/1200x630/6a8a4f/white?text=Our+Gallery&font=roboto",
+      baseHref: `${req.protocol}://${req.get("host")}/`,
+    };
+
+    return res.render("pages/gallery", { meta, galleries: normalized });
+  } catch (err) {
+    console.error("Gallery list error:", err?.message || err);
+    const meta = {
+      title: "Our Gallery | Maula Ali Research Center",
+      description: "No galleries found.",
+      ogImage: "https://placehold.co/1200x630/6a8a4f/white?text=Our+Gallery&font=roboto",
+      baseHref: `${req.protocol}://${req.get("host")}/`,
+    };
+    return res.render("pages/gallery", { meta, galleries: [] });
+  }
+});
+
+
+/** ----------- OPTIONAL DETAIL PAGE: /gallery/:slugOrId -----------
+ * Your list EJS links to `/gallery/<%= g.slug or g.id %>`.
+ * This handler resolves either a numeric id or a slug by scanning the list.
+ */
+/** ----------- DETAIL PAGE: /gallery/:slugOrId ----------- */
+app.get("/gallery/:slugOrId", async (req, res) => {
+  const API_BASE = apiBaseFromReq(req);
+  const { slugOrId } = req.params;
+  const isId = /^\d+$/.test(slugOrId);
+
+  const safeGet = async (url) => {
+    try {
+      const { data } = await axios.get(url, { timeout: 15000 });
+      return data;
+    } catch {
+      return null;
+    }
+  };
+
+  try {
+    let found = null;
+
+    if (isId) {
+      // Try by ID directly; returns full detail (with images)
+      found = await safeGet(`${API_BASE}/galleries/${encodeURIComponent(slugOrId)}`);
+    } else {
+      // Resolve by slug using list
+      const list = await safeGet(`${API_BASE}/galleries`);
+      const arr = Array.isArray(list) ? list : [];
+
+      const hit = arr.find((g) => {
+        const saved = g.slug && String(g.slug).trim().toLowerCase();
+        const computed = gallerySlugify(g.title || g.name || "");
+        return (saved && saved === slugOrId.toLowerCase()) || computed === slugOrId.toLowerCase();
+      });
+
+      if (hit && (hit.id || hit._id || hit.galleryId)) {
+        const id = hit.id || hit._id || hit.galleryId;
+        // Now fetch full detail (with images) by id
+        found = await safeGet(`${API_BASE}/galleries/${encodeURIComponent(id)}`);
+      }
+    }
+
+    if (!found || !(found.id || found._id || found.galleryId)) {
+      return res.status(404).send("Gallery not found");
+    }
+
+    // Canonical slug enforcement
+    const id = found.id ?? found._id ?? found.galleryId;
+    const titleForSlug = found.title || found.name || `gallery-${id}`;
+    const canonicalSlug = (found.slug && String(found.slug).trim()) || gallerySlugify(titleForSlug);
+
+    if (!isId && slugOrId !== canonicalSlug) {
+      return res.redirect(301, `/gallery/${canonicalSlug}`);
+    }
+
+    // Build meta
+    const firstId = Array.isArray(found.images) && found.images[0] ? found.images[0].id : null;
+    const ogImage = firstId ? `${API_BASE}/galleries/image/${firstId}` 
+                            : "https://placehold.co/1200x630/e8f0e0/4a7031?text=Gallery&font=roboto";
+
+    const meta = {
+      title: `${found.title || found.name || "Gallery"} | Maula Ali Research Center`,
+      description: String(found.description || "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim(),
+      ogImage,
+      baseHref: `${req.protocol}://${req.get("host")}/`,
+    };
+
+    // Render EJS
+    return res.render("pages/gallery_view", {
+      meta,
+      gallery: found,  // includes images[]
+      apiBase: API_BASE,
+    });
+  } catch (err) {
+    console.error("Gallery detail error:", err?.message || err);
+    return res.status(500).send("Something went wrong");
+  }
+});
+
+
 // Health checks
-app.get("/healthz", (req, res) => res.status(200).send("ok"));
+app.get("/health", (req, res) => res.status(200).send("ok"));
 app.get("/readyz", (req, res) => res.status(200).send("ready"));
 
 // ---- 404 for unknown ----
