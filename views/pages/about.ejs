@@ -156,7 +156,7 @@
                 <div class="hidden lg:flex lg:items-center lg:space-x-4">
                     <a href="/article" class="text-gray-700 hover:text-primary-light px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Articles</a>
                     <a href="/qa" class="text-gray-700 hover:text-primary-light px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Question Answer</a>
-                    <a href="/book-request" class="text-gray-700 hover:text-primary-light px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Request a Book</a>
+                    <!-- <a href="/book-request" class="text-gray-700 hover:text-primary-light px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Request a Book</a> -->
                     <a href="/contact" class="text-gray-700 hover:text-primary-light px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Contact</a>
                 </div>
 
@@ -178,7 +178,7 @@
                 <a href="/book" class="text-gray-700 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">Books</a>
                 <a href="/article" class="text-gray-700 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">Articles</a>
                 <a href="/qa" class="text-gray-700 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">Question Answer</a>
-                <a href="/book-request" class="text-gray-700 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">Request a Book</a>
+                <!-- <a href="/book-request" class="text-gray-700 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">Request a Book</a> -->
                 <a href="/contact" class="text-gray-700 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">Contact</a>
             </div>
         </div>
@@ -426,11 +426,54 @@
         </div>
     </footer>
 
-
     <!-- Back To Top Button -->
     <button id="backToTopBtn" class="fixed bottom-6 right-6 bg-primary hover:bg-primary-dark text-white w-12 h-12 rounded-full shadow-lg hidden justify-center items-center transition-all duration-300 opacity-0 z-40">
         <i class="fas fa-arrow-up"></i>
     </button>
+   
+   
+    <!-- Bottom Navbar -->
+      <div id="mobile-navbar"
+     class="fixed bottom-0 left-0 right-0 bg-white shadow-xl z-40 lg:hidden rounded-t-2xl border-t border-gray-200">
+  <nav class="flex justify-around items-center h-16 text-gray-400">
+
+    <!-- Home -->
+    <a href="/" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm 
+        hover:text-[var(--primary-dark)] transition-colors duration-200">
+      <i class="fas fa-home text-lg mobile-nav-icon"></i>
+      <span class="mt-1 mobile-nav-text">Home</span>
+    </a>
+
+    <!-- Q&A (Updated from About) -->
+    <a href="/qa" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm
+        hover:text-[var(--primary-dark)] transition-colors duration-200">
+      <i class="fas fa-question-circle text-lg mobile-nav-icon"></i>
+      <span class="mt-1 mobile-nav-text">Q&A</span>
+    </a>
+
+    <!-- Books -->
+    <a href="/book" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm
+        hover:text-[var(--primary-dark)] transition-colors duration-200">
+      <i class="fas fa-book text-lg mobile-nav-icon"></i>
+      <span class="mt-1 mobile-nav-text">Books</span>
+    </a>
+
+    <!-- Articles -->
+    <a href="/article" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm
+        hover:text-[var(--primary-dark)] transition-colors duration-200">
+      <i class="fas fa-newspaper text-lg mobile-nav-icon"></i>
+      <span class="mt-1 mobile-nav-text">Articles</span>
+    </a>
+
+    <!-- Gallery (Updated from Contact) -->
+    <a href="/gallery" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm
+        hover:text-[var(--primary-dark)] transition-colors duration-200">
+      <i class="fas fa-images text-lg mobile-nav-icon"></i>
+      <span class="mt-1 mobile-nav-text">Gallery</span>
+    </a>
+
+  </nav>
+</div>
 
     <!-- Inline JavaScript -->
     <script type="module">

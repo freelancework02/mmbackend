@@ -90,14 +90,14 @@
             <a href="/book" class="hover:text-green-100 transition-colors">Books</a>
             <a href="/article" class="hover:text-green-100 transition-colors">Articles</a>
             <a href="/qa" class="hover:text-green-100 transition-colors">Question Answer</a>
-            <a href="/request-book" class="hover:text-green-100 transition-colors">Request a Book</a>
+            <!-- <a href="/request-book" class="hover:text-green-100 transition-colors">Request a Book</a> -->
             <a href="/contact" class="hover:text-green-100 transition-colors">Contact</a>
           </nav>
 
           <div class="md:hidden flex-1"></div>
-          <div class="md:hidden flex-1 flex justify-center">
+          <!-- <div class="md:hidden flex-1 flex justify-center">
             <a href="/"><img src="https://minaramasjid.com/assets/image/logo/marc.png" alt="Logo" class="w-12 h-12 rounded-full object-contain"></a>
-          </div>
+          </div> -->
           <div class="md:hidden flex-1 flex justify-end">
             <button id="mobile-menu-toggle" class="text-white focus:outline-none">
               <i class="fas fa-bars w-7 h-7"></i>
@@ -114,7 +114,7 @@
             <a href="/book" class="hover:bg-[#4f6639] px-4 py-2 rounded">Books</a>
             <a href="/article" class="hover:bg-[#4f6639] px-4 py-2 rounded">Articles</a>
             <a href="/qa" class="hover:bg-[#4f6639] px-4 py-2 rounded">Question Answer</a>
-            <a href="/request-book" class="hover:bg-[#4f6639] px-4 py-2 rounded">Request a Book</a>
+            <!-- <a href="/request-book" class="hover:bg-[#4f6639] px-4 py-2 rounded">Request a Book</a> -->
             <a href="/contact" class="hover:bg-[#4f6639] px-4 py-2 rounded">Contact</a>
           </div>
         </div>
@@ -251,6 +251,54 @@
       </div>
     </div>
   </div>
+
+
+  <!-- Footer  -->
+
+
+  <!-- Mobile Bottom Navigation Bar -->
+ <div id="mobile-navbar"
+     class="fixed bottom-0 left-0 right-0 bg-white shadow-xl z-40 lg:hidden rounded-t-2xl border-t border-gray-200">
+  <nav class="flex justify-around items-center h-16 text-gray-400">
+
+    <!-- Home -->
+    <a href="/" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm 
+        hover:text-[var(--primary-dark)] transition-colors duration-200">
+      <i class="fas fa-home text-lg mobile-nav-icon"></i>
+      <span class="mt-1 mobile-nav-text">Home</span>
+    </a>
+
+    <!-- Q&A (Updated from About) -->
+    <a href="/qa" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm
+        hover:text-[var(--primary-dark)] transition-colors duration-200">
+      <i class="fas fa-question-circle text-lg mobile-nav-icon"></i>
+      <span class="mt-1 mobile-nav-text">Q&A</span>
+    </a>
+
+    <!-- Books -->
+    <a href="/book" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm
+        hover:text-[var(--primary-dark)] transition-colors duration-200">
+      <i class="fas fa-book text-lg mobile-nav-icon"></i>
+      <span class="mt-1 mobile-nav-text">Books</span>
+    </a>
+
+    <!-- Articles -->
+    <a href="/article" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm
+        hover:text-[var(--primary-dark)] transition-colors duration-200">
+      <i class="fas fa-newspaper text-lg mobile-nav-icon"></i>
+      <span class="mt-1 mobile-nav-text">Articles</span>
+    </a>
+
+    <!-- Gallery (Updated from Contact) -->
+    <a href="/gallery" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm
+        hover:text-[var(--primary-dark)] transition-colors duration-200">
+      <i class="fas fa-images text-lg mobile-nav-icon"></i>
+      <span class="mt-1 mobile-nav-text">Gallery</span>
+    </a>
+
+  </nav>
+</div>
+
 
   <script>
     // Mobile menu
