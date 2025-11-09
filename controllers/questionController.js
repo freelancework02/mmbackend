@@ -23,7 +23,6 @@ exports.getAllNewQuestions = (req, res) => {
   const sql = `
     SELECT
       id,
-      image,
       imageName,
       slug,
       questionEnglish, answerEnglish,

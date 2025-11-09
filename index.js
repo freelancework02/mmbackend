@@ -6,6 +6,7 @@ const path = require("path");
 const axios = require("axios");
 const db = require("./config/db");
 
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -77,11 +78,12 @@ async function fetchJSON(url) {
 
 async function getHomeData(API_BASE) {
   try {
-    const [articles, writers, books, events] = await Promise.all([
+    const [articles, writers, books, events, questionsRaw] = await Promise.all([
       fetchJSON(`${API_BASE}/articles`),
       fetchJSON(`${API_BASE}/writers`),
       fetchJSON(`${API_BASE}/books`),
       fetchJSON(`${API_BASE}/events`),
+      fetchJSON(`http://localhost:5000/api/questions`) // <-- add this
     ]);
 
     const normArticles = (Array.isArray(articles) ? articles : []).map((a) => ({
@@ -129,17 +131,32 @@ async function getHomeData(API_BASE) {
       imageSrc: `/api/writers/image/${w.id}`,
     }));
 
+    // Normalize questions for the homepage cards
+    const normQuestions = (Array.isArray(questionsRaw) ? questionsRaw
+                        : Array.isArray(questionsRaw?.data) ? questionsRaw.data
+                        : []).map((q) => {
+      const id    = q.id ?? q._id ?? q.qaId;
+      const title = q.title || q.question || q.questionEnglish || q.questionUrdu || `Question ${id}`;
+      const views = typeof q.views === "number" ? q.views : (q.viewCount || 30);
+      const desc  = q.safeText || q.summary || q.shortAnswer || q.excerpt ||
+                    clamp(stripTags(q.answerUrdu || q.answerEnglish || ""), 150);
+      const slug  = q.slug || slugify(title);
+      return { id, title, views, safeText: desc, slug };
+    });
+
     return {
       articles: normArticles,
-      events: normEvents,
-      books: normBooks,
-      writers: normWriters,
+      events:   normEvents,
+      books:    normBooks,
+      writers:  normWriters,
+      questions: normQuestions, // <-- now exists
     };
   } catch (err) {
     console.error("Home data fetch failed:", err?.message || err);
-    return { articles: [], events: [], books: [], writers: [] };
+    return { articles: [], events: [], books: [], writers: [], questions: [] };
   }
 }
+
 
 // ===== Extra helpers your writer route expects =====
 const toLower = (s) => String(s || "").trim().toLowerCase();
@@ -193,12 +210,13 @@ app.use("/api/galleries", require("./routes/galleryRoutes"));
 app.get("/", async (req, res) => {
   const data = await getHomeData(apiBaseFromReq(req));
   res.render("index", {
-    events: data.events.slice(0, 4),
-    books: data.books.slice(0, 4),
+    events:   data.events.slice(0, 4),
+    books:    data.books.slice(0, 4),
     articles: data.articles.slice(0, 4),
-    writers: data.writers.slice(0, 3),
+    writers:  data.writers.slice(0, 3),
+    questions: data.questions, // EJS slices to 3
   });
-}); 
+});
 
 app.get("/article", (req, res) => res.render("pages/article"));
 app.get("/book", (req, res) => res.render("pages/book"));
@@ -210,7 +228,7 @@ app.get("/qa", async (req, res) => {
   const LOCAL_API_BASE = apiBaseFromReq(req);
   try {
     const [qRes, tRes] = await Promise.all([
-      axios.get(`${LOCAL_API_BASE}/questions`, { timeout: 15000 }),
+      axios.get(`http://localhost:5000/api/questions`, { timeout: 15000 }),
       axios.get(`${LOCAL_API_BASE}/topics`, { timeout: 15000 }).catch(() => ({ data: [] })),
     ]);
 
@@ -303,21 +321,32 @@ app.get("/bookdetail/:id/:slug", async (req, res) => {
 
 /** ----------------- ARTICLE DETAIL (SSR) /article/:id/:slug ----------------- */
 // ----------------- ARTICLE DETAIL (SSR) /article/:id/:slug -----------------
-app.get("/article/:id/:slug", async (req, res) => {
+
+
+
+
+app.get("/article/:id", handleArticleDetail);
+app.get("/article/:id/:slug", handleArticleDetail);
+
+async function handleArticleDetail(req, res) {
   const { id, slug } = req.params;
   const API_BASE = apiBaseFromReq(req);
 
-  // ---- helpers ----
+  // ---- helpers (kept from your code) ----
   const normalize = (s) => {
     const str = String(s || "").toLowerCase().trim();
-    // strip diacritics/accents
     const noAccents = str.normalize("NFKD").replace(/[\u0300-\u036f]/g, "");
-    // remove punctuation-like, collapse spaces
     return noAccents
       .replace(/[.,\/#!$%\^&\*;:{}=\_`~()“”"’'؟،]/g, " ")
       .replace(/\s+/g, " ")
       .trim();
   };
+
+  async function fetchJSON(url, opts) {
+    const r = await fetch(url, opts);
+    if (!r.ok) throw new Error(`HTTP ${r.status} for ${url}`);
+    return await r.json();
+  }
 
   async function fetchWriterById(writerId) {
     try {
@@ -344,45 +373,44 @@ app.get("/article/:id/:slug", async (req, res) => {
 
     const writers = await fetchAllWriters();
 
-    // 1) exact normalized match
-    let hit =
-      writers.find((w) => normalize(w.name) === target) ||
-      null;
+    // exact normalized match
+    let hit = writers.find((w) => normalize(w.name) === target) || null;
 
-    // 2) startsWith / includes fallback (handles “Maulana …” prefixes etc.)
+    // startsWith / includes fallback
     if (!hit) {
       hit =
         writers.find((w) => normalize(w.name).startsWith(target)) ||
         writers.find((w) => normalize(w.name).includes(target)) ||
         null;
     }
-
     return hit;
   }
 
   try {
-    // 1) Article
+    // 1) Load article by ID (always)
     const article = await fetchJSON(`${API_BASE}/articles/${encodeURIComponent(id)}`);
     if (!article || !article.title) {
       return res.status(404).send("Article not found");
     }
 
-    // 2) Canonical slug enforcement
-    const actualSlug = slugify(article.title);
-    if (slug !== actualSlug) {
+    // 2) Compute canonical slug
+    const actualSlug = slugify(article.title || `article-${article.id}`);
+
+    // 3) If a slug is provided but doesn't match, redirect to canonical
+    if (slug && slug !== actualSlug) {
       return res.redirect(301, `/article/${article.id}/${actualSlug}`);
     }
 
-    // 3) Base list for related / highlights
-    const allArticles = await fetchJSON(`${API_BASE}/articles`);
-    const list = Array.isArray(allArticles) ? allArticles : [];
+    // 4) Load list for related/highlights
+    const allArticlesRaw = await fetchJSON(`${API_BASE}/articles`);
+    const list = Array.isArray(allArticlesRaw) ? allArticlesRaw : [];
 
     const related = list
       .filter((a) => a.id !== article.id)
       .sort((a, b) => (b?.views ?? 0) - (a?.views ?? 0))
       .slice(0, 3);
 
-    // 4) Resolve writer (prefer id if present on article, else match by name)
+    // 5) Resolve writer (prefer ID on article, else name match)
     const writerId =
       article.writerId ||
       article.writersId ||
@@ -392,20 +420,14 @@ app.get("/article/:id/:slug", async (req, res) => {
     const writerNameRaw =
       article.writers ||
       article.writer ||
-      ""; // article JSON often has "writers" as a string
+      "";
 
     let writer = null;
+    if (writerId) writer = await fetchWriterById(writerId);
+    if (!writer && writerNameRaw) writer = await matchWriterByName(writerNameRaw);
 
-    if (writerId) {
-      writer = await fetchWriterById(writerId);
-    }
-    if (!writer && writerNameRaw) {
-      writer = await matchWriterByName(writerNameRaw);
-    }
-
-    // 5) Writer Highlights (prefer ID, else by normalized name)
+    // 6) Writer Highlights
     const targetNorm = normalize(writer ? writer.name : writerNameRaw);
-
     let writerHighlights = list
       .filter((a) => a.id !== article.id)
       .filter((a) => {
@@ -425,49 +447,59 @@ app.get("/article/:id/:slug", async (req, res) => {
         .slice(0, 3);
     }
 
-    // 6) Meta
-    const metaTitle = `Article Detail | ${article.title} | Maula Ali Research Center`;
-    const metaDesc =
-      stripHTML(article.englishDescription || article.urduDescription || "") ||
-      "Read the full article on Maula Ali Research Centre.";
-    const metaImage = `${req.protocol}://${req.get("host")}/api/articles/image/${article.id}`;
-    const pageUrl = `${req.protocol}://${req.get("host")}${req.originalUrl}`;
+    // 7) SEO meta / canonical URLs
+    const canonicalUrl = absUrl(req, `/article/${article.id}/${actualSlug}`); // even if no slug in request
+    const pageUrl = canonicalUrl;
     const baseHref = process.env.PUBLIC_BASE_HREF || `${req.protocol}://${req.get("host")}/`;
 
-    // 7) Render
+    const metaTitle = `Article Detail | ${article.title} | Maula Ali Research Center`;
+    const metaDescRaw =
+      stripHTML(article.englishDescription || article.urduDescription || "") ||
+      "Read the full article on Maula Ali Research Centre.";
+    const metaDesc = clamp(metaDescRaw, 300);
+    const metaImage = absUrl(req, `/api/articles/image/${article.id}`);
+
+    // 8) Render the page (works for /article/:id and /article/:id/:slug)
     return res.render("pages/article_view", {
       baseHref,
       pageUrl,
       metaTitle,
-      metaDesc: clamp(metaDesc, 300),
+      metaDesc,
       metaImage,
       article,
       related,
       writerHighlights,
-      writer,     // <-- used by EJS
+      writer,          // used by EJS
       slugify,
       stripHTML,
     });
   } catch (err) {
-    console.error("Article detail error:", err?.response?.status, err?.message);
+    console.error("Article detail error:", err?.message || err);
     return res.status(500).send("Something went wrong");
   }
-});
+}
+
+
+
 
 
 
 /** ----------------- QUESTION DETAIL (SSR) /question/:id/:slug ----------------- */
-const absUrl = (req, p) => `${req.protocol}://${req.get("host")}${p.startsWith("/") ? "" : "/"}${p}`;
+
+  
+// Make absolute URL based on current request
+const absUrl = (req, p = "/") =>
+  `${req.protocol}://${req.get("host")}${p.startsWith("/") ? "" : "/"}${p}`;
 
 async function handleQuestionDetail(req, res) {
   const { id, slug } = req.params;
-  const LOCAL_API_BASE = apiBaseFromReq(req);
+  const LOCAL_API_BASE = apiBaseFromReq(req); // your function that builds base like http://localhost:5000/api
 
   try {
-    const qRes = await axios.get(
-      `${LOCAL_API_BASE}/questions/${encodeURIComponent(id)}`,
-      { timeout: 15000 }
-    );
+    // 1️⃣ Fetch question by ID (always)
+    const qRes = await axios.get(`${LOCAL_API_BASE}/questions/${encodeURIComponent(id)}`, {
+      timeout: 15000,
+    });
 
     const raw = qRes.data;
     const question =
@@ -479,6 +511,7 @@ async function handleQuestionDetail(req, res) {
       return res.status(404).send("Question not found");
     }
 
+    // 2️⃣ Build the canonical slug
     const canonicalBase =
       (question.slug && String(question.slug).trim()) ||
       question.questionEnglish ||
@@ -486,21 +519,30 @@ async function handleQuestionDetail(req, res) {
       `question-${question.id}`;
     const actualSlug = slugify(canonicalBase);
 
-    if (!slug || slug !== actualSlug) {
+    // 3️⃣ If slug present but not matching, redirect to proper canonical URL
+    if (slug && slug !== actualSlug) {
       return res.redirect(301, `/question/${question.id}/${actualSlug}`);
     }
 
+    // 4️⃣ Otherwise, continue rendering normally (even if no slug)
     const allRes = await axios.get(`${LOCAL_API_BASE}/questions`, { timeout: 15000 });
     const all = Array.isArray(allRes.data)
       ? allRes.data
-      : (Array.isArray(allRes.data?.data) ? allRes.data.data : []);
+      : Array.isArray(allRes.data?.data)
+      ? allRes.data.data
+      : [];
 
     const others = all.filter((x) => x.id !== question.id);
     const sidebar = others.slice(0, 5);
     const related = others.slice(0, 13);
 
-    const pageUrl = absUrl(req, req.originalUrl);
-    const titleText = stripTags(question.questionEnglish || question.questionUrdu || "").trim();
+    const canonicalUrl = absUrl(req, `/question/${question.id}/${actualSlug}`);
+    const pageUrl = canonicalUrl;
+
+    // 5️⃣ Meta setup
+    const titleText = stripTags(
+      question.questionEnglish || question.questionUrdu || ""
+    ).trim();
 
     const metaTitle = titleText
       ? `${titleText} — Maula Ali Research Center`
@@ -510,13 +552,18 @@ async function handleQuestionDetail(req, res) {
       stripTags(String(question.answerEnglish || question.answerUrdu || "")) ||
       titleText ||
       "Question & Answer";
-
     const metaDesc = clamp(rawDesc, 300);
     const metaImage = absUrl(req, "/assets/og-default.png");
 
-    const questionHTML = sanitizeHtml(String(question.questionEnglish || question.questionUrdu || ""));
-    const answerHTML = sanitizeHtml(String(question.answerUrdu || question.answerEnglish || ""));
+    // 6️⃣ Safe HTML (for EJS render)
+    const questionHTML = sanitizeHtml(
+      String(question.questionEnglish || question.questionUrdu || "")
+    );
+    const answerHTML = sanitizeHtml(
+      String(question.answerUrdu || question.answerEnglish || "")
+    );
 
+    // 7️⃣ Render page normally
     res.render("pages/question_view", {
       metaTitle,
       metaDesc,
@@ -537,8 +584,12 @@ async function handleQuestionDetail(req, res) {
   }
 }
 
+// Both routes point to same handler
 app.get("/question/:id", handleQuestionDetail);
 app.get("/question/:id/:slug", handleQuestionDetail);
+
+ 
+
 
 /** ----------------- EVENTS LIST ----------------- */
 app.get("/events", async (req, res) => {
@@ -641,7 +692,7 @@ async function handleWriter(req, res) {
     fetchJSON(`${API_BASE}/writers/${id}`),
     fetchJSON(`${API_BASE}/books`),
     fetchJSON(`${API_BASE}/articles`),
-    fetchJSON(`${API_BASE}/questions`),
+    fetchJSON(`http://localhost:5000/api/questions`),
   ]);
 
   if (!writer || !writer.id) {

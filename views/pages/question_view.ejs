@@ -1,78 +1,183 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- ==== SEO / Open Graph (dynamic) ==== -->
-  <title><%= metaTitle || 'Question Detail | Maula Ali Research Center' %></title>
-  <meta name="keywords" content="Maula Ali Research Centre, Islamic Questions, Fatwa, Islamic Rulings, Ask Scholars, Urdu Fatwa">
-  <meta name="description" content="<%= metaDesc || 'Read the detailed answer to this Islamic question on Maula Ali Research Centre.' %>">
-  <meta name="robots" content="index, follow">
-  <% if (pageUrl) { %><link rel="canonical" href="<%= pageUrl %>"><% } %>
+  <% 
+    /* =========================
+       SAFE SEO INPUTS & FALLBACKS
+       ========================= */
+    const SITE_NAME   = "Maula Ali Research Center";
+    const _baseHref   = (typeof baseHref === "string" && baseHref.trim()) ? baseHref.trim() : "https://demo.minaramasjid.com/";
+    const BASE        = _baseHref.replace(/\/+$/,"");            // no trailing slash
+    const q           = (question && typeof question === "object") ? question : {};
+    const qId         = q.id || q._id || q.questionId || "";
+    const qTitleUr    = q.titleUrdu || q.questionUrdu || "";
+    const qTitleEn    = q.titleEnglish || q.questionEnglish || "";
+    const qAnsUr      = q.answerUrdu || "";
+    const qAnsEn      = q.answerEnglish || "";
+    const toText      = (s)=> String(s||"").replace(/<[^>]*>/g,"").replace(/\s+/g," ").trim();
 
-  <meta property="og:title" content="<%= metaTitle || 'Question Detail | Maula Ali Research Center' %>">
-  <meta property="og:description" content="<%= metaDesc || 'Read the detailed answer to this Islamic question on Maula Ali Research Centre.' %>">
-  <meta property="og:image" content="<%= metaImage || 'https://placehold.co/1200x630/6a8a4f/white?text=Question&font=roboto' %>">
-  <% if (pageUrl) { %><meta property="og:url" content="<%= pageUrl %>"><% } %>
+    // Canonical: force id-only route
+    const canonicalUrl= `${BASE}/question/${qId}`;
+
+    const computedTitle = qTitleUr || qTitleEn || "Question Detail";
+    const metaT         = (typeof metaTitle === "string" && metaTitle.trim())
+                          ? metaTitle
+                          : `${computedTitle} | ${SITE_NAME}`;
+
+    const descCandidate = toText(qAnsEn) || toText(qAnsUr) || toText(qTitleEn) || toText(qTitleUr) || "Read this detailed fatwa.";
+    const metaD         = (typeof metaDesc === "string" && metaDesc.trim())
+                          ? metaDesc
+                          : descCandidate.slice(0, 170);
+
+    // You can plug in your own image per-question if you have it, else fallback
+    const fallbackOg    = "https://placehold.co/1200x630/6a8a4f/ffffff?text=Fatwa+%7C+Question+%26+Answer";
+    const metaI         = (typeof metaImage === "string" && metaImage.trim()) ? metaImage : fallbackOg;
+
+    // Dates (optional)
+    const datePublished = q.dateG || q.createdOn || null;
+    const dateModified  = q.modifiedOn || q.dateG || q.createdOn || null;
+
+    // Breadcrumbs
+    const breadcrumbs = [
+      { name: "Home",    url: `${BASE}/` },
+      { name: "Q&A",     url: `${BASE}/qa` },
+      { name: toText(computedTitle) || "Question", url: canonicalUrl }
+    ];
+
+    const askerName   = toText(q.asker || "نامعلوم");
+    const muftiName   = toText(q.mufti || "");
+    const madrasaName = toText(q.madrasa || "");
+    const cityName    = toText(q.city || "");
+  %>
+
+  <!-- ===== Primary SEO ===== -->
+  <title><%= metaT %></title>
+  <meta name="description" content="<%= metaD %>">
+  <meta name="keywords" content="Maula Ali Research Centre, Islamic Questions, Fatwa, Islamic Rulings, Ask Scholars, Urdu Fatwa, Q&A, Darulifta">
+  <meta name="robots" content="index,follow,max-image-preview:large">
+  <link rel="canonical" href="<%= canonicalUrl %>">
+
+  <!-- ===== Open Graph ===== -->
+  <meta property="og:site_name" content="Maula Ali Research Center">
+  <meta property="og:title" content="<%= metaT %>">
+  <meta property="og:description" content="<%= metaD %>">
+  <meta property="og:image" content="<%= metaI %>">
+  <meta property="og:image:alt" content="<%= toText(computedTitle) %>">
   <meta property="og:type" content="article">
-  <meta name="twitter:title" content="<%= metaTitle || 'Question Detail | Maula Ali Research Center' %>">
-  <meta name="twitter:description" content="<%= metaDesc || 'Read the detailed answer to this Islamic question on Maula Ali Research Centre.' %>">
-  <meta name="twitter:image" content="<%= metaImage || 'https://placehold.co/1200x630/6a8a4f/white?text=Question&font=roboto' %>">
-  <meta name="twitter:card" content="summary_large_image">
+  <meta property="og:url" content="<%= canonicalUrl %>">
+  <% if (datePublished) { %><meta property="article:published_time" content="<%= new Date(datePublished).toISOString() %>"><% } %>
+  <% if (dateModified)  { %><meta property="article:modified_time"  content="<%= new Date(dateModified).toISOString() %>"><% } %>
+  <meta property="article:section" content="Fatwa">
 
-  <!-- ==== JSON-LD Article ==== -->
+  <!-- ===== Twitter Cards ===== -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="<%= metaT %>">
+  <meta name="twitter:description" content="<%= metaD %>">
+  <meta name="twitter:image" content="<%= metaI %>">
+
+  <!-- ===== Hreflang (same canonical if single page) ===== -->
+  <link rel="alternate" href="<%= canonicalUrl %>" hreflang="en">
+  <link rel="alternate" href="<%= canonicalUrl %>" hreflang="ur">
+  <link rel="alternate" href="<%= canonicalUrl %>" hreflang="x-default">
+
+  <!-- ===== JSON-LD: WebSite, Organization, BreadcrumbList, QAPage ===== -->
   <script type="application/ld+json">
   {
-    "@context":"https://schema.org",
-    "@type":"Article",
-    "headline":"<%- (metaTitle || '').replace(/\"/g,'\\\"') %>",
-    "inLanguage":"ur",
-    "mainEntityOfPage":"<%- (pageUrl || '') %>",
-    "url":"<%- (pageUrl || '') %>",
-    "author":[{"@type":"Person","name":"<%- ((question && question.writer) || 'نامعلوم').replace(/\"/g,'\\\"') %>"}],
-    "publisher":{"@type":"Organization","name":"Maula Ali Research Center","logo":{"@type":"ImageObject","url":"/assets/image/logo/marc.png"}},
-    "image":["<%- (metaImage || 'https://placehold.co/1200x630') %>"],
-    "datePublished":"<%- (question && (question.dateG || question.createdOn) || '') %>",
-    "dateModified":"<%- (question && (question.modifiedOn || question.dateG || question.createdOn) || '') %>",
-    "about":"سوال و جواب",
-    "description":"<%- (metaDesc || '').replace(/\"/g,'\\\"') %>"
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "<%= BASE %>#website",
+        "url": "<%= BASE %>/",
+        "name": "Maula Ali Research Center",
+        "inLanguage": "ur",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "<%= BASE %>/search?q={search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
+      },
+      {
+        "@type": "Organization",
+        "@id": "<%= BASE %>#organization",
+        "name": "Maula Ali Research Center",
+        "url": "<%= BASE %>/",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://minaramasjid.com/assets/image/logo/marc.png"
+        },
+        "sameAs": []
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": "<%= canonicalUrl %>#breadcrumbs",
+        "itemListElement": [
+          <% breadcrumbs.forEach(function(bc, i){ %>
+          { "@type": "ListItem", "position": <%= i+1 %>, "name": "<%= bc.name %>", "item": "<%= bc.url %>" }<%= (i<breadcrumbs.length-1) ? "," : "" %>
+          <% }) %>
+        ]
+      },
+      {
+        "@type": "QAPage",
+        "@id": "<%= canonicalUrl %>#qapage",
+        "url": "<%= canonicalUrl %>",
+        "name": "<%= toText(computedTitle).replace(/\"/g,'\\\"') %>",
+        "inLanguage": "ur",
+        "mainEntity": {
+          "@type": "Question",
+          "name": "<%= toText(computedTitle).replace(/\"/g,'\\\"') %>",
+          "text": "<%= toText(q.questionUrdu || q.questionEnglish || computedTitle).replace(/\"/g,'\\\"') %>",
+          <% if (datePublished) { %>"dateCreated": "<%= new Date(datePublished).toISOString() %>",<% } %>
+          <% if (askerName) { %>"author": { "@type": "Person", "name": "<%= askerName.replace(/\"/g,'\\\"') %>" },<% } %>
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "<%= toText(qAnsUr || qAnsEn).replace(/\"/g,'\\\"') %>",
+            <% if (dateModified) { %>"dateCreated": "<%= new Date(dateModified).toISOString() %>",<% } %>
+            "author": {
+              "@type": "Person",
+              "name": "<%= (muftiName || 'Mufti').replace(/\"/g,'\\\"') %>"
+            }
+          }
+        },
+        "publisher": { "@id": "<%= BASE %>#organization" },
+        "image": { "@type": "ImageObject", "url": "<%= metaI %>" }
+      }
+    ]
   }
   </script>
 
-  <!-- Base Href (dynamic, no hardcoded localhost) -->
-  <% if (typeof baseHref !== 'undefined' && baseHref) { %>
-    <base href="<%= baseHref %>">
-  <% } %>
+  <!-- Base Href -->
+  <base href="<%= BASE %>/" />
 
-  <link rel="icon" href="https://minaramasjid.com/assets/image/logo/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="https://minaramasjid.com/assets/image/logo/favicon.ico" type="image/x-icon" />
 
   <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
 
   <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,400;8..144,500;8..144,700&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Gulzar&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,400;8..144,500;8..144,700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Gulzar&display=swap" rel="stylesheet" />
 
-  <!-- Font Awesome -->
+  <!-- Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
 
   <style>
     @font-face {
       font-family: 'NaatFont';
       src: url('https://res.cloudinary.com/awescreative/raw/upload/v1749150996/Awes/naatfont.ttf') format('truetype');
-      font-weight: normal;
-      font-style: normal;
-      font-display: swap;
+      font-weight: normal; font-style: normal; font-display: swap;
     }
     body { font-family: "Roboto Flex", sans-serif; }
     .rtl { direction: rtl; }
     .rounded-4xl { border-radius: 2rem; }
     .mobile-menu-hidden { max-height: 0; opacity: 0; transition: max-height .3s ease-out, opacity .2s ease-out; overflow: hidden; }
     .mobile-menu-visible { max-height: 500px; opacity: 1; transition: max-height .4s ease-in, opacity .3s ease-in; }
-    .gulzartext, .heading, .prose-rtl { font-family: 'NaatFont', 'Gulzar', serif; }
+    .gulzartext, .heading, .prose-rtl { font-family: 'NaatFont','Gulzar',serif; }
     .prose { color:#333; }
     .prose p { margin-bottom: 1em; }
     .prose-rtl { direction: rtl; text-align: right; }
@@ -84,7 +189,7 @@
 
 <body class="font-sans bg-[#f0f5e9] text-gray-800 antialiased">
   <!-- Background -->
-  <div class="absolute inset-0 bg-cover bg-no-repeat opacity-70" style="background-image: url('/assets/bg-DgzunbF9.png'); background-position: center center; z-index: -1;"></div>
+  <div class="absolute inset-0 bg-cover bg-no-repeat opacity-70" style="background-image:url('/assets/bg-DgzunbF9.png'); background-position:center; z-index:-1;"></div>
 
   <!-- Header -->
   <header class="bg-[#718e56] sticky top-0 z-50 shadow-md border-b border-green-100">
@@ -97,9 +202,7 @@
           <a href="/book" class="hover:text-green-100 transition-colors">Books</a>
         </nav>
         <div class="absolute left-1/2 transform -translate-x-1/2 -bottom-7 bg-white rounded-full p-1 shadow-lg border border-green-100 z-10">
-          <a href="/">
-            <img src="https://minaramasjid.com/assets/image/logo/marc.png" alt="Logo" class="w-16 h-16 rounded-full object-contain">
-          </a>
+          <a href="/"><img src="https://minaramasjid.com/assets/image/logo/marc.png" alt="Logo" class="w-16 h-16 rounded-full object-contain" /></a>
         </div>
         <nav class="hidden md:flex gap-5 text-md font-semibold text-white tracking-wide">
           <a href="/article" class="hover:text-green-100 transition-colors">Articles</a>
@@ -107,9 +210,6 @@
           <a href="/book-request" class="hover:text-green-100 transition-colors">Request a Book</a>
           <a href="/contact" class="hover:text-green-100 transition-colors">Contact</a>
         </nav>
-        <div class="md:hidden flex-1 flex justify-center">
-          <!-- <a href="/"><img src="https://minaramasjid.com/assets/image/logo/marc.png" alt="Logo" class="w-12 h-12 rounded-full object-contain"></a> -->
-        </div>
         <div class="md:hidden flex-1 flex justify-end">
           <button id="mobile-menu-toggle" class="text-white focus:outline-none" aria-label="Open menu">
             <i class="fas fa-bars w-7 h-7"></i>
@@ -141,33 +241,25 @@
             <div class="rtl text-right">
               <h1 class="heading text-2xl lg:text-4xl font-bold text-[#4a7031] mb-3" lang="ur">
                 <%= stripTags(
-                      question.titleUrdu ||
-                      question.questionUrdu ||
-                      question.titleEnglish ||
-                      question.questionEnglish ||
-                      metaTitle || ''
-                    ) %>
+                  q.titleUrdu || q.questionUrdu || q.titleEnglish || q.questionEnglish || metaTitle || ''
+                ) %>
               </h1>
 
               <div class="mb-4 pb-4 border-b border-gray-200">
                 <p class="gulzartext text-md text-gray-700">
-                  پوچھنے والا: <%= stripTags(question.asker || 'نامعلوم') %>
+                  پوچھنے والا: <%= stripTags(q.asker || 'نامعلوم') %>
                 </p>
                 <p class="gulzartext text-sm text-gray-500 mt-1">
-                  <% if (question.madrasa) { %>دارالافتاء: <%= stripTags(question.madrasa) %><% } %>
-                  <% if (question.mufti) { %>
-                    <span class="mx-2">|</span> کتبہ: <%= stripTags(question.mufti) %>
-                  <% } %>
-                  <% if (question.city) { %>
-                    <span class="mx-2">|</span> <%= stripTags(question.city) %>
-                  <% } %>
+                  <% if (q.madrasa) { %>دارالافتاء: <%= stripTags(q.madrasa) %><% } %>
+                  <% if (q.mufti) { %><span class="mx-2">|</span> کتبہ: <%= stripTags(q.mufti) %><% } %>
+                  <% if (q.city) { %><span class="mx-2">|</span> <%= stripTags(q.city) %><% } %>
                 </p>
               </div>
 
               <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
                 <div class="flex items-center gap-2 text-gray-500">
                   <i class="fas fa-eye w-4 text-gray-400" aria-hidden="true"></i>
-                  <span class="text-md font-bold text-gray-900"><%= Number(question.views || 0) %></span>
+                  <span class="text-md font-bold text-gray-900"><%= Number(q.views || 0) %></span>
                   <span class="text-sm font-semibold">Views</span>
                 </div>
 
@@ -182,10 +274,11 @@
 
             <!-- Language Switcher -->
             <div class="flex rounded-full overflow-hidden border border-[#d6e5c4] mb-6">
-              <% const hasUr = !!(question.questionUrdu || question.titleUrdu || questionHTML);
-                 const hasEn = !!(question.questionEnglish || question.titleEnglish || question.answerEnglish);
-                 const hasRo = !!(question.romanUrdu || question.questionRoman || question.answerRoman);
-                 const initialLang = hasUr ? 'ur' : (hasEn ? 'en' : (hasRo ? 'ro' : 'ur'));
+              <% 
+                const hasUr = !!(q.questionUrdu || q.titleUrdu || questionHTML);
+                const hasEn = !!(q.questionEnglish || q.titleEnglish || q.answerEnglish);
+                const hasRo = !!(q.romanUrdu || q.questionRoman || q.answerRoman);
+                const initialLang = hasUr ? 'ur' : (hasEn ? 'en' : (hasRo ? 'ro' : 'ur'));
               %>
               <button id="lang-ur" class="lang-btn gulzartext flex-1 text-center py-2 text-sm cursor-pointer <%= initialLang==='ur' ? 'bg-[#c1d9a3] text-[#4a7031] font-semibold' : 'bg-[#e8f0e0] hover:bg-[#d6e5c4] text-gray-700 font-medium' %>">اردو</button>
               <button id="lang-ro" class="lang-btn flex-1 text-center py-2 text-sm cursor-pointer <%= initialLang==='ro' ? 'bg-[#c1d9a3] text-[#4a7031] font-semibold' : 'bg-[#e8f0e0] hover:bg-[#d6e5c4] text-gray-700 font-medium' %>">Roman</button>
@@ -195,37 +288,37 @@
             <!-- Urdu -->
             <div id="content-ur" class="lang-content prose prose-rtl max-w-none gulzartext text-lg leading-relaxed <%= initialLang==='ur' ? '' : 'hidden' %>">
               <h2 class="heading text-2xl font-bold text-[#4a7031] mb-3">سوال:</h2>
-              <div id="fatwa-question" dir="<%= detectDirection(stripTags(question.questionUrdu || question.questionEnglish || '')) %>">
+              <div id="fatwa-question" dir="<%= detectDirection(stripTags(q.questionUrdu || q.questionEnglish || '')) %>">
                 <% if (questionHTML) { %>
                   <%- questionHTML %>
                 <% } else { %>
-                  <p><%= stripTags(question.questionUrdu || question.questionEnglish || '') %></p>
+                  <p><%= stripTags(q.questionUrdu || q.questionEnglish || '') %></p>
                 <% } %>
               </div>
 
               <hr class="my-6">
 
               <h2 class="heading text-2xl font-bold text-[#4a7031] mb-3">جواب:</h2>
-              <div id="fatwa-answer" dir="<%= detectDirection(stripTags(question.answerUrdu || question.answerEnglish || '')) %>">
+              <div id="fatwa-answer" dir="<%= detectDirection(stripTags(q.answerUrdu || q.answerEnglish || '')) %>">
                 <% if (answerHTML) { %>
                   <%- answerHTML %>
                 <% } else { %>
-                  <p><%= stripTags(question.answerUrdu || question.answerEnglish || '') %></p>
+                  <p><%= stripTags(q.answerUrdu || q.answerEnglish || '') %></p>
                 <% } %>
 
-                <% if (question.mufti || question.madrasa || question.city || question.dateHijri || question.dateG || question.sealImage){ %>
+                <% if (q.mufti || q.madrasa || q.city || q.dateHijri || q.dateG || q.sealImage){ %>
                   <div class="mt-8 pt-5 border-t border-dashed border-green-200 rtl text-right text-[15px] text-[#2b2b2b]">
-                    <% if (question.mufti) { %><div><strong>المفتی:</strong> <%= stripTags(question.mufti) %></div><% } %>
-                    <% if (question.madrasa) { %><div><strong>دارالافتاء:</strong> <%= stripTags(question.madrasa) %></div><% } %>
-                    <% if (question.city) { %><div><strong>شہر:</strong> <%= stripTags(question.city) %></div><% } %>
-                    <% if (question.dateHijri || question.dateG) { %>
+                    <% if (q.mufti) { %><div><strong>المفتی:</strong> <%= stripTags(q.mufti) %></div><% } %>
+                    <% if (q.madrasa) { %><div><strong>دارالافتاء:</strong> <%= stripTags(q.madrasa) %></div><% } %>
+                    <% if (q.city) { %><div><strong>شہر:</strong> <%= stripTags(q.city) %></div><% } %>
+                    <% if (q.dateHijri || q.dateG) { %>
                       <div>
-                        <% if (question.dateHijri) { %><strong>تاریخ (ہجری):</strong> <%= stripTags(question.dateHijri) %><% } %>
-                        <% if (question.dateG) { %><span class="mx-2">/</span><strong>تاریخ (عیسوی):</strong> <%= stripTags(question.dateG) %><% } %>
+                        <% if (q.dateHijri) { %><strong>تاریخ (ہجری):</strong> <%= stripTags(q.dateHijri) %><% } %>
+                        <% if (q.dateG) { %><span class="mx-2">/</span><strong>تاریخ (عیسوی):</strong> <%= stripTags(q.dateG) %><% } %>
                       </div>
                     <% } %>
-                    <% if (question.sealImage) { %>
-                      <div class="mt-2"><img src="<%= question.sealImage %>" alt="مہر" class="inline-block max-h-24 object-contain"></div>
+                    <% if (q.sealImage) { %>
+                      <div class="mt-2"><img src="<%= q.sealImage %>" alt="مہر" class="inline-block max-h-24 object-contain"></div>
                     <% } %>
                   </div>
                 <% } %>
@@ -235,46 +328,46 @@
             <!-- Roman Urdu -->
             <div id="content-ro" class="lang-content prose prose-ltr max-w-none text-md leading-relaxed <%= initialLang==='ro' ? '' : 'hidden' %>">
               <h2 class="text-2xl font-bold text-[#4a7031] mb-3">Sawaal:</h2>
-              <p><%= stripTags(question.questionRoman || question.romanUrdu || '') %></p>
+              <p><%= stripTags(q.questionRoman || q.romanUrdu || '') %></p>
               <hr class="my-6">
               <h2 class="text-2xl font-bold text-[#4a7031] mb-3">Jawaab:</h2>
-              <p><%= stripTags(question.answerRoman || '') %></p>
+              <p><%= stripTags(q.answerRoman || '') %></p>
             </div>
 
             <!-- English -->
             <div id="content-en" class="lang-content prose prose-ltr max-w-none text-md leading-relaxed <%= initialLang==='en' ? '' : 'hidden' %>">
               <h2 class="text-2xl font-bold text-[#4a7031] mb-3">Question:</h2>
-              <p><%= stripTags(question.questionEnglish || '') %></p>
+              <p><%= stripTags(q.questionEnglish || '') %></p>
               <hr class="my-6">
               <h2 class="text-2xl font-bold text-[#4a7031] mb-3">Answer:</h2>
-              <p><%= stripTags(question.answerEnglish || '') %></p>
+              <p><%= stripTags(q.answerEnglish || '') %></p>
             </div>
           </div>
 
           <!-- Related (mobile) -->
-          <div class="animate-fade-in-up lg:hidden" style="animation-delay: 300ms;">
+          <div class="animate-fade-in-up lg:hidden" style="animation-delay:300ms;">
             <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4 rtl text-right">
               <h2 class="heading text-2xl font-bold text-[#4a7031]">تازہ ترین فتاویٰ</h2>
               <a href="/all-faq" class="bg-white border border-[#4a7031] text-[#4a7031] rounded-full px-4 py-2 text-sm font-medium hover:bg-[#eaf3df] transition-colors duration-300 shadow-sm flex-shrink-0 gulzartext">سب دیکھیں</a>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <% (Array.isArray(related) ? related : []).slice(0,6).forEach(function(q, idx){ %>
+              <% (Array.isArray(related) ? related : []).slice(0,6).forEach(function(r, idx){ %>
                 <div class="bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 h-full">
-                  <a href="/question/<%= q.id %>/<%= slugify(q.slug || (q.questionEnglish || q.questionUrdu || ('question-' + (q.id || idx+1)))) %>"
+                  <a href="/question/<%= r.id %>/<%= slugify(r.slug || (r.questionEnglish || r.questionUrdu || ('question-' + (r.id || idx+1)))) %>"
                      class="group flex flex-col h-full p-4">
                     <div class="flex-grow">
                       <h3 class="heading text-gray-800 group-hover:text-[#4a7031] text-lg font-bold mb-2 truncate rtl text-right transition-colors duration-200">
-                        <%= stripTags(q.titleUrdu || q.questionUrdu || q.titleEnglish || q.questionEnglish || '') %>
+                        <%= stripTags(r.titleUrdu || r.questionUrdu || r.titleEnglish || r.questionEnglish || '') %>
                       </h3>
                       <p class="gulzartext text-gray-600 text-sm line-clamp-1 rtl text-right">
-                        <%= stripTags(q.excerptUrdu || q.questionUrdu || q.excerptEnglish || q.questionEnglish || '') %>
+                        <%= stripTags(r.excerptUrdu || r.questionUrdu || r.excerptEnglish || r.questionEnglish || '') %>
                       </p>
                     </div>
                     <div class="mt-4 pt-3 border-t border-gray-100 flex justify-between items-center">
                       <div class="flex items-center gap-1 text-xs text-gray-500">
                         <i class="fas fa-eye fa-xs" aria-hidden="true"></i>
-                        <span><%= Number(q.views || 0) %></span>
+                        <span><%= Number(r.views || 0) %></span>
                       </div>
                       <span class="gulzartext text-xs font-semibold text-[#4a7031] inline-flex items-center rtl">
                         مزید پڑھیں
@@ -289,23 +382,23 @@
         </div>
 
         <!-- Sidebar -->
-        <aside class="hidden lg:block lg:col-span-1 space-y-6 animate-fade-in-up lg:order-1" style="animation-delay: 150ms;">
+        <aside class="hidden lg:block lg:col-span-1 space-y-6 animate-fade-in-up lg:order-1" style="animation-delay:150ms;">
           <div class="sticky top-24">
             <h3 class="heading text-2xl font-bold text-[#4a7031] mb-4 rtl text-right">متعلقہ سوالات</h3>
 
-            <% (Array.isArray(related) ? related : []).slice(0,10).forEach(function(q, idx){ %>
-              <a href="/question/<%= q.id %>/<%= slugify(q.slug || (q.questionEnglish || q.questionUrdu || ('question-' + (q.id || idx+1)))) %>"
+            <% (Array.isArray(related) ? related : []).slice(0,10).forEach(function(r, idx){ %>
+              <a href="/question/<%= r.id %>/<%= slugify(r.slug || (r.questionEnglish || r.questionUrdu || ('question-' + (r.id || idx+1)))) %>"
                  class="group flex items-start gap-3 bg-white p-4 rounded-2xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 mb-4 border border-transparent hover:border-[#c1d9a3]">
                 <div class="flex-shrink-0 w-10 h-10 rounded-full bg-[#4a7031] flex items-center justify-center">
                   <span class="font-bold text-lg text-white"><%= (idx+1) %></span>
                 </div>
                 <div class="flex-1 rtl text-right">
                   <h4 class="heading text-gray-800 group-hover:text-[#4a7031] text-md font-semibold leading-snug line-clamp-1 transition-colors duration-200">
-                    <%= stripTags(q.titleUrdu || q.questionUrdu || q.titleEnglish || q.questionEnglish || '') %>
+                    <%= stripTags(r.titleUrdu || r.questionUrdu || r.titleEnglish || r.questionEnglish || '') %>
                   </h4>
                   <div class="flex items-center gap-1.5 text-xs text-gray-500 mt-1.5">
                     <i class="fas fa-eye fa-xs" aria-hidden="true"></i>
-                    <span><%= Number(q.views || 0) %></span>
+                    <span><%= Number(r.views || 0) %></span>
                   </div>
                 </div>
               </a>
@@ -314,7 +407,6 @@
             <a href="/all-faq" class="block text-center w-full bg-white border border-[#4a7031] text-[#4a7031] rounded-full px-4 py-2 text-sm font-medium hover:bg-[#eaf3df] transition-colors duration-300 shadow-sm gulzartext">سب دیکھیں</a>
           </div>
         </aside>
-
       </div>
     </section>
   </main>
@@ -329,7 +421,7 @@
     <div class="max-w-7xl mx-auto px-6 lg:px-8 py-8">
       <div class="flex flex-col items-center">
         <a href="/index" class="flex items-center space-x-3 mb-5">
-          <img class="h-12 w-auto bg-white rounded-full p-1" src="https://minaramasjid.com/assets/image/logo/marc.png" alt="Maula Ali Research Center Logo">
+          <img class="h-12 w-auto bg-white rounded-full p-1" src="https://minaramasjid.com/assets/image/logo/marc.png" alt="Maula Ali Research Center Logo" />
           <span class="text-lg font-bold text-white">Maula Ali Research Center</span>
         </a>
         <div class="flex space-x-5">
@@ -339,12 +431,10 @@
           <a href="#" class="text-green-200 hover:text-white transition-colors" aria-label="LinkedIn"><i class="fab fa-linkedin-in fa-lg"></i></a>
         </div>
       </div>
-      <div class="mt-8 pt-5 border-top border-green-400/50 text-center">
+      <div class="mt-8 pt-5 border-t border-green-400/50 text-center">
         <p class="text-sm text-green-200">
           &copy; 2024 - 2025 Design and Develop by
-          <a href="https://www.AlQalamArts.com/" target="_blank" rel="noopener noreferrer" class="font-medium text-white hover:text-green-100">
-            www.AlQalamArts.com
-          </a>
+          <a href="https://www.AlQalamArts.com/" target="_blank" rel="noopener noreferrer" class="font-medium text-white hover:text-green-100">www.AlQalamArts.com</a>
         </p>
       </div>
     </div>
@@ -355,54 +445,31 @@
     <i class="fas fa-arrow-up"></i>
   </button>
 
-
-
-    <!-- Mobile Bottom Navigation Bar -->
- <div id="mobile-navbar"
-     class="fixed bottom-0 left-0 right-0 bg-white shadow-xl z-40 lg:hidden rounded-t-2xl border-t border-gray-200">
-  <nav class="flex justify-around items-center h-16 text-gray-400">
-
-    <!-- Home -->
-    <a href="/" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm 
-        hover:text-[var(--primary-dark)] transition-colors duration-200">
-      <i class="fas fa-home text-lg mobile-nav-icon"></i>
-      <span class="mt-1 mobile-nav-text">Home</span>
-    </a>
-
-    <!-- Q&A (Updated from About) -->
-    <a href="/qa" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm
-        hover:text-[var(--primary-dark)] transition-colors duration-200">
-      <i class="fas fa-question-circle text-lg mobile-nav-icon"></i>
-      <span class="mt-1 mobile-nav-text">Q&A</span>
-    </a>
-
-    <!-- Books -->
-    <a href="/book" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm
-        hover:text-[var(--primary-dark)] transition-colors duration-200">
-      <i class="fas fa-book text-lg mobile-nav-icon"></i>
-      <span class="mt-1 mobile-nav-text">Books</span>
-    </a>
-
-    <!-- Articles -->
-    <a href="/article" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm
-        hover:text-[var(--primary-dark)] transition-colors duration-200">
-      <i class="fas fa-newspaper text-lg mobile-nav-icon"></i>
-      <span class="mt-1 mobile-nav-text">Articles</span>
-    </a>
-
-    <!-- Gallery (Updated from Contact) -->
-    <a href="/gallery" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm
-        hover:text-[var(--primary-dark)] transition-colors duration-200">
-      <i class="fas fa-images text-lg mobile-nav-icon"></i>
-      <span class="mt-1 mobile-nav-text">Gallery</span>
-    </a>
-
-  </nav>
-</div>
+  <!-- Mobile Bottom Navigation Bar -->
+  <div id="mobile-navbar" class="fixed bottom-0 left-0 right-0 bg-white shadow-xl z-40 lg:hidden rounded-t-2xl border-t border-gray-200">
+    <nav class="flex justify-around items-center h-16 text-gray-400">
+      <a href="/" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm hover:text-[var(--primary-dark)] transition-colors duration-200">
+        <i class="fas fa-home text-lg mobile-nav-icon"></i><span class="mt-1 mobile-nav-text">Home</span>
+      </a>
+      <a href="/qa" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm hover:text-[var(--primary-dark)] transition-colors duration-200">
+        <i class="fas fa-question-circle text-lg mobile-nav-icon"></i><span class="mt-1 mobile-nav-text">Q&A</span>
+      </a>
+      <a href="/book" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm hover:text-[var(--primary-dark)] transition-colors duration-200">
+        <i class="fas fa-book text-lg mobile-nav-icon"></i><span class="mt-1 mobile-nav-text">Books</span>
+      </a>
+      <a href="/article" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm hover:text-[var(--primary-dark)] transition-colors duration-200">
+        <i class="fas fa-newspaper text-lg mobile-nav-icon"></i><span class="mt-1 mobile-nav-text">Articles</span>
+      </a>
+      <a href="/gallery" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm hover:text-[var(--primary-dark)] transition-colors duration-200">
+        <i class="fas fa-images text-lg mobile-nav-icon"></i><span class="mt-1 mobile-nav-text">Gallery</span>
+      </a>
+    </nav>
+  </div>
 
   <!-- JS -->
   <script type="module">
     document.addEventListener('DOMContentLoaded', () => {
+      // Mobile menu
       const mobileMenuButton = document.getElementById('mobile-menu-toggle');
       const mobileMenu = document.getElementById('mobile-menu');
       if (mobileMenuButton && mobileMenu) {
@@ -412,6 +479,7 @@
         });
       }
 
+      // Back to top
       const backToTopBtn = document.getElementById('backToTopBtn');
       if (backToTopBtn) {
         window.addEventListener('scroll', () => {
@@ -431,6 +499,7 @@
         backToTopBtn.addEventListener('click', () => window.scrollTo({ top:0, behavior:'smooth' }));
       }
 
+      // Language tabs
       const langButtons = document.querySelectorAll('.lang-btn');
       const langContents = document.querySelectorAll('.lang-content');
       if (langButtons.length && langContents.length) {
@@ -448,27 +517,25 @@
         });
       }
 
+      // Share: force id-only canonical URL
       const shareBtn = document.getElementById('shareBtn');
       const toast = document.getElementById('toast');
       if (shareBtn && toast) {
         shareBtn.addEventListener('click', async () => {
+          const forceUrl = "<%= canonicalUrl %>"; // https://demo.minaramasjid.com/question/{id}
           const title = document.title;
           const descMeta = document.querySelector('meta[name="description"]');
           const text = descMeta ? descMeta.content : '';
-          const url = window.location.href;
           try {
             if (navigator.share) {
-              await navigator.share({ title, text, url });
+              await navigator.share({ title, text, url: forceUrl });
             } else {
               const ta = document.createElement('textarea');
-              ta.value = url; ta.style.position='fixed'; ta.style.left='-9999px';
+              ta.value = forceUrl; ta.style.position='fixed'; ta.style.left='-9999px';
               document.body.appendChild(ta); ta.focus(); ta.select();
               let ok=false; try { ok = document.execCommand('copy'); } catch(e){}
               document.body.removeChild(ta);
-              if (ok) {
-                toast.classList.remove('opacity-0');
-                setTimeout(() => toast.classList.add('opacity-0'), 2000);
-              }
+              if (ok) { toast.classList.remove('opacity-0'); setTimeout(()=>toast.classList.add('opacity-0'), 2000); }
             }
           } catch(e){ console.error('Share failed:', e); }
         });

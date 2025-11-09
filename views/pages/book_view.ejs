@@ -4,25 +4,80 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title><%= metaTitle %></title>
+  <% 
+    // --------- SAFE INPUTS & FALLBACKS ----------
+    const siteName        = "Maula Ali Research Center";
+    const defaultBase     = (typeof baseHref === "string" && baseHref.trim()) ? baseHref.trim() : "https://demo.minaramasjid.com/";
+    const BASE            = defaultBase.replace(/\/+$/,"");
+    const bookObj         = (typeof book === "object" && book) ? book : {};
+    const writerObj       = (typeof writer === "object" && writer) ? writer : null;
+
+    const bookId          = bookObj.id || bookObj._id || "";
+    const bookTitle       = (bookObj.title || "Book");
+    const bookLang        = (bookObj.language || "en");
+    const bookCoverUrl    = `/api/books/cover/${bookId}`;
+    const defaultCover    = "https://placehold.co/1200x630/e8f0e0/4a7031?text=Book&font=roboto";
+
+    // Canonical/share URL strictly by ID (no slug):
+    const canonicalUrl    = `${BASE}/book/${bookId}`;
+
+    // Meta inputs (allow overrides from server meta*, else build from book)
+    const metaT           = (typeof metaTitle === "string" && metaTitle.trim()) ? metaTitle : `${bookTitle} | ${siteName}`;
+    const metaD           = (typeof metaDesc  === "string" && metaDesc.trim())
+                              ? metaDesc
+                              : (typeof stripHTML === "function" && bookObj.description
+                                    ? String(stripHTML(bookObj.description)).slice(0, 170)
+                                    : "Read this Islamic book at Maula Ali Research Center.");
+    const metaI           = (typeof metaImage === "string" && metaImage.trim()) ? metaImage : `${BASE}${bookCoverUrl}`;
+
+    // Writer fields + bilingual about
+    const writerName      = (writerObj && (writerObj.name || writerObj.fullName)) || (bookObj.author || "Writer");
+    const writerImg       = writerObj ? `/api/writers/image/${writerObj.id}` : "https://placehold.co/160x160/e8f0e0/4a7031?text=Writer&font=roboto";
+    const writerAboutEng  = (writerObj && writerObj.englishDescription) || "";
+    const writerAboutUrdu = (writerObj && writerObj.urduDescription) || "";
+
+    // Breadcrumbs helper
+    const breadcrumbs = [
+      { name: "Home",  url: `${BASE}/` },
+      { name: "Books", url: `${BASE}/books` },
+      { name: bookTitle, url: canonicalUrl }
+    ];
+  %>
+
+  <!-- Primary Meta -->
+  <title><%= metaT %></title>
+  <meta name="description" content="<%= metaD %>">
   <meta name="keywords" content="Maula Ali Research Centre, Islamic Books, Islamic Research, Muslim Scholars, Read Islamic Books, Urdu Books">
-  <meta name="description" content="<%= metaDesc %>">
-  <meta name="robots" content="index, follow">
-  <!-- <link rel="canonical" href="<%= pageUrl %>"> -->
+  <meta name="author" content="<%= writerName %>">
+  <meta name="robots" content="index,follow,max-image-preview:large">
+  <link rel="canonical" href="<%= canonicalUrl %>">
 
-  <meta property="og:title" content="<%= metaTitle %>">
-  <meta property="og:description" content="<%= metaDesc %>">
-  <meta property="og:image" content="<%= metaImage %>">
-  <meta property="og:url" content="<%= pageUrl %>">
-  <meta property="og:type" content="article">
-  <meta name="twitter:title" content="<%= metaTitle %>">
-  <meta name="twitter:description" content="<%= metaDesc %>">
-  <meta name="twitter:image" content="<%= metaImage %>">
+  <!-- Open Graph -->
+  <meta property="og:site_name" content="Maula Ali Research Center">
+  <meta property="og:title" content="<%= metaT %>">
+  <meta property="og:description" content="<%= metaD %>">
+  <meta property="og:image" content="<%= metaI %>">
+  <meta property="og:image:alt" content="<%= bookTitle %>">
+  <meta property="og:type" content="book">
+  <meta property="og:url" content="<%= canonicalUrl %>">
+  <meta property="og:locale" content="en_US">
+
+  <!-- Twitter Cards -->
   <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="<%= metaT %>">
+  <meta name="twitter:description" content="<%= metaD %>">
+  <meta name="twitter:image" content="<%= metaI %>">
 
-  <base href="<%= baseHref %>">
+  <!-- Hreflang (optional duplicates if single route; keep canonical consistent) -->
+  <link rel="alternate" href="<%= canonicalUrl %>" hreflang="en">
+  <link rel="alternate" href="<%= canonicalUrl %>" hreflang="ur">
+  <link rel="alternate" href="<%= canonicalUrl %>" hreflang="x-default">
+
+  <!-- Base -->
+  <base href="<%= BASE %>/">
   <link rel="icon" href="https://minaramasjid.com/assets/image/logo/favicon.ico" type="image/x-icon">
 
+  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
 
   <!-- Fonts -->
@@ -34,6 +89,64 @@
   <!-- Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
 
+  <!-- JSON-LD: WebSite, Organization, BreadcrumbList, Book -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "<%= BASE %>#website",
+        "url": "<%= BASE %>/",
+        "name": "Maula Ali Research Center",
+        "inLanguage": "en",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "<%= BASE %>/search?q={search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
+      },
+      {
+        "@type": "Organization",
+        "@id": "<%= BASE %>#organization",
+        "name": "Maula Ali Research Center",
+        "url": "<%= BASE %>/",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://minaramasjid.com/assets/image/logo/marc.png"
+        },
+        "sameAs": []
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": "<%= canonicalUrl %>#breadcrumbs",
+        "itemListElement": [
+          <% breadcrumbs.forEach(function(bc, i){ %>
+          { "@type": "ListItem", "position": <%= i+1 %>, "name": "<%= bc.name %>", "item": "<%= bc.url %>" }<%= (i < breadcrumbs.length-1) ? ',' : '' %>
+          <% }) %>
+        ]
+      },
+      {
+        "@type": "Book",
+        "@id": "<%= canonicalUrl %>#book",
+        "url": "<%= canonicalUrl %>",
+        "name": "<%= bookTitle %>",
+        "bookFormat": "https://schema.org/EBook",
+        "author": {
+          "@type": "Person",
+          "name": "<%= writerName %>",
+          "image": "<%= writerImg %>"
+        },
+        "inLanguage": "<%= bookLang %>",
+        "image": "<%= metaI %>",
+        "description": "<%= metaD %>",
+        "publisher": { "@id": "<%= BASE %>#organization" },
+        "isPartOf": { "@id": "<%= BASE %>#website" }
+      }
+    ]
+  }
+  </script>
+
   <style>
     body { font-family: "Roboto Flex", sans-serif; }
     .rtl { direction: rtl; }
@@ -42,8 +155,17 @@
     .mobile-menu-visible { max-height: 500px; opacity: 1; transition: max-height .4s ease-in, opacity .3s ease-in; }
     .gulzartext { font-family: 'Gulzar', serif; }
     .heading { font-family: 'Gulzar', serif; }
+
     @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     .animate-fade-in-up { animation: fadeInUp .6s ease-out forwards; opacity: 0; }
+
+    /* Lang switch buttons inside About Writer */
+    .lang-toggle { display:inline-flex; background:#eef2e6; border-radius:9999px; padding:.25rem; gap:.25rem; }
+    .btn-lang { padding:.35rem .8rem; border-radius:9999px; font-weight:700; font-size:.85rem; transition:all .2s; }
+    .btn-urdu.active { background:#22c55e; color:#fff; }
+    .btn-urdu:not(.active) { background:#eaf3df; color:#166534; }
+    .btn-eng.active { background:#000; color:#fff; }
+    .btn-eng:not(.active) { background:#e5e7eb; color:#111827; }
   </style>
 </head>
 <body class="font-sans bg-[#f0f5e9] text-gray-800 antialiased">
@@ -106,11 +228,15 @@
     <!-- Main -->
     <main class="relative z-10 pt-16 sm:pt-20">
       <section class="relative max-w-6xl mx-auto px-4 py-12">
+        <!-- Book hero -->
         <div class="bg-white p-8 md:p-12 rounded-3xl mb-12 shadow-xl animate-fade-in-up">
           <div class="flex flex-col md:flex-row gap-10 lg:gap-16 items-start">
             <div class="md:w-1/3 flex justify-center md:justify-start">
               <div class="relative w-64 lg:w-72">
-                <img src="/api/books/cover/<%= book.id %>" alt="<%= book.title %>" class="w-full rounded-xl shadow-xl transform rotate-[-3deg] border-4 border-white">
+                <img src="/api/books/cover/<%= book.id %>" 
+                     alt="<%= book.title %>" 
+                     class="w-full rounded-xl shadow-xl transform rotate-[-3deg] border-4 border-white"
+                     onerror="this.onerror=null;this.src='https://placehold.co/480x640/e8f0e0/4a7031?text=Book&font=roboto'">
               </div>
             </div>
 
@@ -165,24 +291,40 @@
           </div>
         </div>
 
-        <% if (typeof writer !== "undefined" && writer) { %>
+        <!-- About Writer with ENG/URDU toggle -->
+        <% if (writerObj) { %>
         <div class="bg-white p-8 md:p-12 rounded-3xl shadow-xl mb-16 animate-fade-in-up" style="animation-delay: 150ms;">
           <div class="flex flex-col md:flex-row items-start gap-8">
             <div class="flex-1 ltr text-left">
-              <h2 class="heading text-3xl font-bold text-[#4a7031] mb-2">About Writer</h2>
-              <h3 class="gulzartext text-2xl font-bold text-gray-900 mb-4"><%= book.author %></h3>
-              <% if (writer.englishDescription) { %>
-                <!-- Render raw HTML only if sanitized on backend -->
-                <div class="text-gray-700 leading-relaxed text-base"><%- writer.englishDescription %></div>
-              <% } %>
+              <div class="flex items-center gap-3 flex-wrap">
+                <h2 class="heading text-3xl font-bold text-[#4a7031] mb-2">About Writer</h2>
+                <div class="lang-toggle mb-2" aria-label="Writer about language switch">
+                  <button type="button" id="btnUrdu" class="btn-lang btn-urdu">Urdu</button>
+                  <button type="button" id="btnEng"  class="btn-lang btn-eng">Eng</button>
+                </div>
+              </div>
+
+              <h3 class="gulzartext text-2xl font-bold text-gray-900 mb-4"><%= writerName %></h3>
+
+              <div id="writerAbout"
+                   class="text-gray-700 leading-relaxed text-base gulzartext rtl text-right"
+                   data-urdu="<%- (writerAboutUrdu || '') %>"
+                   data-eng="<%- (writerAboutEng  || '') %>">
+                <%- (writerAboutUrdu || writerAboutEng || "مصنف کے بارے میں مختصر تعارفی متن۔") %>
+              </div>
             </div>
+
             <div class="flex-shrink-0 md:order-first">
-              <img src="/api/writers/image/<%= writer.id %>" alt="Writer" class="w-24 h-24 rounded-full border-4 border-green-100 shadow-md">
+              <img src="<%= writerImg %>" 
+                   alt="<%= writerName %>" 
+                   class="w-24 h-24 rounded-full border-4 border-green-100 shadow-md"
+                   onerror="this.onerror=null;this.src='https://placehold.co/96x96/e8f0e0/4a7031?text=Writer&font=roboto'">
             </div>
           </div>
         </div>
         <% } %>
 
+        <!-- Suggestions -->
         <div class="animate-fade-in-up" style="animation-delay: 300ms;">
           <div class="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
             <h2 class="heading text-3xl font-bold text-[#4a7031] ltr text-left">Writer Books Highlights</h2>
@@ -195,7 +337,10 @@
                 <div class="bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
                   <a href="/bookdetail/<%= b.id %>/<%= slugify(b.title || '') %>" class="block">
                     <div class="relative h-72">
-                      <img src="/api/books/cover/<%= b.id %>" alt="<%= b.title %>" class="absolute inset-0 w-full h-full object-cover">
+                      <img src="/api/books/cover/<%= b.id %>" 
+                           alt="<%= b.title %>" 
+                           class="absolute inset-0 w-full h-full object-cover"
+                           onerror="this.onerror=null;this.src='https://placehold.co/480x640/e8f0e0/4a7031?text=Book&font=roboto'">
                     </div>
                     <div class="p-5">
                       <h3 class="heading text-[#4a7031] text-xl font-bold mb-2 truncate ltr text-left"><%= b.title || 'Untitled' %></h3>
@@ -218,14 +363,16 @@
     </main>
   </div>
 
+  <!-- Toast -->
   <div id="toast" class="fixed bottom-24 right-6 bg-gray-800 text-white px-5 py-3 rounded-lg shadow-lg opacity-0 transition-opacity duration-300 z-50">
     Link copied to clipboard!
   </div>
 
+  <!-- Footer -->
   <footer class="bg-[#718e56] text-white mt-20 sm:mt-28 relative z-20">
     <div class="max-w-7xl mx-auto px-6 lg:px-8 py-10">
       <div class="flex flex-col items-center">
-        <a href="index" class="flex items-center space-x-3 mb-6">
+        <a href="/" class="flex items-center space-x-3 mb-6">
           <img class="h-14 w-auto bg-white rounded-full p-1" src="https://minaramasjid.com/assets/image/logo/marc.png" alt="Maula Ali Research Center Logo">
           <span class="text-xl font-bold text-white">Maula Ali Research Center</span>
         </a>
@@ -249,52 +396,36 @@
     <i class="fas fa-arrow-up"></i>
   </button>
 
-
-    <!-- Mobile Bottom Navigation Bar -->
- <div id="mobile-navbar"
-     class="fixed bottom-0 left-0 right-0 bg-white shadow-xl z-40 lg:hidden rounded-t-2xl border-t border-gray-200">
-  <nav class="flex justify-around items-center h-16 text-gray-400">
-
-    <!-- Home -->
-    <a href="/" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm 
-        hover:text-[var(--primary-dark)] transition-colors duration-200">
-      <i class="fas fa-home text-lg mobile-nav-icon"></i>
-      <span class="mt-1 mobile-nav-text">Home</span>
-    </a>
-
-    <!-- Q&A (Updated from About) -->
-    <a href="/qa" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm
-        hover:text-[var(--primary-dark)] transition-colors duration-200">
-      <i class="fas fa-question-circle text-lg mobile-nav-icon"></i>
-      <span class="mt-1 mobile-nav-text">Q&A</span>
-    </a>
-
-    <!-- Books -->
-    <a href="/book" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm
-        hover:text-[var(--primary-dark)] transition-colors duration-200">
-      <i class="fas fa-book text-lg mobile-nav-icon"></i>
-      <span class="mt-1 mobile-nav-text">Books</span>
-    </a>
-
-    <!-- Articles -->
-    <a href="/article" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm
-        hover:text-[var(--primary-dark)] transition-colors duration-200">
-      <i class="fas fa-newspaper text-lg mobile-nav-icon"></i>
-      <span class="mt-1 mobile-nav-text">Articles</span>
-    </a>
-
-    <!-- Gallery (Updated from Contact) -->
-    <a href="/gallery" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm
-        hover:text-[var(--primary-dark)] transition-colors duration-200">
-      <i class="fas fa-images text-lg mobile-nav-icon"></i>
-      <span class="mt-1 mobile-nav-text">Gallery</span>
-    </a>
-
-  </nav>
-</div>
+  <!-- Mobile Bottom Navigation Bar -->
+  <div id="mobile-navbar"
+      class="fixed bottom-0 left-0 right-0 bg-white shadow-xl z-40 lg:hidden rounded-t-2xl border-t border-gray-200">
+    <nav class="flex justify-around items-center h-16 text-gray-400">
+      <a href="/" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm hover:text-[var(--primary-dark)] transition-colors duration-200">
+        <i class="fas fa-home text-lg mobile-nav-icon"></i>
+        <span class="mt-1 mobile-nav-text">Home</span>
+      </a>
+      <a href="/qa" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm hover:text-[var(--primary-dark)] transition-colors duration-200">
+        <i class="fas fa-question-circle text-lg mobile-nav-icon"></i>
+        <span class="mt-1 mobile-nav-text">Q&A</span>
+      </a>
+      <a href="/book" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm hover:text-[var(--primary-dark)] transition-colors duration-200">
+        <i class="fas fa-book text-lg mobile-nav-icon"></i>
+        <span class="mt-1 mobile-nav-text">Books</span>
+      </a>
+      <a href="/article" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm hover:text-[var(--primary-dark)] transition-colors duration-200">
+        <i class="fas fa-newspaper text-lg mobile-nav-icon"></i>
+        <span class="mt-1 mobile-nav-text">Articles</span>
+      </a>
+      <a href="/gallery" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm hover:text-[var(--primary-dark)] transition-colors duration-200">
+        <i class="fas fa-images text-lg mobile-nav-icon"></i>
+        <span class="mt-1 mobile-nav-text">Gallery</span>
+      </a>
+    </nav>
+  </div>
 
   <script type="module">
     document.addEventListener('DOMContentLoaded', () => {
+      // Mobile menu
       const mobileMenuButton = document.getElementById('mobile-menu-toggle');
       const mobileMenu = document.getElementById('mobile-menu');
       if (mobileMenuButton && mobileMenu) {
@@ -304,6 +435,7 @@
         });
       }
 
+      // Back to top
       const backToTopBtn = document.getElementById('backToTopBtn');
       if (backToTopBtn) {
         window.addEventListener('scroll', () => {
@@ -324,25 +456,26 @@
         backToTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
       }
 
+      // Share (force /book/{id} URL)
       const shareBtn = document.getElementById('shareBtn');
       const toast = document.getElementById('toast');
       if (shareBtn && toast) {
         shareBtn.addEventListener('click', async () => {
+          const forceUrl = "<%= canonicalUrl %>";
           const shareData = {
             title: document.title,
-            text: (document.querySelector('meta[name="description"]')?.content) || "",
-            url: window.location.href
+            text: (document.querySelector('meta[name=\"description\"]')?.content) || "",
+            url: forceUrl
           };
           try {
             if (navigator.share) {
               await navigator.share(shareData);
             } else {
               const textArea = document.createElement('textarea');
-              textArea.value = window.location.href;
+              textArea.value = forceUrl;
               textArea.style.position = 'fixed';
               textArea.style.left = '-9999px';
               document.body.appendChild(textArea);
-              textArea.focus();
               textArea.select();
               let success = false;
               try { success = document.execCommand('copy'); } catch (err) {}
@@ -356,6 +489,39 @@
             console.error('Error sharing:', err);
           }
         });
+      }
+
+      // About Writer language toggle
+      const aboutEl = document.getElementById('writerAbout');
+      const btnUrdu = document.getElementById('btnUrdu');
+      const btnEng  = document.getElementById('btnEng');
+
+      function setAbout(mode) {
+        if (!aboutEl) return;
+        const urdu = (aboutEl.dataset.urdu || "").trim();
+        const eng  = (aboutEl.dataset.eng  || "").trim();
+
+        if (mode === 'urdu') {
+          btnUrdu?.classList.add('active');
+          btnEng?.classList.remove('active');
+          aboutEl.innerHTML = urdu || "مصنف کے بارے میں مختصر تعارفی متن۔";
+          aboutEl.classList.add('gulzartext','rtl','text-right');
+        } else {
+          btnEng?.classList.add('active');
+          btnUrdu?.classList.remove('active');
+          // english content should be Roman/LTR: use textContent if you don’t trust HTML;
+          // here we trust server to sanitize:
+          aboutEl.innerHTML = eng || "Short bio will appear here.";
+          aboutEl.classList.remove('rtl','text-right','gulzartext');
+        }
+      }
+
+      if (btnUrdu && btnEng && aboutEl) {
+        const hasUrdu = (aboutEl.dataset.urdu || "").trim().length > 0;
+        setAbout(hasUrdu ? 'urdu' : 'eng');
+
+        btnUrdu.addEventListener('click', (e)=>{ e.preventDefault(); setAbout('urdu'); });
+        btnEng .addEventListener('click', (e)=>{ e.preventDefault(); setAbout('eng');  });
       }
     });
   </script>

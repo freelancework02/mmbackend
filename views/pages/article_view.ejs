@@ -4,26 +4,81 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Meta Tags for Article Detail Page -->
-  <title><%= metaTitle || (article && article.title ? article.title : "Article | Maula Ali Research Center") %></title>
-  <meta name="keywords" content="نوری راہ, Maula Ali Research Centre, Islamic Articles, Islamic Research, Muslim Scholars, Read Islamic Articles, Urdu Articles">
-  <meta name="description" content="<%= metaDesc || (article && article.englishDescription ? String(article.englishDescription).replace(/<[^>]*>/g,'').slice(0,160) : '') %>">
-  <meta name="robots" content="index, follow">
-  <!-- <link rel="canonical" href="<%= pageUrl || '' %>"> -->
+  <% 
+    /* =========================
+       SAFE INPUTS & FALLBACKS
+       ========================= */
+    const SITE_NAME       = "Maula Ali Research Center";
+    const _base           = (typeof baseHref === "string" && baseHref.trim()) ? baseHref.trim() : "https://demo.minaramasjid.com/";
+    const BASE            = _base.replace(/\/+$/,"");
+    const art             = (article && typeof article === "object") ? article : {};
+    const wr              = (typeof writer === "object" && writer) ? writer : null;
 
-  <meta property="og:title" content="<%= metaTitle || (article && article.title ? article.title : '') %>">
-  <meta property="og:description" content="<%= metaDesc || '' %>">
-  <meta property="og:image" content="<%= metaImage || '' %>">
-  <meta property="og:url" content="<%= pageUrl || '' %>">
+    const artId           = art.id || art._id || "";
+    const artTitle        = art.title || "Article";
+    const artOgImg        = `/api/articles/image/${artId}`;
+    const artImageAbs     = `${BASE}${artOgImg.startsWith("/") ? "" : "/"}${artOgImg}`;
+    const canonicalUrl    = `${BASE}/article/${artId}`;
+
+    // Plain-text snippets from HTML descriptions
+    const rawUrdu         = (art.urduDescription || "");
+    const rawEng          = (art.englishDescription || "");
+    const rawRoman        = (art.romanUrduDescription || "");
+    const toText          = (s)=> String(s||"").replace(/<[^>]*>/g,"").replace(/\s+/g," ").trim();
+    const descPick        = toText(rawEng) || toText(rawUrdu) || toText(rawRoman) || "Read this article on Maula Ali Research Center.";
+    const metaT           = (typeof metaTitle === "string" && metaTitle.trim()) ? metaTitle : `${artTitle} | ${SITE_NAME}`;
+    const metaD           = (typeof metaDesc  === "string" && metaDesc.trim())  ? metaDesc  : descPick.slice(0, 170);
+    const metaI           = (typeof metaImage === "string" && metaImage.trim()) ? metaImage : artImageAbs;
+
+    const authorName      = (wr && (wr.name || wr.fullName)) || (art.writers || art.writer) || "Author";
+    const authorImage     = wr ? (`${BASE}/api/writers/image/${wr.id}`) : `${BASE}/assets/user-CIrRdymX.png`;
+
+    // dates (optional)
+    const datePublished   = art.createdOn || art.created_at || art.date || null;
+    const dateModified    = art.modifiedOn || art.updated_at || null;
+
+    const sectionName     = art.topic || art.category || "Article";
+
+    const breadcrumbs = [
+      { name: "Home",    url: `${BASE}/` },
+      { name: "Articles",url: `${BASE}/article` },
+      { name: artTitle,  url: canonicalUrl }
+    ];
+  %>
+
+  <!-- Primary Meta -->
+  <title><%= metaT %></title>
+  <meta name="description" content="<%= metaD %>">
+  <meta name="keywords" content="Maula Ali Research Centre, Islamic Articles, Islamic Research, Muslim Scholars, Urdu Articles, English Articles, Roman Urdu">
+  <meta name="author" content="<%= authorName %>">
+  <meta name="robots" content="index,follow,max-image-preview:large">
+  <link rel="canonical" href="<%= canonicalUrl %>">
+
+  <!-- Open Graph -->
+  <meta property="og:site_name" content="Maula Ali Research Center">
+  <meta property="og:title" content="<%= metaT %>">
+  <meta property="og:description" content="<%= metaD %>">
+  <meta property="og:image" content="<%= metaI %>">
+  <meta property="og:image:alt" content="<%= artTitle %>">
   <meta property="og:type" content="article">
+  <meta property="og:url" content="<%= canonicalUrl %>">
+  <% if (datePublished) { %><meta property="article:published_time" content="<%= new Date(datePublished).toISOString() %>"><% } %>
+  <% if (dateModified)  { %><meta property="article:modified_time"  content="<%= new Date(dateModified).toISOString() %>"><% } %>
+  <meta property="article:section" content="<%= sectionName %>">
 
-  <meta name="twitter:title" content="<%= metaTitle || (article && article.title ? article.title : '') %>">
-  <meta name="twitter:description" content="<%= metaDesc || '' %>">
-  <meta name="twitter:image" content="<%= metaImage || '' %>">
+  <!-- Twitter Cards -->
   <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="<%= metaT %>">
+  <meta name="twitter:description" content="<%= metaD %>">
+  <meta name="twitter:image" content="<%= metaI %>">
+
+  <!-- Hreflang (same URL variants if single route) -->
+  <link rel="alternate" href="<%= canonicalUrl %>" hreflang="en">
+  <link rel="alternate" href="<%= canonicalUrl %>" hreflang="ur">
+  <link rel="alternate" href="<%= canonicalUrl %>" hreflang="x-default">
 
   <!-- Base Href -->
-  <base href="<%= baseHref || '/' %>">
+  <base href="<%= BASE %>/">
   <link rel="icon" href="https://minaramasjid.com/assets/image/logo/favicon.ico" type="image/x-icon">
 
   <!-- Tailwind -->
@@ -37,6 +92,64 @@
 
   <!-- Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
+
+  <!-- JSON-LD: Website, Organization, BreadcrumbList, Article -->
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@graph":[
+      {
+        "@type":"WebSite",
+        "@id":"<%= BASE %>#website",
+        "url":"<%= BASE %>/",
+        "name":"Maula Ali Research Center",
+        "inLanguage":"en",
+        "potentialAction":{
+          "@type":"SearchAction",
+          "target":"<%= BASE %>/search?q={search_term_string}",
+          "query-input":"required name=search_term_string"
+        }
+      },
+      {
+        "@type":"Organization",
+        "@id":"<%= BASE %>#organization",
+        "name":"Maula Ali Research Center",
+        "url":"<%= BASE %>/",
+        "logo":{"@type":"ImageObject","url":"https://minaramasjid.com/assets/image/logo/marc.png"},
+        "sameAs":[]
+      },
+      {
+        "@type":"BreadcrumbList",
+        "@id":"<%= canonicalUrl %>#breadcrumbs",
+        "itemListElement":[
+          <% breadcrumbs.forEach(function(bc, i){ %>
+          {"@type":"ListItem","position":<%= i+1 %>,"name":"<%= bc.name %>","item":"<%= bc.url %>"}<%= (i<breadcrumbs.length-1) ? "," : "" %>
+          <% }) %>
+        ]
+      },
+      {
+        "@type":"Article",
+        "@id":"<%= canonicalUrl %>#article",
+        "url":"<%= canonicalUrl %>",
+        "isPartOf":{"@id":"<%= BASE %>#website"},
+        "publisher":{"@id":"<%= BASE %>#organization"},
+        "headline":"<%= artTitle %>",
+        "name":"<%= artTitle %>",
+        "description":"<%= metaD %>",
+        "articleSection":"<%= sectionName %>",
+        "image":{"@type":"ImageObject","url":"<%= metaI %>"},
+        <% if (datePublished) { %>"datePublished":"<%= new Date(datePublished).toISOString() %>",<% } %>
+        <% if (dateModified)  { %>"dateModified":"<%= new Date(dateModified).toISOString() %>",<% } %>
+        "author":{
+          "@type":"Person",
+          "name":"<%= authorName %>",
+          "image":"<%= authorImage %>"
+        },
+        "inLanguage":"en"
+      }
+    ]
+  }
+  </script>
 
   <style>
     body{font-family:"Roboto Flex",sans-serif}
@@ -74,7 +187,7 @@
           <nav class="hidden md:flex gap-6 text-md font-semibold text-white tracking-wide">
             <a href="/article" class="text-white font-bold" aria-current="page">Articles</a>
             <a href="/qa" class="hover:text-green-100 transition-colors">Question Answer</a>
-            <a href="/book" class="hover:text-green-100 transition-colors">Request a Book</a>
+            <a href="/book-request" class="hover:text-green-100 transition-colors">Request a Book</a>
             <a href="/contact" class="hover:text-green-100 transition-colors">Contact</a>
           </nav>
 
@@ -104,23 +217,20 @@
     <main class="relative z-10">
       <!-- Hero -->
       <div class="relative w-full h-[400px] md:h-[500px] -mt-8 overflow-hidden rounded-b-4xl">
-        <!-- Featured Image: article image -->
-        <img src="/api/articles/image/<%= article.id %>" alt="<%= article.title %>" class="absolute inset-0 w-full h-full object-cover z-0" onerror="this.onerror=null;this.src='https://img.freepik.com/free-photo/fantastic-mosque-architecture-islamic-new-year-celebration_23-2151457420.jpg';">
+        <img src="/api/articles/image/<%= artId %>" alt="<%= artTitle %>" class="absolute inset-0 w-full h-full object-cover z-0"
+             onerror="this.onerror=null;this.src='https://img.freepik.com/free-photo/fantastic-mosque-architecture-islamic-new-year-celebration_23-2151457420.jpg';">
         <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent z-10"></div>
 
         <div class="relative z-20 max-w-7xl mx-auto h-full flex flex-col justify-end px-6 sm:px-8 lg:px-12 py-10 md:py-16">
           <div class="max-w-4xl rtl text-right">
-            <h1 class="heading text-4xl md:text-6xl font-bold text-white text-shadow-lg"><%= article.title %></h1>
+            <h1 class="heading text-4xl md:text-6xl font-bold text-white text-shadow-lg"><%= artTitle %></h1>
             <div class="flex items-center justify-end gap-4 mt-6">
               <div class="text-right">
-                <h2 class="font-bold text-2xl text-white gulzartext"><%= (article.writers || article.writer || (writer && writer.name) || "—") %></h2>
-                <p class="text-sm text-green-200 gulzartext mt-1"><%= (writer && writer.designation) ? writer.designation : "استاد اسکالر" %></p>
+                <h2 class="font-bold text-2xl text-white gulzartext"><%= authorName %></h2>
+                <p class="text-sm text-green-200 gulzartext mt-1"><%= (wr && wr.designation) ? wr.designation : "—" %></p>
               </div>
-              <img
-                src="<%= (writer && writer.id) ? ('/api/writers/image/' + writer.id) : '/assets/user-CIrRdymX.png' %>"
-                alt="Author"
-                class="w-16 h-16 rounded-full border-2 border-white/50 shadow-lg"
-                onerror="this.onerror=null;this.src='/assets/user-CIrRdymX.png';">
+              <img src="<%= authorImage %>" alt="Author" class="w-16 h-16 rounded-full border-2 border-white/50 shadow-lg"
+                   onerror="this.onerror=null;this.src='/assets/user-CIrRdymX.png';">
             </div>
           </div>
         </div>
@@ -142,8 +252,8 @@
             <!-- Urdu -->
             <div id="content-ur" class="lang-content leading-relaxed space-y-8 rtl text-right">
               <div class="prose max-w-none paragraph gulzartext">
-                <% if (article.urduDescription) { %>
-                  <%- article.urduDescription %>
+                <% if (rawUrdu) { %>
+                  <%- rawUrdu %>
                 <% } else { %>
                   <p>اردو مواد دستیاب نہیں ہے۔</p>
                 <% } %>
@@ -153,10 +263,10 @@
             <!-- Roman -->
             <div id="content-ro" class="lang-content leading-relaxed space-y-8 text-left hidden">
               <div class="prose max-w-none paragraph">
-                <% if (article.romanUrduDescription) { %>
-                  <%- article.romanUrduDescription %>
-                <% } else if (article.englishDescription) { %>
-                  <%- article.englishDescription %>
+                <% if (rawRoman) { %>
+                  <%- rawRoman %>
+                <% } else if (rawEng) { %>
+                  <%- rawEng %>
                 <% } else { %>
                   <p>(Roman Urdu content not available.)</p>
                 <% } %>
@@ -166,8 +276,8 @@
             <!-- English -->
             <div id="content-en" class="lang-content leading-relaxed space-y-8 text-left hidden">
               <div class="prose max-w-none paragraph">
-                <% if (article.englishDescription) { %>
-                  <%- article.englishDescription %>
+                <% if (rawEng) { %>
+                  <%- rawEng %>
                 <% } else { %>
                   <p>(English content not available.)</p>
                 <% } %>
@@ -177,7 +287,6 @@
 
           <!-- Buttons -->
           <div class="flex flex-col sm:flex-row sm:justify-between items-center gap-4 mt-8 pt-6 border-t border-gray-200">
-            <a href="#writer-profile" class="gulzartext bg-[#e8f0e0] text-[#4a7031] px-6 py-2.5 rounded-full font-semibold hover:bg-[#d6e5c4] hover:shadow-md transition-all duration-300 w-full sm:w-auto">مصنف کا تعارف</a>
             <a href="#writer-articles" class="gulzartext bg-[#e8f0e0] text-[#4a7031] px-6 py-2.5 rounded-full font-semibold hover:bg-[#d6e5c4] hover:shadow-md transition-all duration-300 w-full sm:w-auto">مزید تحریریں</a>
           </div>
         </div>
@@ -188,9 +297,10 @@
 
           <% (related || []).forEach(function(r, idx){ %>
             <div class="rounded-xl overflow-hidden shadow-lg border border-gray-200 bg-[#ecf1e1] hover:shadow-xl transition-shadow animate-fade-in-up" style="animation-delay:<%= 200 + idx*100 %>ms">
-              <a href="/article/<%= r.id %>/<%= slugify(r.title || '') %>" class="block">
+              <a href="/article/<%= r.id %>/<%= slugify ? slugify(r.title || '') : encodeURIComponent(r.title || '') %>" class="block">
                 <div class="relative h-40">
-                  <img src="/api/articles/image/<%= r.id %>" alt="<%= r.title %>" class="object-cover h-full w-full" onerror="this.onerror=null;this.src='https://img.freepik.com/free-photo/islamic-ramadan-celebration-lantern-fantasy-style_23-2151241596.jpg';">
+                  <img src="/api/articles/image/<%= r.id %>" alt="<%= r.title %>" class="object-cover h-full w-full"
+                       onerror="this.onerror=null;this.src='https://img.freepik.com/free-photo/islamic-ramadan-celebration-lantern-fantasy-style_23-2151241596.jpg';">
                   <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent"></div>
                   <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex flex-col justify-end p-4">
                     <h4 class="heading text-white rtl mb-1 text-lg leading-snug line-clamp-2"><%= r.title %></h4>
@@ -209,35 +319,23 @@
       </div>
 
       <!-- Writer Profile -->
-      <% if (typeof writer !== 'undefined' && writer) { %>
+      <% if (wr) { %>
       <section id="writer-profile" class="container mx-auto px-4 py-8">
         <div class="bg-white/70 backdrop-blur-lg border border-white/40 rounded-xl p-6 md:p-8 shadow-2xl mb-12 animate-fade-in-up" style="animation-delay:200ms">
           <div class="flex flex-col md:flex-row items-start justify-between gap-6">
             <!-- Avatar -->
             <div class="order-1">
               <div class="w-28 h-28 md:w-32 md:h-32 rounded-full bg-green-100 border-4 border-green-200 overflow-hidden shadow-md">
-                <img
-                  src="<%= writer.id ? ('/api/writers/image/' + writer.id) : '/assets/user-CIrRdymX.png' %>"
-                  alt="<%= writer.name || 'Writer' %>"
-                  class="w-full h-full object-cover"
-                  onerror="this.onerror=null;this.src='/assets/user-CIrRdymX.png';">
+                <img src="/api/writers/image/<%= wr.id %>" alt="<%= wr.name || 'Writer' %>" class="w-full h-full object-cover"
+                     onerror="this.onerror=null;this.src='/assets/user-CIrRdymX.png';">
               </div>
             </div>
 
             <!-- Info -->
             <div class="flex-1 text-right order-2 rtl">
               <h3 class="text-2xl md:text-3xl font-bold text-green-700 mb-1 gulzartext">مصنف کا پروفائل</h3>
-              <h4 class="text-xl md:text-2xl font-semibold text-gray-800 mb-2 gulzartext"><%= writer.name || (article.writers || article.writer) || "—" %></h4>
-              <p class="text-sm md:text-base text-gray-700 gulzartext mb-2"><%= writer.designation || '' %></p>
-
-              <div class="text-sm text-gray-600 mb-4">
-                <% if (writer.email) { %>
-                  <span class="inline-flex items-center ml-3"><i class="fas fa-envelope ml-2"></i><%= writer.email %></span>
-                <% } %>
-                <% if (writer.joinedDate && writer.joinedDate !== "0000-00-00") { %>
-                  <span class="inline-flex items-center ml-3"><i class="fas fa-calendar-day ml-2"></i>Joined: <%= writer.joinedDate %></span>
-                <% } %>
-              </div>
+              <h4 class="text-xl md:text-2xl font-semibold text-gray-800 mb-2 gulzartext"><%= wr.name || authorName %></h4>
+              <p class="text-sm md:text-base text-gray-700 gulzartext mb-2"><%= wr.designation || '' %></p>
 
               <!-- Writer bio tabs -->
               <div class="mt-4">
@@ -251,8 +349,8 @@
                   <!-- Urdu -->
                   <div id="wcontent-ur" class="wlang-content leading-relaxed space-y-4 rtl text-right">
                     <div class="prose max-w-none gulzartext">
-                      <% if (writer.urduDescription) { %>
-                        <%- writer.urduDescription %>
+                      <% if (wr.urduDescription) { %>
+                        <%- wr.urduDescription %>
                       <% } else { %>
                         <p>مصنف کا اردو تعارف دستیاب نہیں ہے۔</p>
                       <% } %>
@@ -261,20 +359,20 @@
                   <!-- Roman -->
                   <div id="wcontent-ro" class="wlang-content leading-relaxed space-y-4 hidden">
                     <div class="prose max-w-none">
-                      <% if (writer.romanUrduDescription) { %>
-                        <%- writer.romanUrduDescription %>
-                      <% } else if (writer.englishDescription) { %>
-                        <%- writer.englishDescription %>
+                      <% if (wr.romanUrduDescription) { %>
+                        <%- wr.romanUrduDescription %>
+                      <% } else if (wr.englishDescription) { %>
+                        <%- wr.englishDescription %>
                       <% } else { %>
                         <p>(Roman Urdu bio not available.)</p>
                       <% } %>
                     </div>
                   </div>
                   <!-- English -->
-                  <div id="wcontent-en" class="wlang-content leading-relaxed space-y-4 hidden">
+                  <div id="wcontent-en" class="text-left wlang-content leading-relaxed space-y-4 hidden">
                     <div class="prose max-w-none">
-                      <% if (writer.englishDescription) { %>
-                        <%- writer.englishDescription %>
+                      <% if (wr.englishDescription) { %>
+                        <%- wr.englishDescription %>
                       <% } else { %>
                         <p>(English bio not available.)</p>
                       <% } %>
@@ -284,10 +382,8 @@
               </div>
 
               <div class="mt-6 flex flex-wrap gap-3 justify-end">
-                <% if (writer.id) { %>
-                  <a href="/writer/<%= writer.id %>/<%= slugify(writer.name || '') %>" class="bg-[#e8f0e0] text-[#4a7031] px-5 py-2 rounded-full font-medium hover:bg-[#d6e5c4] transition">View full profile</a>
-                <% } %>
-                <a href="#writer-articles" class="bg-white border border-[#4a7031] text-[#4a7031] px-5 py-2 rounded-full font-medium hover:bg-[#eaf3df] transition">See articles</a>
+                <a href="/writer/<%= wr.id %>/<%= slugify ? slugify(wr.name || '') : encodeURIComponent(wr.name || '') %>" class="bg-[#e8f0e0] text-[#4a7031] px-5 py-2 rounded-full font-medium hover:bg-[#d6e5c4] transition">View full profile</a>
+                <a href="/article" class="bg-white border border-[#4a7031] text-[#4a7031] px-5 py-2 rounded-full font-medium hover:bg-[#eaf3df] transition">See articles</a>
               </div>
             </div>
           </div>
@@ -305,9 +401,10 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 cursor-pointer">
           <% (writerHighlights || []).forEach(function(w, idx){ %>
             <div class="rounded-xl overflow-hidden shadow-sm border border-gray-200 bg-white hover:shadow-lg transition-shadow animate-fade-in-up" style="animation-delay:<%= 400 + idx*100 %>ms">
-              <a href="/article/<%= w.id %>/<%= slugify(w.title || '') %>" class="block">
+              <a href="/article/<%= w.id %>/<%= slugify ? slugify(w.title || '') : encodeURIComponent(w.title || '') %>" class="block">
                 <div class="relative h-48">
-                  <img src="/api/articles/image/<%= w.id %>" alt="<%= w.title %>" class="object-cover h-full w-full" onerror="this.onerror=null;this.src='https://img.freepik.com/premium-photo/holy-quran-book-with-illuminated-lanterns-ramadan-islam_324689-2694.jpg';">
+                  <img src="/api/articles/image/<%= w.id %>" alt="<%= w.title %>" class="object-cover h-full w-full"
+                       onerror="this.onerror=null;this.src='https://img.freepik.com/premium-photo/holy-quran-book-with-illuminated-lanterns-ramadan-islam_324689-2694.jpg';">
                   <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent"></div>
                   <div class="absolute top-2 right-2 flex space-x-2 rtl:space-x-reverse">
                     <% if (w.romanUrduDescription) { %><div class="bg-white rounded-full px-2 py-0.5 text-xs">Roman</div><% } %>
@@ -319,7 +416,7 @@
                 </div>
                 <div class="p-4">
                   <p class="gulzartext text-xs text-right rtl text-gray-600 mb-1 line-clamp-1">
-                    <span class="font-semibold">مصنف :</span> <%= (w.writers || w.writer || (writer && writer.name) || "—") %>
+                    <span class="font-semibold">مصنف :</span> <%= (w.writers || w.writer || (wr && wr.name) || "—") %>
                   </p>
                 </div>
               </a>
@@ -344,7 +441,7 @@
   <footer class="bg-[#718e56] text-white mt-20 sm:mt-28 relative z-20">
     <div class="max-w-7xl mx-auto px-6 lg:px-8 py-10">
       <div class="flex flex-col items-center">
-        <a href="index" class="flex items-center space-x-3 mb-6">
+        <a href="/" class="flex items-center space-x-3 mb-6">
           <img class="h-14 w-auto bg-white rounded-full p-1" src="https://minaramasjid.com/assets/image/logo/marc.png" alt="Maula Ali Research Center Logo">
           <span class="text-xl font-bold text-white">Maula Ali Research Center</span>
         </a>
@@ -370,47 +467,31 @@
   </button>
 
   <!-- Mobile Bottom Navigation Bar -->
- <div id="mobile-navbar"
-     class="fixed bottom-0 left-0 right-0 bg-white shadow-xl z-40 lg:hidden rounded-t-2xl border-t border-gray-200">
-  <nav class="flex justify-around items-center h-16 text-gray-400">
-
-    <!-- Home -->
-    <a href="/" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm 
-        hover:text-[var(--primary-dark)] transition-colors duration-200">
-      <i class="fas fa-home text-lg mobile-nav-icon"></i>
-      <span class="mt-1 mobile-nav-text">Home</span>
-    </a>
-
-    <!-- Q&A (Updated from About) -->
-    <a href="/qa" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm
-        hover:text-[var(--primary-dark)] transition-colors duration-200">
-      <i class="fas fa-question-circle text-lg mobile-nav-icon"></i>
-      <span class="mt-1 mobile-nav-text">Q&A</span>
-    </a>
-
-    <!-- Books -->
-    <a href="/book" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm
-        hover:text-[var(--primary-dark)] transition-colors duration-200">
-      <i class="fas fa-book text-lg mobile-nav-icon"></i>
-      <span class="mt-1 mobile-nav-text">Books</span>
-    </a>
-
-    <!-- Articles -->
-    <a href="/article" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm
-        hover:text-[var(--primary-dark)] transition-colors duration-200">
-      <i class="fas fa-newspaper text-lg mobile-nav-icon"></i>
-      <span class="mt-1 mobile-nav-text">Articles</span>
-    </a>
-
-    <!-- Gallery (Updated from Contact) -->
-    <a href="/gallery" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm
-        hover:text-[var(--primary-dark)] transition-colors duration-200">
-      <i class="fas fa-images text-lg mobile-nav-icon"></i>
-      <span class="mt-1 mobile-nav-text">Gallery</span>
-    </a>
-
-  </nav>
-</div>
+  <div id="mobile-navbar"
+      class="fixed bottom-0 left-0 right-0 bg-white shadow-xl z-40 lg:hidden rounded-t-2xl border-t border-gray-200">
+    <nav class="flex justify-around items-center h-16 text-gray-400">
+      <a href="/" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm hover:text-[var(--primary-dark)] transition-colors duration-200">
+        <i class="fas fa-home text-lg mobile-nav-icon"></i>
+        <span class="mt-1 mobile-nav-text">Home</span>
+      </a>
+      <a href="/qa" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm hover:text-[var(--primary-dark)] transition-colors duration-200">
+        <i class="fas fa-question-circle text-lg mobile-nav-icon"></i>
+        <span class="mt-1 mobile-nav-text">Q&A</span>
+      </a>
+      <a href="/book" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm hover:text-[var(--primary-dark)] transition-colors duration-200">
+        <i class="fas fa-book text-lg mobile-nav-icon"></i>
+        <span class="mt-1 mobile-nav-text">Books</span>
+      </a>
+      <a href="/article" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm hover:text-[var(--primary-dark)] transition-colors duration-200">
+        <i class="fas fa-newspaper text-lg mobile-nav-icon"></i>
+        <span class="mt-1 mobile-nav-text">Articles</span>
+      </a>
+      <a href="/gallery" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm hover:text-[var(--primary-dark)] transition-colors duration-200">
+        <i class="fas fa-images text-lg mobile-nav-icon"></i>
+        <span class="mt-1 mobile-nav-text">Gallery</span>
+      </a>
+    </nav>
+  </div>
 
   <script type="module">
     document.addEventListener('DOMContentLoaded', () => {
@@ -453,15 +534,12 @@
       langButtons.forEach(button => {
         button.addEventListener('click', () => {
           const lang = button.id.split('-')[1]; // ur | ro | en
-          // buttons state
           langButtons.forEach(btn => {
             btn.classList.remove('text-[#4a7031]', 'border-[#4a7031]', 'font-semibold');
             btn.classList.add('text-gray-500', 'border-transparent', 'font-medium', 'hover:text-[#4a7031]', 'hover:border-gray-400');
-            btn.classList.remove('bg-[#c1d9a3]', 'bg-[#e8f0e0]', 'text-gray-700');
           });
           button.classList.add('text-[#4a7031]', 'border-[#4a7031]', 'font-semibold');
           button.classList.remove('text-gray-500', 'border-transparent', 'font-medium', 'hover:text-[#4a7031]', 'hover:border-gray-400');
-          // contents
           langContents.forEach(content => {
             content.classList.toggle('hidden', content.id !== `content-${lang}`);
           });
@@ -485,26 +563,26 @@
         });
       });
 
-      // Share
+      // Share (force /article/{id} URL)
       const shareBtn = document.getElementById('shareBtn');
       const toast = document.getElementById('toast');
       if (shareBtn && toast) {
         shareBtn.addEventListener('click', async () => {
+          const forceUrl = "<%= canonicalUrl %>";
           const shareData = {
             title: document.title,
-            text: (document.querySelector('meta[name="description"]')?.content) || "",
-            url: window.location.href
+            text: (document.querySelector('meta[name=\"description\"]')?.content) || "",
+            url: forceUrl
           };
           try {
             if (navigator.share) {
               await navigator.share(shareData);
             } else {
               const textArea = document.createElement('textarea');
-              textArea.value = window.location.href;
+              textArea.value = forceUrl;
               textArea.style.position = 'fixed';
               textArea.style.left = '-9999px';
               document.body.appendChild(textArea);
-              textArea.focus();
               textArea.select();
               let success = false;
               try { success = document.execCommand('copy'); } catch (err) {}
