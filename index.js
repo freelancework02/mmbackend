@@ -15,7 +15,22 @@ const PORT = process.env.PORT || 5000;
  * Always prefer the same process host so it works locally and on Render.
  * IMPORTANT: This returns the full API root (already includes /api).
  */
-const apiBaseFromReq = (req) => `https://demo.minaramasjid.com/api`;
+// Always returns a base that already includes `/api`
+const apiBaseFromReq = (req) => {
+  const envBase = process.env.API_BASE && process.env.API_BASE.trim();
+  if (envBase) {
+    // allow both with/without trailing slash, but ensure we end with /api
+    const base = envBase.replace(/\/+$/, "");
+    return base.endsWith("/api") ? base : `${base}/api`;
+  }
+
+  // Prefer proto forwarded by proxies (Render/Vercel), fallback to req.protocol
+  const proto = req.headers["x-forwarded-proto"] || req.protocol || "http";
+  const host  = req.get("host"); // e.g. 127.0.0.1:5000 in dev, or your live host
+
+  return `${proto}://${host}/api`;
+};
+
 
 // ---- View engine ----
 app.set("views", path.join(__dirname, "views"));
@@ -77,16 +92,36 @@ async function fetchJSON(url) {
 }
 
 async function getHomeData(API_BASE) {
-  try {
-    const [articles, writers, books, events, questionsRaw] = await Promise.all([
-      fetchJSON(`${API_BASE}/articles`),
-      fetchJSON(`${API_BASE}/writers`),
-      fetchJSON(`${API_BASE}/books`),
-      fetchJSON(`${API_BASE}/events`),
-      fetchJSON(`http://localhost:5000/api/questions`) // <-- add this
-    ]);
+  // tiny helper
+  const val = (s) => (Array.isArray(s) ? s : Array.isArray(s?.data) ? s.data : []);
+  const logFail = (label, err) => {
+    console.error(
+      `[home] ${label} failed:`,
+      err?.response?.status || "-",
+      err?.code || "-",
+      err?.message || err
+    );
+  };
 
-    const normArticles = (Array.isArray(articles) ? articles : []).map((a) => ({
+  // run all calls in parallel; a single failure won't abort the rest
+  const results = await Promise.allSettled([
+    fetchJSON(`${API_BASE}/articles`),   // 0
+    fetchJSON(`${API_BASE}/writers`),    // 1
+    fetchJSON(`${API_BASE}/books`),      // 2
+    fetchJSON(`${API_BASE}/events`),     // 3
+    fetchJSON(`${API_BASE}/questions`),  // 4
+  ]);
+
+  // unpack with defaults + targeted logging
+  const articlesRaw  = results[0].status === "fulfilled" ? results[0].value : (logFail("articles", results[0].reason), []);
+  const writersRaw   = results[1].status === "fulfilled" ? results[1].value : (logFail("writers",  results[1].reason), []);
+  const booksRaw     = results[2].status === "fulfilled" ? results[2].value : (logFail("books",    results[2].reason), []);
+  const eventsRaw    = results[3].status === "fulfilled" ? results[3].value : (logFail("events",   results[3].reason), []);
+  const questionsRaw = results[4].status === "fulfilled" ? results[4].value : (logFail("questions",results[4].reason), []);
+
+  try {
+    // ---- normalize Articles ----
+    const normArticles = val(articlesRaw).map((a) => ({
       id: a.id,
       title: a.title || "",
       englishDescription: a.englishDescription || "",
@@ -101,7 +136,8 @@ async function getHomeData(API_BASE) {
       safeText: clamp(stripTags(a.urduDescription || a.englishDescription || "")),
     }));
 
-    const normEvents = (Array.isArray(events) ? events : []).map((e) => ({
+    // ---- normalize Events ----
+    const normEvents = val(eventsRaw).map((e) => ({
       id: e.id,
       title: e.title || "",
       content: e.content || "",
@@ -112,7 +148,8 @@ async function getHomeData(API_BASE) {
       safeText: clamp(stripTags(e.content || "")),
     }));
 
-    const normBooks = (Array.isArray(books) ? books : []).map((b) => ({
+    // ---- normalize Books ----
+    const normBooks = val(booksRaw).map((b) => ({
       id: b.id,
       title: b.title || "",
       author: b.author || b.writer || "Unknown",
@@ -124,17 +161,16 @@ async function getHomeData(API_BASE) {
       subTitle: b.subTitle || b.description || "",
     }));
 
-    const normWriters = (Array.isArray(writers) ? writers : []).map((w) => ({
+    // ---- normalize Writers ----
+    const normWriters = val(writersRaw).map((w) => ({
       id: w.id,
       name: w.name || "",
       designation: w.designation || "Islamic Scholar",
       imageSrc: `/api/writers/image/${w.id}`,
     }));
 
-    // Normalize questions for the homepage cards
-    const normQuestions = (Array.isArray(questionsRaw) ? questionsRaw
-                        : Array.isArray(questionsRaw?.data) ? questionsRaw.data
-                        : []).map((q) => {
+    // ---- normalize Questions (accept array or {data: [...]}) ----
+    const normQuestions = val(questionsRaw).map((q) => {
       const id    = q.id ?? q._id ?? q.qaId;
       const title = q.title || q.question || q.questionEnglish || q.questionUrdu || `Question ${id}`;
       const views = typeof q.views === "number" ? q.views : (q.viewCount || 30);
@@ -145,17 +181,19 @@ async function getHomeData(API_BASE) {
     });
 
     return {
-      articles: normArticles,
-      events:   normEvents,
-      books:    normBooks,
-      writers:  normWriters,
-      questions: normQuestions, // <-- now exists
+      articles:  normArticles,
+      events:    normEvents,
+      books:     normBooks,
+      writers:   normWriters,
+      questions: normQuestions,
     };
   } catch (err) {
-    console.error("Home data fetch failed:", err?.message || err);
+    // this would only trigger if a normalization line throws
+    console.error("Home data normalize failed:", err?.message || err);
     return { articles: [], events: [], books: [], writers: [], questions: [] };
   }
 }
+
 
 
 // ===== Extra helpers your writer route expects =====
@@ -207,6 +245,7 @@ app.use("/api/share", require("./routes/shareRoutes"));
 app.use("/api/galleries", require("./routes/galleryRoutes"));
 
 // ---- SSR Pages (EJS) ----
+
 app.get("/", async (req, res) => {
   const data = await getHomeData(apiBaseFromReq(req));
   res.render("index", {
@@ -228,7 +267,7 @@ app.get("/qa", async (req, res) => {
   const LOCAL_API_BASE = apiBaseFromReq(req);
   try {
     const [qRes, tRes] = await Promise.all([
-      axios.get(`http://localhost:5000/api/questions`, { timeout: 15000 }),
+      axios.get(`${LOCAL_API_BASE}/questions`, { timeout: 15000 }),
       axios.get(`${LOCAL_API_BASE}/topics`, { timeout: 15000 }).catch(() => ({ data: [] })),
     ]);
 
@@ -692,7 +731,7 @@ async function handleWriter(req, res) {
     fetchJSON(`${API_BASE}/writers/${id}`),
     fetchJSON(`${API_BASE}/books`),
     fetchJSON(`${API_BASE}/articles`),
-    fetchJSON(`http://localhost:5000/api/questions`),
+    fetchJSON(`${API_BASE}/questions`),
   ]);
 
   if (!writer || !writer.id) {
