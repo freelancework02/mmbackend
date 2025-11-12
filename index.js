@@ -294,58 +294,119 @@ app.get("/qa", async (req, res) => {
 });
 
 /** ----------------- BOOK DETAIL (SSR) /bookdetail/:id/:slug ----------------- */
-app.get("/bookdetail/:id/:slug", async (req, res) => {
+// app.get("/bookdetail/:id/:slug", async (req, res) => {
+//   const { id, slug } = req.params;
+//   const API_BASE = apiBaseFromReq(req);
+
+//   try {
+//     const bookRes = await axios.get(`${API_BASE}/books/${id}`);
+//     const book = bookRes.data;
+
+//     if (!book || !book.title) return res.status(404).send("Book not found");
+
+//     const actualSlug = slugify(book.title);
+//     if (slug !== actualSlug) {
+//       return res.redirect(301, `/bookdetail/${book.id}/${actualSlug}`);
+//     }
+
+//     const [allBooksRes, writersRes] = await Promise.all([
+//       axios.get(`${API_BASE}/books`),
+//       axios.get(`${API_BASE}/writers`),
+//     ]);
+
+//     const allBooks = Array.isArray(allBooksRes.data) ? allBooksRes.data : [];
+//     const writers = Array.isArray(writersRes.data) ? writersRes.data : [];
+
+//     const wanted = (book.author || "").toLowerCase().trim();
+//     const matchedWriter =
+//       writers.find((w) => (w.name || "").toLowerCase().trim() === wanted) ||
+//       null;
+
+//     const suggestions = allBooks
+//       .filter(
+//         (b) =>
+//           b.id !== book.id &&
+//           (b.author || "").toLowerCase().trim() === wanted
+//       )
+//       .slice(0, 8);
+
+//     const metaTitle = "Book Detail | Maula Ali Research Center";
+//     const metaDesc =
+//       stripHTML(book.description || "") ||
+//       "Read details about this book on Maula Ali Research Centre.";
+//     const metaImage = `${req.protocol}://${req.get("host")}/api/books/cover/${book.id}`;
+//     const pageUrl = `${req.protocol}://${req.get("host")}${req.originalUrl}`;
+//     const baseHref =
+//       process.env.PUBLIC_BASE_HREF ||
+//       `${req.protocol}://${req.get("host")}/`;
+
+//     return res.render("pages/book_view", {
+//       baseHref,
+//       pageUrl,
+//       metaTitle,
+//       metaDesc: metaDesc.slice(0, 300),
+//       metaImage,
+//       book,
+//       writer: matchedWriter,
+//       suggestions,
+//       slugify,
+//       stripHTML,
+//     });
+//   } catch (err) {
+//     console.error("Book detail error:", err?.response?.status, err?.message);
+//     return res.status(500).send("Something went wrong");
+//   }
+// });
+
+// --- One controller for both routes ---
+async function bookDetailController(req, res) {
   const { id, slug } = req.params;
   const API_BASE = apiBaseFromReq(req);
 
   try {
     const bookRes = await axios.get(`${API_BASE}/books/${id}`);
     const book = bookRes.data;
-
     if (!book || !book.title) return res.status(404).send("Book not found");
 
-    const actualSlug = slugify(book.title);
-    if (slug !== actualSlug) {
+    const actualSlug = slugify(book.title || "");
+
+    // If this hit the slugless route OR slug is wrong, send canonical 301
+    if (!slug || slug !== actualSlug) {
       return res.redirect(301, `/bookdetail/${book.id}/${actualSlug}`);
     }
 
+    // Parallel fetches
     const [allBooksRes, writersRes] = await Promise.all([
       axios.get(`${API_BASE}/books`),
       axios.get(`${API_BASE}/writers`),
     ]);
 
     const allBooks = Array.isArray(allBooksRes.data) ? allBooksRes.data : [];
-    const writers = Array.isArray(writersRes.data) ? writersRes.data : [];
+    const writers  = Array.isArray(writersRes.data)  ? writersRes.data  : [];
 
     const wanted = (book.author || "").toLowerCase().trim();
     const matchedWriter =
-      writers.find((w) => (w.name || "").toLowerCase().trim() === wanted) ||
-      null;
+      writers.find(w => (w.name || "").toLowerCase().trim() === wanted) || null;
 
     const suggestions = allBooks
-      .filter(
-        (b) =>
-          b.id !== book.id &&
-          (b.author || "").toLowerCase().trim() === wanted
-      )
+      .filter(b => b.id !== book.id && (b.author || "").toLowerCase().trim() === wanted)
       .slice(0, 8);
 
-    const metaTitle = "Book Detail | Maula Ali Research Center";
-    const metaDesc =
-      stripHTML(book.description || "") ||
-      "Read details about this book on Maula Ali Research Centre.";
-    const metaImage = `${req.protocol}://${req.get("host")}/api/books/cover/${book.id}`;
-    const pageUrl = `${req.protocol}://${req.get("host")}${req.originalUrl}`;
-    const baseHref =
-      process.env.PUBLIC_BASE_HREF ||
-      `${req.protocol}://${req.get("host")}/`;
+    // Absolute URLs for OG/Twitter/WhatsApp
+    const host    = `${req.protocol}://${req.get("host")}`;
+    const pageUrl = `${host}/bookdetail/${book.id}/${actualSlug}`;
+    const baseHref = process.env.PUBLIC_BASE_HREF || `${host}/`;
+    const metaTitle = `${book.title} | Maula Ali Research Center`;
+    const metaDesc  = stripHTML(book.description || "") ||
+                      "Read details about this book on Maula Ali Research Centre.";
+    const metaImage = `${host}/api/books/cover/${book.id}`;
 
     return res.render("pages/book_view", {
       baseHref,
       pageUrl,
       metaTitle,
       metaDesc: metaDesc.slice(0, 300),
-      metaImage,
+      metaImage, // absolute for WA preview
       book,
       writer: matchedWriter,
       suggestions,
@@ -356,7 +417,14 @@ app.get("/bookdetail/:id/:slug", async (req, res) => {
     console.error("Book detail error:", err?.response?.status, err?.message);
     return res.status(500).send("Something went wrong");
   }
-});
+}
+
+// --- Two explicit routes (no ? optional) ---
+app.get("/bookdetail/:id",       bookDetailController);      // slugless, will 301 to canonical
+app.get("/bookdetail/:id/:slug", bookDetailController);      // pretty URL
+
+
+
 
 /** ----------------- ARTICLE DETAIL (SSR) /article/:id/:slug ----------------- */
 // ----------------- ARTICLE DETAIL (SSR) /article/:id/:slug -----------------

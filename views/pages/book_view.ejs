@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <% 
+  <%
     // --------- SAFE INPUTS & FALLBACKS ----------
     const siteName        = "Maula Ali Research Center";
     const defaultBase     = (typeof baseHref === "string" && baseHref.trim()) ? baseHref.trim() : "https://demo.minaramasjid.com/";
@@ -15,24 +15,29 @@
     const bookId          = bookObj.id || bookObj._id || "";
     const bookTitle       = (bookObj.title || "Book");
     const bookLang        = (bookObj.language || "en");
-    const bookCoverUrl    = `/api/books/cover/${bookId}`;
-    const defaultCover    = "https://placehold.co/1200x630/e8f0e0/4a7031?text=Book&font=roboto";
+    const bookCoverRel    = `/api/books/cover/${bookId}`;
 
-    // Canonical/share URL strictly by ID (no slug):
-    const canonicalUrl    = `${BASE}/book/${bookId}`;
+    // Canonical/share URL uses pretty route with slug (matches route)
+    const prettySlug      = (typeof slugify === "function") ? slugify(bookTitle) : encodeURIComponent(bookTitle);
+    const canonicalUrl    = `${BASE}/bookdetail/${bookId}`;
 
-    // Meta inputs (allow overrides from server meta*, else build from book)
+    // Meta inputs (override-ready)
     const metaT           = (typeof metaTitle === "string" && metaTitle.trim()) ? metaTitle : `${bookTitle} | ${siteName}`;
     const metaD           = (typeof metaDesc  === "string" && metaDesc.trim())
                               ? metaDesc
                               : (typeof stripHTML === "function" && bookObj.description
-                                    ? String(stripHTML(bookObj.description)).slice(0, 170)
+                                    ? String(stripHTML(bookObj.description)).slice(0, 200)
                                     : "Read this Islamic book at Maula Ali Research Center.");
-    const metaI           = (typeof metaImage === "string" && metaImage.trim()) ? metaImage : `${BASE}${bookCoverUrl}`;
+
+    // Absolute image for OG/Twitter/WhatsApp
+    const providedImage   = (typeof metaImage === "string" && metaImage.trim()) ? metaImage.trim() : "";
+    const metaI           = (/^https?:\/\//i.test(providedImage) ? providedImage
+                           : providedImage ? `${BASE}${providedImage.startsWith("/")?"":"/"}${providedImage}`
+                           : `${BASE}${bookCoverRel}`);
 
     // Writer fields + bilingual about
     const writerName      = (writerObj && (writerObj.name || writerObj.fullName)) || (bookObj.author || "Writer");
-    const writerImg       = writerObj ? `/api/writers/image/${writerObj.id}` : "https://placehold.co/160x160/e8f0e0/4a7031?text=Writer&font=roboto";
+    const writerImg       = writerObj ? `${BASE}/api/writers/image/${writerObj.id}` : "https://placehold.co/160x160/e8f0e0/4a7031?text=Writer&font=roboto";
     const writerAboutEng  = (writerObj && writerObj.englishDescription) || "";
     const writerAboutUrdu = (writerObj && writerObj.urduDescription) || "";
 
@@ -42,6 +47,9 @@
       { name: "Books", url: `${BASE}/books` },
       { name: bookTitle, url: canonicalUrl }
     ];
+
+    // OG locale tuned for WA preview
+    const ogLocale = (String(bookLang).toLowerCase().startsWith("ur")) ? "ur_PK" : "en_US";
   %>
 
   <!-- Primary Meta -->
@@ -52,15 +60,18 @@
   <meta name="robots" content="index,follow,max-image-preview:large">
   <link rel="canonical" href="<%= canonicalUrl %>">
 
-  <!-- Open Graph -->
+  <!-- Open Graph (Hardened for WhatsApp) -->
   <meta property="og:site_name" content="Maula Ali Research Center">
   <meta property="og:title" content="<%= metaT %>">
   <meta property="og:description" content="<%= metaD %>">
-  <meta property="og:image" content="<%= metaI %>">
-  <meta property="og:image:alt" content="<%= bookTitle %>">
   <meta property="og:type" content="book">
   <meta property="og:url" content="<%= canonicalUrl %>">
-  <meta property="og:locale" content="en_US">
+  <meta property="og:locale" content="<%= ogLocale %>">
+  <meta property="og:image" content="<%= metaI %>">
+  <meta property="og:image:secure_url" content="<%= metaI.replace(/^http:/,'https:') %>">
+  <meta property="og:image:alt" content="<%= bookTitle %>">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
 
   <!-- Twitter Cards -->
   <meta name="twitter:card" content="summary_large_image">
@@ -68,7 +79,7 @@
   <meta name="twitter:description" content="<%= metaD %>">
   <meta name="twitter:image" content="<%= metaI %>">
 
-  <!-- Hreflang (optional duplicates if single route; keep canonical consistent) -->
+  <!-- Hreflang -->
   <link rel="alternate" href="<%= canonicalUrl %>" hreflang="en">
   <link rel="alternate" href="<%= canonicalUrl %>" hreflang="ur">
   <link rel="alternate" href="<%= canonicalUrl %>" hreflang="x-default">
@@ -99,7 +110,7 @@
         "@id": "<%= BASE %>#website",
         "url": "<%= BASE %>/",
         "name": "Maula Ali Research Center",
-        "inLanguage": "en",
+        "inLanguage": "<%= ogLocale === 'ur_PK' ? 'ur' : 'en' %>",
         "potentialAction": {
           "@type": "SearchAction",
           "target": "<%= BASE %>/search?q={search_term_string}",
@@ -155,7 +166,6 @@
     .mobile-menu-visible { max-height: 500px; opacity: 1; transition: max-height .4s ease-in, opacity .3s ease-in; }
     .gulzartext { font-family: 'Gulzar', serif; }
     .heading { font-family: 'Gulzar', serif; }
-
     @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     .animate-fade-in-up { animation: fadeInUp .6s ease-out forwards; opacity: 0; }
 
@@ -197,12 +207,7 @@
           </nav>
 
           <div class="md:hidden flex-1"></div>
-          <div class="md:hidden flex-1 flex justify-center">
-            <!-- <a href="/">
-              <img src="https://minaramasjid.com/assets/image/logo/marc.png" alt="Logo" class="w-12 h-12 rounded-full object-contain">
-            </a> -->
-          </div>
-
+          <div class="md:hidden flex-1 flex justify-center"></div>
           <div class="md:hidden flex-1 flex justify-end">
             <button id="mobile-menu-toggle" class="text-white focus:outline-none">
               <i class="fas fa-bars w-7 h-7"></i>
@@ -430,8 +435,9 @@
       const mobileMenu = document.getElementById('mobile-menu');
       if (mobileMenuButton && mobileMenu) {
         mobileMenuButton.addEventListener('click', () => {
-          mobileMenu.classList.toggle('mobile-menu-hidden');
-          mobileMenu.classList.toggle('mobile-menu-visible');
+          const visible = mobileMenu.classList.toggle('mobile-menu-visible');
+          mobileMenu.classList.toggle('mobile-menu-hidden', !visible);
+          mobileMenu.setAttribute('aria-hidden', String(!visible));
         });
       }
 
@@ -440,9 +446,8 @@
       if (backToTopBtn) {
         window.addEventListener('scroll', () => {
           if (window.scrollY > 300) {
-            backToTopBtn.classList.remove('hidden');
+            backToTopBtn.classList.remove('hidden','opacity-0');
             backToTopBtn.classList.add('flex');
-            backToTopBtn.classList.remove('opacity-0');
           } else {
             backToTopBtn.classList.add('opacity-0');
             setTimeout(() => {
@@ -456,37 +461,44 @@
         backToTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
       }
 
-      // Share (force /book/{id} URL)
+      // Share (use pretty route + WA fallback)
       const shareBtn = document.getElementById('shareBtn');
       const toast = document.getElementById('toast');
       if (shareBtn && toast) {
         shareBtn.addEventListener('click', async () => {
           const forceUrl = "<%= canonicalUrl %>";
-          const shareData = {
-            title: document.title,
-            text: (document.querySelector('meta[name=\"description\"]')?.content) || "",
-            url: forceUrl
-          };
+          const title = document.title;
+          const descMeta = document.querySelector('meta[name="description"]');
+          const text = descMeta ? descMeta.content : '';
+
           try {
             if (navigator.share) {
-              await navigator.share(shareData);
-            } else {
-              const textArea = document.createElement('textarea');
-              textArea.value = forceUrl;
-              textArea.style.position = 'fixed';
-              textArea.style.left = '-9999px';
-              document.body.appendChild(textArea);
-              textArea.select();
-              let success = false;
-              try { success = document.execCommand('copy'); } catch (err) {}
-              document.body.removeChild(textArea);
-              if (success) {
-                toast.classList.remove('opacity-0');
-                setTimeout(() => { toast.classList.add('opacity-0'); }, 2000);
-              }
+              await navigator.share({ title, text, url: forceUrl });
+              return;
             }
-          } catch (err) {
-            console.error('Error sharing:', err);
+          } catch (e) {
+            // fall through to WA
+          }
+
+          // WhatsApp fallback: prefill title + snippet + URL
+          const waText = encodeURIComponent(`${title}\n${text}\n${forceUrl}`);
+          const waUrl  = `https://api.whatsapp.com/send?text=${waText}`;
+          const opened = window.open(waUrl, '_blank', 'noopener,noreferrer');
+          if (opened) return;
+
+          // Clipboard fallback
+          try {
+            await navigator.clipboard.writeText(forceUrl);
+            toast.classList.remove('opacity-0');
+            setTimeout(()=>toast.classList.add('opacity-0'), 2000);
+          } catch {
+            const ta = document.createElement('textarea');
+            ta.value = forceUrl; ta.style.position='fixed'; ta.style.left='-9999px';
+            document.body.appendChild(ta); ta.focus(); ta.select();
+            try { document.execCommand('copy'); } catch {}
+            document.body.removeChild(ta);
+            toast.classList.remove('opacity-0');
+            setTimeout(()=>toast.classList.add('opacity-0'), 2000);
           }
         });
       }
@@ -509,9 +521,7 @@
         } else {
           btnEng?.classList.add('active');
           btnUrdu?.classList.remove('active');
-          // english content should be Roman/LTR: use textContent if you don’t trust HTML;
-          // here we trust server to sanitize:
-          aboutEl.innerHTML = eng || "Short bio will appear here.";
+          aboutEl.innerHTML = (eng || "Short bio will appear here.");
           aboutEl.classList.remove('rtl','text-right','gulzartext');
         }
       }
