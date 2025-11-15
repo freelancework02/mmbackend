@@ -357,7 +357,7 @@ app.get("/qa", async (req, res) => {
 //     return res.status(500).send("Something went wrong");
 //   }
 // });
-
+ 
 // --- One controller for both routes ---
 async function bookDetailController(req, res) {
   const { id, slug } = req.params;

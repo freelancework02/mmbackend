@@ -85,51 +85,88 @@
 <body class="bg-slate-100 bg-opacity-90" style="background-image:url('/images/newbg.png'); background-blend-mode:overlay;">
 
   <!-- Header / Navbar -->
-  <header class="bg-white sticky top-0 z-50 shadow-md border-b border-green-100">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex justify-between items-center py-4 relative">
-        <nav class="hidden md:flex gap-6 text-md font-semibold text-gray-700 tracking-wide">
-          <a href="/" class="hover:text-green-800">Home</a>
-          <a href="/about" class="hover:text-green-800">About</a>
-          <a href="/events" class="hover:text-green-800">News & Event</a>
-          <a href="/book" class="hover:text-green-800">Books</a>
+   <header class="bg-white shadow-sm sticky top-0 z-50">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="relative flex items-center justify-between h-20">
+                
+                <!-- Mobile Menu Button (lg:hidden) -->
+                <div class="absolute inset-y-0 left-0 flex items-center lg:hidden z-50">
+  <button
+    id="mobile-menu-button"
+    type="button"
+    class="inline-flex items-center justify-center p-2 rounded-md bg-white/90 border border-slate-200 text-slate-800 hover:bg-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-emerald-500"
+    aria-controls="mobile-menu"
+    aria-expanded="false"
+    aria-label="Toggle menu"
+  >
+    <span class="sr-only">Open main menu</span>
+
+    <!-- Hamburger icon (shown when aria-expanded="false") -->
+    <svg class="h-6 w-6 block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+    </svg>
+
+    <!-- Close icon (shown when aria-expanded="true") -->
+    <svg class="h-6 w-6 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+    </svg>
+  </button>
+</div>
+
+
+                <!-- Mobile Logo (lg:hidden) -->
+                <div class="flex-1 flex items-center justify-center lg:hidden">
+                    <a href="/" class="flex-shrink-0">
+                        <img class="h-12 w-auto" src="https://minaramasjid.com/assets/image/logo/marc.png" alt="Maula Ali Research Center Logo">
+                    </a>
+                </div>
+
+                <!-- Desktop Menu (hidden lg:flex) -->
+                <div class="hidden lg:flex lg:items-center lg:space-x-4">
+                    <a href="/" class="text-gray-700 hover:text-primary-light px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Home</a>
+<a href="/about" class="text-gray-700 hover:text-primary-light px-3 py-2 rounded-md text-sm">About</a>
+                    <a href="/events" class="text-gray-700 hover:text-primary-light px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">News & Events</a>
+                    <a href="/book" class="text-gray-700 hover:text-primary-light px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Books</a>
+                </div>
+
+                <!-- Desktop Logo (hidden lg:flex) -->
+                <div class="hidden lg:flex lg:flex-shrink-0 mx-6">
+                    <a href="/">
+                        <img class="h-16 w-auto" src="https://minaramasjid.com/assets/image/logo/marc.png" alt="Maula Ali Research Center Logo">
+                    </a>
+                </div>
+
+                <!-- Desktop Menu Right (hidden lg:flex) -->
+                <div class="hidden lg:flex lg:items-center lg:space-x-4">
+                    <a href="/article" class="text-gray-700 hover:text-primary-light px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200" aria-current="page">Articles</a>
+                    <a href="/qa" class="text-gray-700 hover:text-primary-light px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Question Answer</a>
+                    <!-- <a href="/book-request" class="text-gray-700 hover:text-primary-light px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Request a Book</a> -->
+                    <a href="/contact" class="text-gray-700 hover:text-primary-light px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Contact</a>
+                </div>
+
+                <!-- Mobile Search (Placeholder) -->
+                <div class="absolute inset-y-0 right-0 flex items-center pr-2 lg:hidden">
+                    <button class="p-2 rounded-full text-gray-500 hover:text-gray-900">
+                        <i class="fas fa-search fa-fw"></i>
+                    </button>
+                </div>
+            </div>
         </nav>
 
-        <div class="absolute left-1/2 transform -translate-x-1/2 -bottom-7 bg-white rounded-full p-1 shadow-lg border border-green-100 z-10">
-          <img src="/images/marc.png" alt="Logo" class="w-16 h-16 rounded-full object-contain" />
+        <!-- Mobile Menu, show/hide based on menu state. -->
+        <div class="lg:hidden hidden" id="mobile-menu">
+            <div class="px-2 pt-2 pb-3 space-y-1">
+                <a href="/" class="text-gray-700 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">Home</a>
+                <a href="/about" class="text-primary-light bg-gray-100 block px-3 py-2 rounded-md text-base font-medium" >About</a>
+                <a href="/events" class="text-gray-700 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">News & Events</a>
+                <a href="/book" class="text-gray-700 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">Books</a>
+                <a href="/article" class="text-gray-700 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">Articles</a>
+                <a href="/qa" class="text-gray-700 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">Question Answer</a>
+                <!-- <a href="/book-request" class="text-gray-700 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">Request a Book</a> -->
+                <a href="/contact" class="text-gray-700 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">Contact</a>
+            </div>
         </div>
-
-        <nav class="hidden md:flex gap-6 text-md font-semibold text-gray-700 tracking-wide">
-          <a href="/article" class="hover:text-green-800">Articles</a>
-          <a href="/qa" class="hover:text-green-800">Question Answer</a>
-          <a href="/contact" class="hover:text-green-800">Contact</a>
-        </nav>
-
-        <div class="md:hidden">
-          <button id="mobileMenuBtn" class="text-gray-700 focus:outline-none" aria-label="Toggle Menu">
-            <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path id="mobileMenuIcon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
-        </div>
-      </div>
-
-      <!-- Mobile menu -->
-      <div id="mobileMenu" class="md:hidden transition-all overflow-hidden max-h-0 opacity-0">
-        <div class="flex flex-col gap-3 py-4 px-2 text-white bg-[#5a7544] rounded-b-xl">
-          <a href="/" class="hover:bg-[#4f6639] px-4 py-2 rounded">Home</a>
-          <a href="/about" class="hover:bg-[#4f6639] px-4 py-2 rounded">About</a>
-          <a href="/book" class="hover:bg-[#4f6639] px-4 py-2 rounded">Books</a>
-          <a href="/events" class="hover:bg-[#4f6639] px-4 py-2 rounded">News & Event</a>
-          <a href="/article" class="hover:bg-[#4f6639] px-4 py-2 rounded">Articles</a>
-          <a href="/qa" class="hover:bg-[#4f6639] px-4 py-2 rounded">Question Answer</a>
-          <a href="/requestbook" class="hover:bg-[#4f6639] px-4 py-2 rounded">Request a Book</a>
-          <a href="/contact" class="hover:bg-[#4f6639] px-4 py-2 rounded">Contact</a>
-        </div>
-      </div>
-    </div>
-  </header>
+    </header>
 
   <!-- Loading screen -->
   <div id="pageLoader" class="flex flex-col justify-center items-center h-screen space-y-6">
@@ -352,9 +389,11 @@
     // ======= Elements =======
     const pageLoader = document.getElementById("pageLoader");
     const pageContent = document.getElementById("pageContent");
-    const mobileMenuBtn = document.getElementById("mobileMenuBtn");
-    const mobileMenuIcon = document.getElementById("mobileMenuIcon");
-    const mobileMenu = document.getElementById("mobileMenu");
+
+    // mobile menu elements - NOTE: match IDs in the markup
+    const mobileMenuBtn = document.getElementById("mobile-menu-button");
+    const mobileMenuIcon = document.getElementById("mobileMenuIcon"); // optional, may be null
+    const mobileMenu = document.getElementById("mobile-menu");
 
     const filterWriter = document.getElementById("filterWriter");
     const filterTranslator = document.getElementById("filterTranslator");
@@ -535,7 +574,8 @@
     function escapeHtml(str) {
       return String(str)
         .replace(/&/g, "&amp;").replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;").replace(/"/g, "&quot;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
     }
 
@@ -609,46 +649,56 @@
 
     // ======= Event wiring =======
     function bindUI() {
-      gridBtn.addEventListener("click", () => setViewMode("grid"));
-      listBtn.addEventListener("click", () => setViewMode("list"));
+      if (gridBtn) gridBtn.addEventListener("click", () => setViewMode("grid"));
+      if (listBtn) listBtn.addEventListener("click", () => setViewMode("list"));
 
       window.addEventListener("scroll", () => {
         const nearBottom = window.innerHeight + document.documentElement.scrollTop >= (document.documentElement.offsetHeight - 100);
         if (nearBottom) loadMore();
       });
 
-      filterWriter.addEventListener("change", e => { selectedFilters.writer = e.target.value; resetAndRender(); });
-      filterTranslator.addEventListener("change", e => { selectedFilters.translator = e.target.value; resetAndRender(); });
-      filterLanguage.addEventListener("change", e => { selectedFilters.language = e.target.value; resetAndRender(); });
-      filterTopic.addEventListener("change", e => { selectedFilters.topic = e.target.value; resetAndRender(); });
-      filterSorting.addEventListener("change", e => { selectedFilters.sorting = e.target.value; resetAndRender(); });
+      if (filterWriter) filterWriter.addEventListener("change", e => { selectedFilters.writer = e.target.value; resetAndRender(); });
+      if (filterTranslator) filterTranslator.addEventListener("change", e => { selectedFilters.translator = e.target.value; resetAndRender(); });
+      if (filterLanguage) filterLanguage.addEventListener("change", e => { selectedFilters.language = e.target.value; resetAndRender(); });
+      if (filterTopic) filterTopic.addEventListener("change", e => { selectedFilters.topic = e.target.value; resetAndRender(); });
+      if (filterSorting) filterSorting.addEventListener("change", e => { selectedFilters.sorting = e.target.value; resetAndRender(); });
 
       let t;
-      searchInput.addEventListener("input", e => {
-        clearTimeout(t);
-        t = setTimeout(() => { selectedFilters.search = e.target.value.trim(); resetAndRender(); }, 250);
-      });
+      if (searchInput) {
+        searchInput.addEventListener("input", e => {
+          clearTimeout(t);
+          t = setTimeout(() => { selectedFilters.search = e.target.value.trim(); resetAndRender(); }, 250);
+        });
+      }
 
-      chipAll.addEventListener("click", () => {
-        selectedFilters.topic = "";
-        filterTopic.value = "";
-        resetAndRender();
-      });
+      if (chipAll) {
+        chipAll.addEventListener("click", () => {
+          selectedFilters.topic = "";
+          if (filterTopic) filterTopic.value = "";
+          resetAndRender();
+        });
+      }
     }
 
-    // Mobile menu
-    mobileMenuBtn.addEventListener("click", () => {
-      const open = mobileMenu.classList.contains("max-h-screen");
-      if (open) {
-        mobileMenu.classList.remove("max-h-screen", "opacity-100");
-        mobileMenu.classList.add("max-h-0", "opacity-0");
-        mobileMenuIcon.setAttribute("d", "M4 6h16M4 12h16M4 18h16");
-      } else {
-        mobileMenu.classList.remove("max-h-0", "opacity-0");
-        mobileMenu.classList.add("max-h-screen", "opacity-100");
-        mobileMenuIcon.setAttribute("d", "M6 18L18 6M6 6l12 12");
-      }
-    });
+    // Mobile menu - guard before attaching to avoid null errors
+    if (mobileMenuBtn) {
+      mobileMenuBtn.addEventListener("click", () => {
+        const open = mobileMenu && mobileMenu.classList.contains("max-h-screen");
+        if (mobileMenu) {
+          if (open) {
+            mobileMenu.classList.remove("max-h-screen", "opacity-100");
+            mobileMenu.classList.add("max-h-0", "opacity-0");
+          } else {
+            mobileMenu.classList.remove("max-h-0", "opacity-0");
+            mobileMenu.classList.add("max-h-screen", "opacity-100");
+          }
+        }
+        // optional icon toggle if present
+        if (mobileMenuIcon) {
+          mobileMenuIcon.setAttribute("d", open ? "M4 6h16M4 12h16M4 18h16" : "M6 18L18 6M6 6l12 12");
+        }
+      });
+    }
 
     // ======= Initial Fetch =======
     (async function init() {
@@ -667,42 +717,42 @@
         writers.forEach(w => {
           const opt = document.createElement("option");
           opt.value = w.name; opt.textContent = w.name;
-          filterWriter.appendChild(opt);
+          if (filterWriter) filterWriter.appendChild(opt);
         });
 
         translators.forEach(t => {
           const opt = document.createElement("option");
           opt.value = t.name; opt.textContent = t.name;
-          filterTranslator.appendChild(opt);
+          if (filterTranslator) filterTranslator.appendChild(opt);
         });
 
         languages.forEach(l => {
           const opt = document.createElement("option");
           opt.value = l.language; opt.textContent = l.language;
-          filterLanguage.appendChild(opt);
+          if (filterLanguage) filterLanguage.appendChild(opt);
         });
 
         topics.forEach(tp => {
           const opt = document.createElement("option");
           opt.value = tp.topic; opt.textContent = tp.topic;
-          filterTopic.appendChild(opt);
+          if (filterTopic) filterTopic.appendChild(opt);
         });
 
-        if (topics[0]) {
+        if (topics[0] && chipTopic1) {
           chipTopic1.classList.remove("hidden");
           chipTopic1Name.textContent = topics[0].topic;
           chipTopic1.addEventListener("click", () => {
             selectedFilters.topic = topics[0].topic;
-            filterTopic.value = topics[0].topic;
+            if (filterTopic) filterTopic.value = topics[0].topic;
             resetAndRender();
           });
         }
-        if (topics[1]) {
+        if (topics[1] && chipTopic2) {
           chipTopic2.classList.remove("hidden");
           chipTopic2Name.textContent = topics[1].topic;
           chipTopic2.addEventListener("click", () => {
             selectedFilters.topic = topics[1].topic;
-            filterTopic.value = topics[1].topic;
+            if (filterTopic) filterTopic.value = topics[1].topic;
             resetAndRender();
           });
         }
@@ -710,8 +760,8 @@
         allArticles = Array.isArray(articles) ? articles : [];
         allCount.textContent = String(allArticles.length || 0);
 
-        if (topics[0]) chipTopic1Count.textContent = String(allArticles.filter(a => a.topic === topics[0].topic).length);
-        if (topics[1]) chipTopic2Count.textContent = String(allArticles.filter(a => a.topic === topics[1].topic).length);
+        if (topics[0] && chipTopic1Count) chipTopic1Count.textContent = String(allArticles.filter(a => a.topic === topics[0].topic).length);
+        if (topics[1] && chipTopic2Count) chipTopic2Count.textContent = String(allArticles.filter(a => a.topic === topics[1].topic).length);
 
         bindUI();
 
@@ -726,6 +776,88 @@
         pageContent.classList.remove("hidden");
       }
     })();
+
+
+
+     document.addEventListener('DOMContentLoaded', () => {
+
+            // --- Mobile Menu Toggle (second-safe handler) ---
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenuLocal = document.getElementById('mobile-menu');
+            if (mobileMenuButton && mobileMenuLocal) {
+                mobileMenuButton.addEventListener('click', () => {
+                    const isExpanded = mobileMenuButton.getAttribute('aria-expanded') === 'true';
+                    mobileMenuButton.setAttribute('aria-expanded', (!isExpanded).toString());
+                    mobileMenuLocal.classList.toggle('hidden');
+                });
+            }
+
+            // --- Back To Top Button ---
+            const backToTopBtn = document.getElementById('backToTopBtn');
+            if (backToTopBtn) {
+                window.addEventListener('scroll', () => {
+                    if (window.scrollY > 300) {
+                        backToTopBtn.classList.remove('hidden');
+                        backToTopBtn.classList.add('flex');
+                        backToTopBtn.classList.remove('opacity-0');
+                    } else {
+                        backToTopBtn.classList.add('opacity-0');
+                        // Use setTimeout to hide after transition
+                        setTimeout(() => {
+                           if (window.scrollY <= 300) { // Double check in case user scrolled back up
+                                backToTopBtn.classList.add('hidden');
+                                backToTopBtn.classList.remove('flex');
+                           }
+                        }, 300); // Match transition duration
+                    }
+                });
+
+                backToTopBtn.addEventListener('click', () => {
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                });
+            }
+
+            // --- New Language Toggle Logic ---
+            const langButtons = document.querySelectorAll('.lang-btn');
+            
+            langButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const clickedButton = e.currentTarget;
+                    const sectionId = clickedButton.dataset.sectionId;
+                    const lang = clickedButton.dataset.lang;
+                    const isUrdu = (lang === 'ur');
+
+                    // 1. Update button styles
+                    const sectionButtons = document.querySelectorAll(`.lang-btn[data-section-id="${sectionId}"]`);
+                    sectionButtons.forEach(btn => {
+                        btn.classList.remove('active-lang-btn');
+                    });
+                    clickedButton.classList.add('active-lang-btn');
+
+                    // 2. Find all content elements for this section
+                    const contentElements = document.querySelectorAll(`.lang-content[data-section-id="${sectionId}"]`);
+                    
+                    contentElements.forEach(el => {
+                        if (isUrdu && el.dataset.lang === 'ur') {
+                            el.classList.remove('hidden');
+                        } else if (!isUrdu && el.dataset.lang === 'en') {
+                            el.classList.remove('hidden');
+                        } else {
+                            el.classList.add('hidden');
+                        }
+                    });
+
+                    // 3. Set text direction for the wrapper
+                    const contentWrapper = document.querySelector(`.card-content-wrapper[data-section-id="${sectionId}"]`);
+                    if (contentWrapper) {
+                        contentWrapper.dir = isUrdu ? 'rtl' : 'ltr';
+                    }
+                });
+            });
+        });
   </script>
 </body>
 </html>

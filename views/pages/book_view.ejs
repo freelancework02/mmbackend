@@ -183,52 +183,59 @@
     <div class="absolute inset-0 bg-cover bg-no-repeat opacity-70" style="background-image: url('/assets/bg-DgzunbF9.png'); background-position: center center; z-index: -1;"></div>
 
     <!-- Header -->
-    <header class="bg-[#718e56] sticky top-0 z-50 shadow-md border-b border-green-100">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-center py-4 relative">
-          <nav class="hidden md:flex gap-6 text-md font-semibold text-white tracking-wide">
-            <a href="/" class="hover:text-green-100 transition-colors">Home</a>
-            <a href="/about" class="hover:text-green-100 transition-colors">About</a>
-            <a href="/events" class="hover:text-green-100 transition-colors">News & Event</a>
-            <a href="/book" class="text-white font-bold" aria-current="page">Books</a>
-          </nav>
+     <header class="bg-[#718e56] sticky top-0 z-50 shadow-md border-b border-green-100">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center py-4 relative">
+                    <!-- Left nav -->
+                    <nav class="hidden md:flex gap-6 text-md font-semibold text-white tracking-wide">
+                        <a href="/">Home</a>
+                        <a href="/about">About</a>
+                        <a href="/events" class="font-bold">News & Event</a>
+                        <a href="/book">Books</a>
+                    </nav>
 
-          <div class="absolute left-1/2 transform -translate-x-1/2 -bottom-7 bg-white rounded-full p-1 shadow-lg border border-green-100 z-10">
-            <a href="/">
-              <img src="https://minaramasjid.com/assets/image/logo/marc.png" alt="Logo" class="w-16 h-16 rounded-full object-contain">
-            </a>
-          </div>
+                    <!-- Center logo -->
+                    <div
+                        class="absolute left-1/2 transform -translate-x-1/2 -bottom-7 bg-white rounded-full p-1 shadow-lg border border-green-100 z-10">
+                        <img src="https://minaramasjid.com/assets/image/logo/marc.png" alt="Logo"
+                            class="w-16 h-16 rounded-full object-contain" />
+                    </div>
 
-          <nav class="hidden md:flex gap-6 text-md font-semibold text-white tracking-wide">
-            <a href="/article" class="hover:text-green-100 transition-colors">Articles</a>
-            <a href="/qa" class="hover:text-green-100 transition-colors">Question Answer</a>
-            <a href="/book-request" class="hover:text-green-100 transition-colors">Request a Book</a>
-            <a href="/contact" class="hover:text-green-100 transition-colors">Contact</a>
-          </nav>
+                    <!-- Right nav -->
+                    <nav class="hidden md:flex gap-6 text-md font-semibold text-white tracking-wide">
+                        <a href="/article">Articles</a>
+                        <a href="/qa">Question Answer</a>
+                        <!-- <a href="/requestBook">Request a Book</a> -->
+                        <a href="/contact">Contact</a>
+                    </nav>
 
-          <div class="md:hidden flex-1"></div>
-          <div class="md:hidden flex-1 flex justify-center"></div>
-          <div class="md:hidden flex-1 flex justify-end">
-            <button id="mobile-menu-toggle" class="text-white focus:outline-none">
-              <i class="fas fa-bars w-7 h-7"></i>
-            </button>
-          </div>
-        </div>
+                    <!-- Mobile button -->
+                    <div class="md:hidden">
+                        <button id="mm-btn" class="text-gray-100 focus:outline-none" aria-label="Toggle menu">
+                            <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 6h16M4 12h16M4 18h16" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
 
-        <div id="mobile-menu" class="md:hidden mobile-menu-hidden">
-          <div class="flex flex-col gap-3 py-4 px-2 text-white bg-[#5a7544] rounded-b-xl">
-            <a href="/" class="hover:bg-[#4f6639] px-4 py-2 rounded">Home</a>
-            <a href="/about" class="hover:bg-[#4f6639] px-4 py-2 rounded">About</a>
-            <a href="/events" class="hover:bg-[#4f6639] px-4 py-2 rounded">News & Event</a>
-            <a href="/book" class="bg-[#4f6639] px-4 py-2 rounded" aria-current="page">Books</a>
-            <a href="/article" class="hover:bg-[#4f6639] px-4 py-2 rounded">Articles</a>
-            <a href="/qa" class="hover:bg-[#4f6639] px-4 py-2 rounded">Question Answer</a>
-            <a href="/book-request" class="hover:bg-[#4f6639] px-4 py-2 rounded">Request a Book</a>
-            <a href="/contact" class="hover:bg-[#4f6639] px-4 py-2 rounded">Contact</a>
-          </div>
-        </div>
-      </div>
-    </header>
+                <!-- Mobile menu -->
+                <div id="mm" class="md:hidden transition-all overflow-hidden max-h-0 opacity-0">
+                    <div class="flex flex-col gap-3 py-4 px-2 text-white bg-[#5a7544] rounded-b-xl">
+                        <a href="/" class="hover:bg-[#4f6639] px-4 py-2 rounded">Home</a>
+                        <a href="/about" class="hover:bg-[#4f6639] px-4 py-2 rounded">About</a>
+                        <a href="/book" class="hover:bg-[#4f6639] px-4 py-2 rounded">Books</a>
+                        <a href="/events" class="bg-[#4f6639] px-4 py-2 rounded">News & Event</a>
+                        <a href="/article" class="hover:bg-[#4f6639] px-4 py-2 rounded">Articles</a>
+                        <a href="/qa" class="hover:bg-[#4f6639] px-4 py-2 rounded">Question Answer</a>
+                        <!-- <a href="/requestBook" class="hover:bg-[#4f6639] px-4 py-2 rounded">Request a Book</a> -->
+                        <a href="/contact" class="hover:bg-[#4f6639] px-4 py-2 rounded">Contact</a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
 
     <!-- Main -->
     <main class="relative z-10 pt-16 sm:pt-20">
@@ -429,6 +436,20 @@
   </div>
 
   <script type="module">
+
+      const mmBtn = document.getElementById('mm-btn');
+        const mm = document.getElementById('mm');
+        if (mmBtn && mm) {
+            mmBtn.addEventListener('click', () => {
+                const open = mm.classList.contains('max-h-screen');
+                mm.classList.toggle('max-h-screen', !open);
+                mm.classList.toggle('opacity-100', !open);
+                mm.classList.toggle('max-h-0', open);
+                mm.classList.toggle('opacity-0', open);
+            });
+        }
+
+        
     document.addEventListener('DOMContentLoaded', () => {
       // Mobile menu
       const mobileMenuButton = document.getElementById('mobile-menu-toggle');
