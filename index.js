@@ -5,12 +5,12 @@ const cors = require("cors");
 const path = require("path");
 const axios = require("axios");
 const db = require("./config/db");
-
+ 
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-/**
+/** 
  * API base used by SSR routes.
  * Always prefer the same process host so it works locally and on Render.
  * IMPORTANT: This returns the full API root (already includes /api).
@@ -30,6 +30,7 @@ const apiBaseFromReq = (req) => {
 
   return `${proto}://${host}/api`;
 };
+
 
 
 // ---- View engine ----
