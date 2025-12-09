@@ -56,15 +56,13 @@
     }
 
     .heading, .card-title { font-family: var(--font-urdu); font-weight: 700; }
-    /* You can still use .sub-heading elsewhere if you want; not on description */
     .sub-heading { font-family: var(--font-urdu); font-weight: 600; }
 
-    /* Consistent description look (size, color, family). Urdu overrides via .gulzartext */
     .text-description {
       font-family: var(--font-latin);
-      font-size: 0.95rem;       /* same everywhere */
-      line-height: 1.4;         /* comfortable clamp */
-      color: #334155;           /* slate-700-ish */
+      font-size: 0.95rem;
+      line-height: 1.4;
+      color: #334155;
     }
     .text-description.gulzartext {
       font-family: var(--font-urdu) !important;
@@ -85,88 +83,84 @@
 <body class="bg-slate-100 bg-opacity-90" style="background-image:url('/images/newbg.png'); background-blend-mode:overlay;">
 
   <!-- Header / Navbar -->
-   <header class="bg-white shadow-sm sticky top-0 z-50">
-        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="relative flex items-center justify-between h-20">
-                
-                <!-- Mobile Menu Button (lg:hidden) -->
-                <div class="absolute inset-y-0 left-0 flex items-center lg:hidden z-50">
-  <button
-    id="mobile-menu-button"
-    type="button"
-    class="inline-flex items-center justify-center p-2 rounded-md bg-white/90 border border-slate-200 text-slate-800 hover:bg-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-emerald-500"
-    aria-controls="mobile-menu"
-    aria-expanded="false"
-    aria-label="Toggle menu"
-  >
-    <span class="sr-only">Open main menu</span>
+  <header class="bg-white shadow-sm sticky top-0 z-50">
+    <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="relative flex items-center justify-between h-20">
+        <!-- Mobile Menu Button (lg:hidden) -->
+        <div class="absolute inset-y-0 left-0 flex items-center lg:hidden z-50">
+          <button
+            id="mobile-menu-button"
+            type="button"
+            class="inline-flex items-center justify-center p-2 rounded-md bg-white/90 border border-slate-200 text-slate-800 hover:bg-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-emerald-500"
+            aria-controls="mobile-menu"
+            aria-expanded="false"
+            aria-label="Toggle menu"
+          >
+            <span class="sr-only">Open main menu</span>
 
-    <!-- Hamburger icon (shown when aria-expanded="false") -->
-    <svg class="h-6 w-6 block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-    </svg>
+            <!-- Hamburger icon (shown when aria-expanded="false") -->
+            <svg class="h-6 w-6 block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+            </svg>
 
-    <!-- Close icon (shown when aria-expanded="true") -->
-    <svg class="h-6 w-6 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-    </svg>
-  </button>
-</div>
-
-
-                <!-- Mobile Logo (lg:hidden) -->
-                <div class="flex-1 flex items-center justify-center lg:hidden">
-                    <a href="/" class="flex-shrink-0">
-                        <img class="h-12 w-auto" src="https://minaramasjid.com/assets/image/logo/marc.png" alt="Maula Ali Research Center Logo">
-                    </a>
-                </div>
-
-                <!-- Desktop Menu (hidden lg:flex) -->
-                <div class="hidden lg:flex lg:items-center lg:space-x-4">
-                    <a href="/" class="text-gray-700 hover:text-primary-light px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Home</a>
-<a href="/about" class="text-gray-700 hover:text-primary-light px-3 py-2 rounded-md text-sm">About</a>
-                    <a href="/events" class="text-gray-700 hover:text-primary-light px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">News & Events</a>
-                    <a href="/book" class="text-gray-700 hover:text-primary-light px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Books</a>
-                </div>
-
-                <!-- Desktop Logo (hidden lg:flex) -->
-                <div class="hidden lg:flex lg:flex-shrink-0 mx-6">
-                    <a href="/">
-                        <img class="h-16 w-auto" src="https://minaramasjid.com/assets/image/logo/marc.png" alt="Maula Ali Research Center Logo">
-                    </a>
-                </div>
-
-                <!-- Desktop Menu Right (hidden lg:flex) -->
-                <div class="hidden lg:flex lg:items-center lg:space-x-4">
-                    <a href="/article" class="text-gray-700 hover:text-primary-light px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200" aria-current="page">Articles</a>
-                    <a href="/qa" class="text-gray-700 hover:text-primary-light px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Question Answer</a>
-                    <!-- <a href="/book-request" class="text-gray-700 hover:text-primary-light px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Request a Book</a> -->
-                    <a href="/contact" class="text-gray-700 hover:text-primary-light px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Contact</a>
-                </div>
-
-                <!-- Mobile Search (Placeholder) -->
-                <div class="absolute inset-y-0 right-0 flex items-center pr-2 lg:hidden">
-                    <button class="p-2 rounded-full text-gray-500 hover:text-gray-900">
-                        <i class="fas fa-search fa-fw"></i>
-                    </button>
-                </div>
-            </div>
-        </nav>
-
-        <!-- Mobile Menu, show/hide based on menu state. -->
-        <div class="lg:hidden hidden" id="mobile-menu">
-            <div class="px-2 pt-2 pb-3 space-y-1">
-                <a href="/" class="text-gray-700 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">Home</a>
-                <a href="/about" class="text-primary-light bg-gray-100 block px-3 py-2 rounded-md text-base font-medium" >About</a>
-                <a href="/events" class="text-gray-700 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">News & Events</a>
-                <a href="/book" class="text-gray-700 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">Books</a>
-                <a href="/article" class="text-gray-700 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">Articles</a>
-                <a href="/qa" class="text-gray-700 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">Question Answer</a>
-                <!-- <a href="/book-request" class="text-gray-700 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">Request a Book</a> -->
-                <a href="/contact" class="text-gray-700 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">Contact</a>
-            </div>
+            <!-- Close icon (shown when aria-expanded="true") -->
+            <svg class="h-6 w-6 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
         </div>
-    </header>
+
+        <!-- Mobile Logo (lg:hidden) -->
+        <div class="flex-1 flex items-center justify-center lg:hidden">
+          <a href="/" class="flex-shrink-0">
+            <img class="h-12 w-auto" src="https://minaramasjid.com/assets/image/logo/marc.png" alt="Maula Ali Research Center Logo">
+          </a>
+        </div>
+
+        <!-- Desktop Menu (hidden lg:flex) -->
+        <div class="hidden lg:flex lg:items-center lg:space-x-4">
+          <a href="/" class="text-gray-700 hover:text-primary-light px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Home</a>
+          <a href="/about" class="text-gray-700 hover:text-primary-light px-3 py-2 rounded-md text-sm">About</a>
+          <a href="/events" class="text-gray-700 hover:text-primary-light px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">News & Events</a>
+          <a href="/book" class="text-gray-700 hover:text-primary-light px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Books</a>
+        </div>
+
+        <!-- Desktop Logo (hidden lg:flex) -->
+        <div class="hidden lg:flex lg:flex-shrink-0 mx-6">
+          <a href="/">
+            <img class="h-16 w-auto" src="https://minaramasjid.com/assets/image/logo/marc.png" alt="Maula Ali Research Center Logo">
+          </a>
+        </div>
+
+        <!-- Desktop Menu Right (hidden lg:flex) -->
+        <div class="hidden lg:flex lg:items-center lg:space-x-4">
+          <a href="/article" class="text-gray-700 hover:text-primary-light px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200" aria-current="page">Articles</a>
+          <a href="/qa" class="text-gray-700 hover:text-primary-light px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Question Answer</a>
+          <a href="/contact" class="text-gray-700 hover:text-primary-light px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Contact</a>
+        </div>
+
+        <!-- Mobile Search (Placeholder) -->
+        <div class="absolute inset-y-0 right-0 flex items-center pr-2 lg:hidden">
+          <button class="p-2 rounded-full text-gray-500 hover:text-gray-900">
+            <i class="fas fa-search fa-fw"></i>
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Mobile Menu, show/hide based on menu state. -->
+    <div class="lg:hidden hidden" id="mobile-menu">
+      <div class="px-2 pt-2 pb-3 space-y-1">
+        <a href="/" class="text-gray-700 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">Home</a>
+        <a href="/about" class="text-primary-light bg-gray-100 block px-3 py-2 rounded-md text-base font-medium" >About</a>
+        <a href="/events" class="text-gray-700 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">News & Events</a>
+        <a href="/book" class="text-gray-700 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">Books</a>
+        <a href="/article" class="text-gray-700 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">Articles</a>
+        <a href="/qa" class="text-gray-700 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">Question Answer</a>
+        <a href="/contact" class="text-gray-700 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">Contact</a>
+      </div>
+    </div>
+  </header>
 
   <!-- Loading screen -->
   <div id="pageLoader" class="flex flex-col justify-center items-center h-screen space-y-6">
@@ -191,6 +185,7 @@
         <span class="serif font-medium">All</span>
         <span id="allCount" class="bg-emerald-600 text-white rounded-full px-2.5 py-0.5 text-xs font-semibold">0</span>
       </div>
+      <!-- Topic chips will be shown only when user selects a topic -->
       <div id="chipTopic1" class="hidden bg-emerald-100 px-4 py-2 rounded-full items-center gap-2 text-emerald-700 shadow-sm hover:bg-emerald-200 hover:shadow-md transform hover:-translate-y-0.5 transition-all duration-200 cursor-pointer">
         <span class="gulzartext font-medium" id="chipTopic1Name"></span>
         <span id="chipTopic1Count" class="bg-emerald-600 text-white rounded-full px-2.5 py-0.5 text-xs font-semibold">0</span>
@@ -390,9 +385,8 @@
     const pageLoader = document.getElementById("pageLoader");
     const pageContent = document.getElementById("pageContent");
 
-    // mobile menu elements - NOTE: match IDs in the markup
     const mobileMenuBtn = document.getElementById("mobile-menu-button");
-    const mobileMenuIcon = document.getElementById("mobileMenuIcon"); // optional, may be null
+    const mobileMenuIcon = document.getElementById("mobileMenuIcon");
     const mobileMenu = document.getElementById("mobile-menu");
 
     const filterWriter = document.getElementById("filterWriter");
@@ -441,9 +435,7 @@
     function toPlainText(html) {
       const tmp = document.createElement("div");
       tmp.innerHTML = String(html || "");
-      // remove script/style entirely
       tmp.querySelectorAll("script,style").forEach(n => n.remove());
-      // get text
       const txt = tmp.textContent || tmp.innerText || "";
       return txt.replace(/\s+/g, " ").trim();
     }
@@ -529,7 +521,6 @@
         </div>
         <div class="card-content-container p-4 flex-1 flex flex-col justify-between overflow-hidden">
           <div class="overflow-hidden">
-            <!-- No raw HTML here -->
             <p class="text-description line-clamp-2 text-sm"></p>
           </div>
           <div class="mt-3 pt-3 border-t border-slate-200">
@@ -549,12 +540,10 @@
         </div>
       `;
 
-      // Build a clean, plain-text description
       const descEl = card.querySelector(".text-description");
       const rawDesc = article.englishDescription || article.urduDescription || article.description || article.title || "";
       const text = toPlainText(rawDesc);
 
-      // Decide font/direction based on script
       const urdu = isUrdu(text);
       descEl.textContent = text;
       if (urdu) {
@@ -565,7 +554,6 @@
         descEl.classList.add("text-left");
       }
 
-      // Apply view styles to this new card
       applyViewStylesTo(card, currentView);
 
       return card;
@@ -647,6 +635,26 @@
       return out;
     }
 
+    // ======= Topic Chip Updater =======
+    function updateTopicChipsFromSelect(topicValue) {
+      if (!chipTopic1) return;
+
+      if (!topicValue) {
+        chipTopic1.classList.add("hidden");
+        chipTopic1Name.textContent = "";
+        if (chipTopic1Count) chipTopic1Count.textContent = "0";
+        chipTopic1.removeAttribute("data-topic");
+        return;
+      }
+
+      const topicText = topicValue; // you can also use selected option text if needed
+      chipTopic1Name.textContent = topicText;
+      const count = allArticles.filter(a => String(a.topic) === topicValue).length;
+      if (chipTopic1Count) chipTopic1Count.textContent = String(count);
+      chipTopic1.classList.remove("hidden");
+      chipTopic1.dataset.topic = topicValue;
+    }
+
     // ======= Event wiring =======
     function bindUI() {
       if (gridBtn) gridBtn.addEventListener("click", () => setViewMode("grid"));
@@ -660,7 +668,16 @@
       if (filterWriter) filterWriter.addEventListener("change", e => { selectedFilters.writer = e.target.value; resetAndRender(); });
       if (filterTranslator) filterTranslator.addEventListener("change", e => { selectedFilters.translator = e.target.value; resetAndRender(); });
       if (filterLanguage) filterLanguage.addEventListener("change", e => { selectedFilters.language = e.target.value; resetAndRender(); });
-      if (filterTopic) filterTopic.addEventListener("change", e => { selectedFilters.topic = e.target.value; resetAndRender(); });
+      
+      if (filterTopic) {
+        filterTopic.addEventListener("change", e => {
+          const value = e.target.value;
+          selectedFilters.topic = value;
+          updateTopicChipsFromSelect(value);
+          resetAndRender();
+        });
+      }
+
       if (filterSorting) filterSorting.addEventListener("change", e => { selectedFilters.sorting = e.target.value; resetAndRender(); });
 
       let t;
@@ -675,9 +692,20 @@
         chipAll.addEventListener("click", () => {
           selectedFilters.topic = "";
           if (filterTopic) filterTopic.value = "";
+          updateTopicChipsFromSelect("");
           resetAndRender();
         });
       }
+
+      if (chipTopic1) {
+        chipTopic1.addEventListener("click", () => {
+          const topicValue = chipTopic1.dataset.topic || "";
+          selectedFilters.topic = topicValue;
+          if (filterTopic) filterTopic.value = topicValue;
+          resetAndRender();
+        });
+      }
+      // chipTopic2 kept unused/hidden for now
     }
 
     // Mobile menu - guard before attaching to avoid null errors
@@ -693,7 +721,6 @@
             mobileMenu.classList.add("max-h-screen", "opacity-100");
           }
         }
-        // optional icon toggle if present
         if (mobileMenuIcon) {
           mobileMenuIcon.setAttribute("d", open ? "M4 6h16M4 12h16M4 18h16" : "M6 18L18 6M6 6l12 12");
         }
@@ -738,30 +765,11 @@
           if (filterTopic) filterTopic.appendChild(opt);
         });
 
-        if (topics[0] && chipTopic1) {
-          chipTopic1.classList.remove("hidden");
-          chipTopic1Name.textContent = topics[0].topic;
-          chipTopic1.addEventListener("click", () => {
-            selectedFilters.topic = topics[0].topic;
-            if (filterTopic) filterTopic.value = topics[0].topic;
-            resetAndRender();
-          });
-        }
-        if (topics[1] && chipTopic2) {
-          chipTopic2.classList.remove("hidden");
-          chipTopic2Name.textContent = topics[1].topic;
-          chipTopic2.addEventListener("click", () => {
-            selectedFilters.topic = topics[1].topic;
-            if (filterTopic) filterTopic.value = topics[1].topic;
-            resetAndRender();
-          });
-        }
+        // Notice: no default topic chips here anymore.
+        // They will only be shown when a topic is selected from dropdown.
 
         allArticles = Array.isArray(articles) ? articles : [];
         allCount.textContent = String(allArticles.length || 0);
-
-        if (topics[0] && chipTopic1Count) chipTopic1Count.textContent = String(allArticles.filter(a => a.topic === topics[0].topic).length);
-        if (topics[1] && chipTopic2Count) chipTopic2Count.textContent = String(allArticles.filter(a => a.topic === topics[1].topic).length);
 
         bindUI();
 
@@ -777,87 +785,78 @@
       }
     })();
 
-
-
-     document.addEventListener('DOMContentLoaded', () => {
-
-            // --- Mobile Menu Toggle (second-safe handler) ---
-            const mobileMenuButton = document.getElementById('mobile-menu-button');
-            const mobileMenuLocal = document.getElementById('mobile-menu');
-            if (mobileMenuButton && mobileMenuLocal) {
-                mobileMenuButton.addEventListener('click', () => {
-                    const isExpanded = mobileMenuButton.getAttribute('aria-expanded') === 'true';
-                    mobileMenuButton.setAttribute('aria-expanded', (!isExpanded).toString());
-                    mobileMenuLocal.classList.toggle('hidden');
-                });
-            }
-
-            // --- Back To Top Button ---
-            const backToTopBtn = document.getElementById('backToTopBtn');
-            if (backToTopBtn) {
-                window.addEventListener('scroll', () => {
-                    if (window.scrollY > 300) {
-                        backToTopBtn.classList.remove('hidden');
-                        backToTopBtn.classList.add('flex');
-                        backToTopBtn.classList.remove('opacity-0');
-                    } else {
-                        backToTopBtn.classList.add('opacity-0');
-                        // Use setTimeout to hide after transition
-                        setTimeout(() => {
-                           if (window.scrollY <= 300) { // Double check in case user scrolled back up
-                                backToTopBtn.classList.add('hidden');
-                                backToTopBtn.classList.remove('flex');
-                           }
-                        }, 300); // Match transition duration
-                    }
-                });
-
-                backToTopBtn.addEventListener('click', () => {
-                    window.scrollTo({
-                        top: 0,
-                        behavior: 'smooth'
-                    });
-                });
-            }
-
-            // --- New Language Toggle Logic ---
-            const langButtons = document.querySelectorAll('.lang-btn');
-            
-            langButtons.forEach(button => {
-                button.addEventListener('click', (e) => {
-                    const clickedButton = e.currentTarget;
-                    const sectionId = clickedButton.dataset.sectionId;
-                    const lang = clickedButton.dataset.lang;
-                    const isUrdu = (lang === 'ur');
-
-                    // 1. Update button styles
-                    const sectionButtons = document.querySelectorAll(`.lang-btn[data-section-id="${sectionId}"]`);
-                    sectionButtons.forEach(btn => {
-                        btn.classList.remove('active-lang-btn');
-                    });
-                    clickedButton.classList.add('active-lang-btn');
-
-                    // 2. Find all content elements for this section
-                    const contentElements = document.querySelectorAll(`.lang-content[data-section-id="${sectionId}"]`);
-                    
-                    contentElements.forEach(el => {
-                        if (isUrdu && el.dataset.lang === 'ur') {
-                            el.classList.remove('hidden');
-                        } else if (!isUrdu && el.dataset.lang === 'en') {
-                            el.classList.remove('hidden');
-                        } else {
-                            el.classList.add('hidden');
-                        }
-                    });
-
-                    // 3. Set text direction for the wrapper
-                    const contentWrapper = document.querySelector(`.card-content-wrapper[data-section-id="${sectionId}"]`);
-                    if (contentWrapper) {
-                        contentWrapper.dir = isUrdu ? 'rtl' : 'ltr';
-                    }
-                });
-            });
+    document.addEventListener('DOMContentLoaded', () => {
+      // --- Mobile Menu Toggle (second-safe handler) ---
+      const mobileMenuButton = document.getElementById('mobile-menu-button');
+      const mobileMenuLocal = document.getElementById('mobile-menu');
+      if (mobileMenuButton && mobileMenuLocal) {
+        mobileMenuButton.addEventListener('click', () => {
+          const isExpanded = mobileMenuButton.getAttribute('aria-expanded') === 'true';
+          mobileMenuButton.setAttribute('aria-expanded', (!isExpanded).toString());
+          mobileMenuLocal.classList.toggle('hidden');
         });
+      }
+
+      // --- Back To Top Button ---
+      const backToTopBtn = document.getElementById('backToTopBtn');
+      if (backToTopBtn) {
+        window.addEventListener('scroll', () => {
+          if (window.scrollY > 300) {
+            backToTopBtn.classList.remove('hidden');
+            backToTopBtn.classList.add('flex');
+            backToTopBtn.classList.remove('opacity-0');
+          } else {
+            backToTopBtn.classList.add('opacity-0');
+            setTimeout(() => {
+              if (window.scrollY <= 300) {
+                backToTopBtn.classList.add('hidden');
+                backToTopBtn.classList.remove('flex');
+              }
+            }, 300);
+          }
+        });
+
+        backToTopBtn.addEventListener('click', () => {
+          window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+          });
+        });
+      }
+
+      // --- New Language Toggle Logic ---
+      const langButtons = document.querySelectorAll('.lang-btn');
+      langButtons.forEach(button => {
+        button.addEventListener('click', (e) => {
+          const clickedButton = e.currentTarget;
+          const sectionId = clickedButton.dataset.sectionId;
+          const lang = clickedButton.dataset.lang;
+          const isUrdu = (lang === 'ur');
+
+          const sectionButtons = document.querySelectorAll(`.lang-btn[data-section-id="${sectionId}"]`);
+          sectionButtons.forEach(btn => {
+            btn.classList.remove('active-lang-btn');
+          });
+          clickedButton.classList.add('active-lang-btn');
+
+          const contentElements = document.querySelectorAll(`.lang-content[data-section-id="${sectionId}"]`);
+          contentElements.forEach(el => {
+            if (isUrdu && el.dataset.lang === 'ur') {
+              el.classList.remove('hidden');
+            } else if (!isUrdu && el.dataset.lang === 'en') {
+              el.classList.remove('hidden');
+            } else {
+              el.classList.add('hidden');
+            }
+          });
+
+          const contentWrapper = document.querySelector(`.card-content-wrapper[data-section-id="${sectionId}"]`);
+          if (contentWrapper) {
+            contentWrapper.dir = isUrdu ? 'rtl' : 'ltr';
+          }
+        });
+      });
+    });
   </script>
 </body>
 </html>

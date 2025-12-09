@@ -123,7 +123,8 @@
     function qText(q){ return q?.questionUrdu || q?.questionEnglish || q?.title || ""; }
 
     const pageSize = 12;
-    const totalPages = Math.max(1, Math.ceil((questions?.length || 0) / pageSize));
+    const totalCount = (questions?.length || 0);   // <-- total count
+    const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
   %>
 </head>
 <body class="bg-[#f0f5e9] text-gray-800 antialiased">
@@ -186,7 +187,7 @@
 
     <!-- Main -->
     <main class="relative z-10 pt-12 sm:pt-16">
-      <section class="relative max-w-7xl mx-auto py-8">
+      <section class="relative max-w-7xl mx.auto py-8">
         <h1 class="heading text-3xl lg:text-4xl font-bold text-[#4a7031] mb-6 text-center gulzartext">تمام فتاویٰ</h1>
 
         <div class="qa-layout-grid">
@@ -255,17 +256,20 @@
 
                      const urduExcerpt = q?.excerpt || urduText;
                      const romanExcerpt = q?.excerptRoman || romanText || urduExcerpt;
+
+                     // descending number: totalCount, totalCount-1, ...
+                     const displayNumber = totalCount - idx;
               %>
                 <a href="<%= href %>" class="card-link group">
                   <div class="flex items-start gap-4 justify-between">
-                    <div class="flex items-center gap-4 flex-1 min-w-0">
+                    <div class="flex.items-center gap-4 flex-1 min-w-0">
                       <div class="flex-shrink-0 w-10 h-10 bg-midnight_green text-white rounded-full flex items-center justify-center font-bold text-lg gulzartext">
-                        <%= toEastern(idx+1) %>
+                        <%= toEastern(displayNumber) %>
                       </div>
                       <h3 class="heading overflow-hidden">
                         <span class="q-text-urdu"><%- escapeHTML(urduText) %></span>
                         <% if (hasRoman) { %>
-                          <span class="q-text-roman hidden"><%- escapeHTML(romanText) %></span>
+                          <span class="q-text-roman.hidden"><%- escapeHTML(romanText) %></span>
                         <% } %>
                       </h3>
                     </div>
@@ -288,7 +292,7 @@
                   <% } %>
 
                   <div class="mt-4 flex justify-between items-center text-sm pt-3 border-t border-gray-100">
-                    <span class="bg-[#eaf3df] text-[#4a7031] rounded-full px-4 py-1.5 text-sm font-bold transition-colors group-hover:bg-[#4a7031] group-hover:text-white heading">
+                    <span class="bg-[#eaf3df] text-[#white] rounded-full px-4 py-1.5 text-sm font-bold transition-colors group-hover:bg-[#4a7031] group-hover:text-white.heading">
                       مکمل جواب پڑھیں
                       <i class="fa-solid fa-arrow-left text-xs mr-2 opacity-70 transition-transform group-hover:mr-3"></i>
                     </span>
@@ -349,35 +353,35 @@
 
       <!-- Home -->
       <a href="/" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm 
-        hover:text-[var(--primary-dark)] transition-colors duration-200">
+        hover:text-[var(--primary-dark)] transition-colors.duration-200">
         <i class="fas fa-home text-lg mobile-nav-icon"></i>
         <span class="mt-1 mobile-nav-text">Home</span>
       </a>
 
       <!-- Q&A (Updated from About) -->
       <a href="/qa" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm
-        hover:text-[var(--primary-dark)] transition-colors duration-200">
+        hover:text-[var(--primary-dark)] transition-colors.duration-200">
         <i class="fas fa-question-circle text-lg mobile-nav-icon"></i>
         <span class="mt-1 mobile-nav-text">Q&A</span>
       </a>
 
       <!-- Books -->
       <a href="/book" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm
-        hover:text-[var(--primary-dark)] transition-colors duration-200">
+        hover:text-[var(--primary-dark)] transition-colors.duration-200">
         <i class="fas fa-book text-lg mobile-nav-icon"></i>
         <span class="mt-1 mobile-nav-text">Books</span>
       </a>
 
       <!-- Articles -->
       <a href="/article" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm
-        hover:text-[var(--primary-dark)] transition-colors duration-200">
+        hover:text-[var(--primary-dark)] transition-colors.duration-200">
         <i class="fas fa-newspaper text-lg mobile-nav-icon"></i>
         <span class="mt-1 mobile-nav-text">Articles</span>
       </a>
 
       <!-- Gallery (Updated from Contact) -->
-      <a href="/gallery" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm
-        hover:text-[var(--primary-dark)] transition-colors duration-200">
+      <a href="/gallery" class="mobile-nav-item flex flex.col items-center justify-center p-2 text-sm
+        hover:text-[var(--primary-dark)] transition-colors.duration-200">
         <i class="fas fa-images text-lg mobile-nav-icon"></i>
         <span class="mt-1 mobile-nav-text">Gallery</span>
       </a>
@@ -497,7 +501,7 @@
       let workingSet = allQuestionsSSR.slice();
 
       // ---- rendering ----
-      function cardHTML(q, idxOnPage){
+      function cardHTML(q, displayNumber){
         const baseText = qText(q);
 
         // slug + href
@@ -517,11 +521,11 @@
         const safeRomanExcerpt = escapeHTML(romanExcerpt);
 
         return `
-          <a href="${href}" class="card-link group">
+          <a href="${href}" class="card-link.group">
             <div class="flex items-start gap-4 justify-between">
               <div class="flex items-center gap-4 flex-1 min-w-0">
                 <div class="flex-shrink-0 w-10 h-10 bg-midnight_green text-white rounded-full flex items-center justify-center font-bold text-lg gulzartext">
-                  ${toEastern(idxOnPage)}
+                  ${toEastern(displayNumber)}
                 </div>
                 <h3 class="heading overflow-hidden">
                   <span class="q-text-urdu">${safeUrdu}</span>
@@ -581,7 +585,7 @@
 
       function renderListAndPager(source){
         const filtered = filterLocal(applySort(source));
-        const total = filtered.length;
+        const total = filtered.length;                       // total after filters
         const pages = Math.max(1, Math.ceil(total / pageSize));
         if(state.page > pages) state.page = pages;
 
@@ -589,7 +593,11 @@
         const pageItems = filtered.slice(start, start + pageSize);
 
         listEl.innerHTML = pageItems.length
-          ? pageItems.map((q, i) => cardHTML(q, i+1)).join("")
+          ? pageItems.map((q, i) => {
+              // descending numbering across full filtered list:
+              const displayNumber = total - (start + i);
+              return cardHTML(q, displayNumber);
+            }).join("")
           : `<div class="text-center text-gray-600 py-8">کوئی نتیجہ نہیں۔</div>`;
 
         pageNumbersEl.innerHTML = Array.from({length: pages}, (_,i)=>{
@@ -632,7 +640,7 @@
         }
       }
 
-      async function render(){ await ensureTagData(state.tag); renderListAndPager(workingSet); }
+      async function render(){ await.ensureTagData(state.tag); renderListAndPager(workingSet); }
 
       // ---- header/menu/back-to-top ----
       if(mobileMenuButton && mobileMenu){
@@ -665,7 +673,8 @@
           if(!btn) return;
           if(btn.id === "prevPage"){ state.page = Math.max(1, state.page-1); render(); return; }
           if(btn.id === "nextPage"){
-            const pages = Math.max(1, Math.ceil(filterLocal(applySort(workingSet)).length / pageSize));
+            const filtered = filterLocal(applySort(workingSet));
+            const pages = Math.max(1, Math.ceil(filtered.length / pageSize));
             state.page = Math.min(pages, state.page+1); render(); return;
           }
           const p = Number(btn.dataset.page||1);
@@ -762,7 +771,7 @@
         });
       }
 
-      // ---- Urdu / Roman toggle handler (per card, Option A) ----
+      // ---- Urdu / Roman toggle handler (per card) ----
       if (listEl) {
         listEl.addEventListener('click', (e) => {
           const btn = e.target.closest('.lang-toggle');
@@ -789,7 +798,7 @@
         });
       }
 
-      // initial render (client-side; SSR first page already shown, but this keeps behavior consistent after interactions)
+      // initial render (client-side)
       render();
     });
   </script>

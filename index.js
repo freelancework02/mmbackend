@@ -6,7 +6,7 @@ const path = require("path");
 const axios = require("axios");
 const db = require("./config/db");
  
-
+ 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -696,7 +696,7 @@ async function handleQuestionDetail(req, res) {
 app.get("/question/:id", handleQuestionDetail);
 app.get("/question/:id/:slug", handleQuestionDetail);
 
- 
+   
 
 
 /** ----------------- EVENTS LIST ----------------- */
