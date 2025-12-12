@@ -44,6 +44,7 @@
     body { font-family: "Roboto Flex", sans-serif; background-color: #f0f5e9; }
     .rtl { direction: rtl; }
 
+    /* small helper classes for JS toggling */
     .mobile-menu-hidden { max-height: 0; opacity: 0; transition: max-height .3s ease-out, opacity .2s ease-out; overflow: hidden; }
     .mobile-menu-visible { max-height: 500px; opacity: 1; transition: max-height .4s ease-in, opacity .3s ease-in; }
 
@@ -63,46 +64,50 @@
 
     <header class="bg-[#718e56] sticky top-0 z-50 shadow-md border-b border-green-100">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-center py-3 relative">
-          <nav class="hidden md:flex gap-5 text-md font-semibold text-white tracking-wide">
-            <a href="/" class="hover:text-green-100 transition-colors">Home</a>
-            <a href="/about" class="hover:text-green-100 transition-colors">About</a>
-            <a href="/events" class="hover:text-green-100 transition-colors">News & Event</a>
-            <a href="/gallery" class="text-white font-bold" aria-current="page">Gallery</a>
+        <div class="flex justify-between items-center py-4 relative">
+          <!-- Left nav -->
+          <nav class="hidden md:flex gap-6 text-md font-semibold text-white tracking-wide">
+            <a href="/">Home</a>
+            <a href="/about">About</a>
+            <a href="/events" >News & Event</a>
+            <a href="/book">Books</a>
           </nav>
 
+          <!-- Center logo -->
           <div class="absolute left-1/2 transform -translate-x-1/2 -bottom-7 bg-white rounded-full p-1 shadow-lg border border-green-100 z-10">
-            <a href="/"><img src="https://minaramasjid.com/assets/image/logo/marc.png" alt="Logo" class="w-16 h-16 rounded-full object-contain"></a>
+            <img src="https://minaramasjid.com/assets/image/logo/marc.png" alt="Logo" class="w-16 h-16 rounded-full object-contain" />
           </div>
 
-          <nav class="hidden md:flex gap-5 text-md font-semibold text-white tracking-wide">
-            <a href="/book" class="hover:text-green-100 transition-colors">Books</a>
-            <a href="/article" class="hover:text-green-100 transition-colors">Articles</a>
-            <a href="/qa" class="hover:text-green-100 transition-colors">Question Answer</a>
-            <a href="/contact" class="hover:text-green-100 transition-colors">Contact</a>
+          <!-- Right nav -->
+          <nav class="hidden md:flex gap-6 text-md font-semibold text-white tracking-wide">
+            <a href="/article">Articles</a>
+            <a href="/qa">Question Answer</a>
+            <!-- <a href="/requestBook">Request a Book</a> -->
+            <a href="/contact">Contact</a>
           </nav>
 
-          <div class="md:hidden flex-1"></div>
-          <!-- <div class="md:hidden flex-1 flex justify-center">
-            <a href="/"><img src="https://minaramasjid.com/assets/image/logo/marc.png" alt="Logo" class="w-12 h-12 rounded-full object-contain"></a>
-          </div> -->
-          <div class="md:hidden flex-1 flex justify-end">
-            <button id="mobile-menu-toggle" class="text-white focus:outline-none">
-              <i class="fas fa-bars w-7 h-7"></i>
+          <!-- Mobile button -->
+          <div class="md:hidden">
+            <!-- note: id is mm-btn and data-state is used to read open/closed state for accessibility -->
+            <button id="mm-btn" class="text-gray-100 focus:outline-none" aria-label="Toggle menu" aria-expanded="false" aria-controls="mm">
+              <svg id="mm-icon" class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                <path id="mm-icon-path" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
             </button>
           </div>
         </div>
 
-        <div id="mobile-menu" class="md:hidden mobile-menu-hidden">
-          <div class="flex flex-col gap-2 py-3 px-2 text-white bg-[#5a7544] rounded-b-xl">
+        <!-- Mobile menu -->
+        <!-- initial classes match hidden state; JS will toggle max-h-0/opactiy-0 -> max-h-screen/opacity-100 -->
+        <div id="mm" class="md:hidden transition-all overflow-hidden max-h-0 opacity-0">
+          <div class="flex flex-col gap-3 py-4 px-2 text-white bg-[#5a7544] rounded-b-xl">
             <a href="/" class="hover:bg-[#4f6639] px-4 py-2 rounded">Home</a>
             <a href="/about" class="hover:bg-[#4f6639] px-4 py-2 rounded">About</a>
-            <a href="/events" class="hover:bg-[#4f6639] px-4 py-2 rounded">News & Event</a>
-            <a href="/gallery" class="bg-[#4f6639] px-4 py-2 rounded" aria-current="page">Gallery</a>
             <a href="/book" class="hover:bg-[#4f6639] px-4 py-2 rounded">Books</a>
+            <a href="/events" class="bg-[#4f6639] px-4 py-2 rounded">News & Event</a>
             <a href="/article" class="hover:bg-[#4f6639] px-4 py-2 rounded">Articles</a>
             <a href="/qa" class="hover:bg-[#4f6639] px-4 py-2 rounded">Question Answer</a>
-            <!-- <a href="/request-book" class="hover:bg-[#4f6639] px-4 py-2 rounded">Request a Book</a> -->
+            <!-- <a href="/requestBook" class="hover:bg-[#4f6639] px-4 py-2 rounded">Request a Book</a> -->
             <a href="/contact" class="hover:bg-[#4f6639] px-4 py-2 rounded">Contact</a>
           </div>
         </div>
@@ -188,64 +193,76 @@
     </div>
   </footer>
 
-  <button id="backToTopBtn" class="fixed bottom-6 right-6 bg-[#4a7031] hover:bg-[#3b5a28] text-white w-10 h-10 rounded-full shadow-lg hidden justify-center items-center transition-all duration-300 opacity-0 z-40">
+  <button id="backToTopBtn" class="fixed bottom-6 right-6 bg-[#4a7031] hover:bg-[#3b5a28] text-white w-10 h-10 rounded-full shadow-lg hidden justify-center items-center transition-all duration-300 opacity-0 z-40" aria-label="Back to top">
     <i class="fas fa-arrow-up"></i>
   </button>
 
-    <!-- Mobile Bottom Navigation Bar -->
-  <div id="mobile-navbar"
-     class="fixed bottom-0 left-0 right-0 bg-white shadow-xl z-40 lg:hidden rounded-t-2xl border-t border-gray-200">
-  <nav class="flex justify-around items-center h-16 text-gray-400">
+  <!-- Mobile Bottom Navigation Bar -->
+  <div id="mobile-navbar" class="fixed bottom-0 left-0 right-0 bg-white shadow-xl z-40 lg:hidden rounded-t-2xl border-t border-gray-200">
+    <nav class="flex justify-around items-center h-16 text-gray-400">
+      <!-- Home -->
+      <a href="/" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm hover:text-[var(--primary-dark)] transition-colors duration-200">
+        <i class="fas fa-home text-lg mobile-nav-icon"></i>
+        <span class="mt-1 mobile-nav-text">Home</span>
+      </a>
 
-    <!-- Home -->
-    <a href="/" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm 
-        hover:text-[var(--primary-dark)] transition-colors duration-200">
-      <i class="fas fa-home text-lg mobile-nav-icon"></i>
-      <span class="mt-1 mobile-nav-text">Home</span>
-    </a>
+      <!-- Q&A -->
+      <a href="/qa" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm hover:text-[var(--primary-dark)] transition-colors duration-200">
+        <i class="fas fa-question-circle text-lg mobile-nav-icon"></i>
+        <span class="mt-1 mobile-nav-text">Q&A</span>
+      </a>
 
-    <!-- Q&A (Updated from About) -->
-    <a href="/qa" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm
-        hover:text-[var(--primary-dark)] transition-colors duration-200">
-      <i class="fas fa-question-circle text-lg mobile-nav-icon"></i>
-      <span class="mt-1 mobile-nav-text">Q&A</span>
-    </a>
+      <!-- Books -->
+      <a href="/book" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm hover:text-[var(--primary-dark)] transition-colors duration-200">
+        <i class="fas fa-book text-lg mobile-nav-icon"></i>
+        <span class="mt-1 mobile-nav-text">Books</span>
+      </a>
 
-    <!-- Books -->
-    <a href="/book" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm
-        hover:text-[var(--primary-dark)] transition-colors duration-200">
-      <i class="fas fa-book text-lg mobile-nav-icon"></i>
-      <span class="mt-1 mobile-nav-text">Books</span>
-    </a>
+      <!-- Articles -->
+      <a href="/article" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm hover:text-[var(--primary-dark)] transition-colors duration-200">
+        <i class="fas fa-newspaper text-lg mobile-nav-icon"></i>
+        <span class="mt-1 mobile-nav-text">Articles</span>
+      </a>
 
-    <!-- Articles -->
-    <a href="/article" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm
-        hover:text-[var(--primary-dark)] transition-colors duration-200">
-      <i class="fas fa-newspaper text-lg mobile-nav-icon"></i>
-      <span class="mt-1 mobile-nav-text">Articles</span>
-    </a>
-
-    <!-- Gallery (Updated from Contact) -->
-    <a href="/gallery" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm
-        hover:text-[var(--primary-dark)] transition-colors duration-200">
-      <i class="fas fa-images text-lg mobile-nav-icon"></i>
-      <span class="mt-1 mobile-nav-text">Gallery</span>
-    </a>
-
-  </nav>
-</div>
+      <!-- Gallery -->
+      <a href="/gallery" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm hover:text-[var(--primary-dark)] transition-colors duration-200">
+        <i class="fas fa-images text-lg mobile-nav-icon"></i>
+        <span class="mt-1 mobile-nav-text">Gallery</span>
+      </a>
+    </nav>
+  </div>
 
   <script type="module">
+    // DOM-ready
     document.addEventListener('DOMContentLoaded', () => {
-      const mobileMenuButton = document.getElementById('mobile-menu-toggle');
-      const mobileMenu = document.getElementById('mobile-menu');
-      if (mobileMenuButton && mobileMenu) {
-        mobileMenuButton.addEventListener('click', () => {
-          mobileMenu.classList.toggle('mobile-menu-hidden');
-          mobileMenu.classList.toggle('mobile-menu-visible');
+      // Corrected mobile menu toggle (button id: mm-btn, menu id: mm)
+      const mmBtn = document.getElementById('mm-btn');
+      const mmMenu = document.getElementById('mm');
+      const mmIconPath = document.getElementById('mm-icon-path');
+
+      if (mmBtn && mmMenu && mmIconPath) {
+        mmBtn.addEventListener('click', () => {
+          const isOpen = !mmMenu.classList.contains('max-h-0') && mmMenu.classList.contains('opacity-100');
+
+          if (isOpen) {
+            // close
+            mmMenu.classList.remove('max-h-screen', 'opacity-100');
+            mmMenu.classList.add('max-h-0', 'opacity-0');
+            mmBtn.setAttribute('aria-expanded', 'false');
+            // set hamburger icon
+            mmIconPath.setAttribute('d', 'M4 6h16M4 12h16M4 18h16');
+          } else {
+            // open
+            mmMenu.classList.remove('max-h-0', 'opacity-0');
+            mmMenu.classList.add('max-h-screen', 'opacity-100');
+            mmBtn.setAttribute('aria-expanded', 'true');
+            // set X icon
+            mmIconPath.setAttribute('d', 'M6 18L18 6M6 6l12 12');
+          }
         });
       }
 
+      // Back to top button logic (keeps your original behaviour)
       const backToTopBtn = document.getElementById('backToTopBtn');
       if (backToTopBtn) {
         window.addEventListener('scroll', () => {

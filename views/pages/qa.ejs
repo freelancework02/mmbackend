@@ -13,7 +13,7 @@
   <meta property="og:type" content="website" />
   <meta name="twitter:card" content="summary_large_image" />
 
-  <base href="https://demo.minaramasjid.com/" />
+  <base href="http:localhost:3000" />
   <link rel="icon" href="https://minaramasjid.com/assets/image/logo/favicon.ico" type="image/x-icon" />
 
   <script src="https://cdn.tailwindcss.com"></script>
@@ -187,7 +187,7 @@
 
     <!-- Main -->
     <main class="relative z-10 pt-12 sm:pt-16">
-      <section class="relative max-w-7xl mx.auto py-8">
+      <section class="relative max-w-7xl mx-auto py-8">
         <h1 class="heading text-3xl lg:text-4xl font-bold text-[#4a7031] mb-6 text-center gulzartext">تمام فتاویٰ</h1>
 
         <div class="qa-layout-grid">
@@ -269,7 +269,7 @@
                       <h3 class="heading overflow-hidden">
                         <span class="q-text-urdu"><%- escapeHTML(urduText) %></span>
                         <% if (hasRoman) { %>
-                          <span class="q-text-roman.hidden"><%- escapeHTML(romanText) %></span>
+                          <span class="q-text-roman hidden"><%- escapeHTML(romanText) %></span>
                         <% } %>
                       </h3>
                     </div>
@@ -350,42 +350,31 @@
   <div id="mobile-navbar"
        class="fixed bottom-0 left-0 right-0 bg-white shadow-xl z-40 lg:hidden rounded-t-2xl border-t border-gray-200">
     <nav class="flex justify-around items-center h-16 text-gray-400">
-
-      <!-- Home -->
       <a href="/" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm 
-        hover:text-[var(--primary-dark)] transition-colors.duration-200">
+          hover:text-[var(--primary-dark)] transition-colors duration-200">
         <i class="fas fa-home text-lg mobile-nav-icon"></i>
         <span class="mt-1 mobile-nav-text">Home</span>
       </a>
-
-      <!-- Q&A (Updated from About) -->
       <a href="/qa" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm
-        hover:text-[var(--primary-dark)] transition-colors.duration-200">
+          hover:text-[var(--primary-dark)] transition-colors duration-200">
         <i class="fas fa-question-circle text-lg mobile-nav-icon"></i>
         <span class="mt-1 mobile-nav-text">Q&A</span>
       </a>
-
-      <!-- Books -->
       <a href="/book" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm
-        hover:text-[var(--primary-dark)] transition-colors.duration-200">
+          hover:text-[var(--primary-dark)] transition-colors duration-200">
         <i class="fas fa-book text-lg mobile-nav-icon"></i>
         <span class="mt-1 mobile-nav-text">Books</span>
       </a>
-
-      <!-- Articles -->
       <a href="/article" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm
-        hover:text-[var(--primary-dark)] transition-colors.duration-200">
+          hover:text-[var(--primary-dark)] transition-colors duration-200">
         <i class="fas fa-newspaper text-lg mobile-nav-icon"></i>
         <span class="mt-1 mobile-nav-text">Articles</span>
       </a>
-
-      <!-- Gallery (Updated from Contact) -->
-      <a href="/gallery" class="mobile-nav-item flex flex.col items-center justify-center p-2 text-sm
-        hover:text-[var(--primary-dark)] transition-colors.duration-200">
+      <a href="/gallery" class="mobile-nav-item flex flex-col items-center justify-center p-2 text-sm
+          hover:text-[var(--primary-dark)] transition-colors duration-200">
         <i class="fas fa-images text-lg mobile-nav-icon"></i>
         <span class="mt-1 mobile-nav-text">Gallery</span>
       </a>
-
     </nav>
   </div>
 
@@ -398,18 +387,56 @@
 
   <!-- Page logic -->
   <script type="module">
-    const mmBtn = document.getElementById('mm-btn');
-    const mm = document.getElementById('mm');
-    if (mmBtn && mm) {
-      mmBtn.addEventListener('click', () => {
-        const open = mm.classList.contains('max-h-screen');
-        mm.classList.toggle('max-h-screen', !open);
-        mm.classList.toggle('opacity-100', !open);
-        mm.classList.toggle('max-h-0', open);
-        mm.classList.toggle('opacity-0', open);
-      });
-    }
+    // === mobile menu toggler (single reliable handler) ===
+    (function () {
+      const mmBtn = document.getElementById('mm-btn');
+      const mm = document.getElementById('mm');
+      const mmIconPath = mmBtn?.querySelector('svg path');
 
+      if (!mmBtn || !mm) return;
+
+      // ensure closed state
+      mm.style.maxHeight = '0';
+      mm.style.opacity = '0';
+      mm.style.overflow = 'hidden';
+      mm.style.transition = 'max-height .35s ease, opacity .25s ease';
+
+      mmBtn.setAttribute('aria-expanded', 'false');
+
+      mmBtn.addEventListener('click', () => {
+        const isOpen = mm.style.maxHeight && mm.style.maxHeight !== '0px' && mm.style.maxHeight !== '0';
+
+        if (isOpen) {
+          // close
+          mm.style.maxHeight = '0';
+          mm.style.opacity = '0';
+          mmBtn.setAttribute('aria-expanded', 'false');
+          if (mmIconPath) mmIconPath.setAttribute('d', 'M4 6h16M4 12h16M4 18h16'); // hamburger
+        } else {
+          // open
+          mm.style.maxHeight = mm.scrollHeight + 'px';
+          mm.style.opacity = '1';
+          mmBtn.setAttribute('aria-expanded', 'true');
+          if (mmIconPath) mmIconPath.setAttribute('d', 'M6 18L18 6M6 6l12 12'); // X
+          // keep big maxHeight after animation to allow content changes
+          setTimeout(() => { mm.style.maxHeight = '100vh'; }, 360);
+        }
+      });
+
+      // close when clicking outside (optional UX)
+      document.addEventListener('click', (e) => {
+        if (!mm.contains(e.target) && !mmBtn.contains(e.target)) {
+          if (mm.style.maxHeight && mm.style.maxHeight !== '0px' && mm.style.maxHeight !== '0') {
+            mm.style.maxHeight = '0';
+            mm.style.opacity = '0';
+            mmBtn.setAttribute('aria-expanded', 'false');
+            if (mmIconPath) mmIconPath.setAttribute('d', 'M4 6h16M4 12h16M4 18h16');
+          }
+        }
+      });
+    })();
+
+    // === rest of page logic (kept intact but fixed a bug where await.ensureTagData was used) ===
     document.addEventListener('DOMContentLoaded', () => {
       const API_BASE = String(window.__API_BASE__ || "").replace(/\/+$/,"");
       const allQuestionsSSR = Array.isArray(window.__QUESTIONS__) ? window.__QUESTIONS__ : [];
@@ -473,8 +500,6 @@
       })();
 
       // ---- DOM refs ----
-      const mobileMenuButton = document.getElementById('mobile-menu-toggle');
-      const mobileMenu = document.getElementById('mobile-menu');
       const backToTopBtn = document.getElementById('backToTopBtn');
 
       const listEl = document.getElementById('list');
@@ -521,7 +546,7 @@
         const safeRomanExcerpt = escapeHTML(romanExcerpt);
 
         return `
-          <a href="${href}" class="card-link.group">
+          <a href="${href}" class="card-link group">
             <div class="flex items-start gap-4 justify-between">
               <div class="flex items-center gap-4 flex-1 min-w-0">
                 <div class="flex-shrink-0 w-10 h-10 bg-midnight_green text-white rounded-full flex items-center justify-center font-bold text-lg gulzartext">
@@ -640,15 +665,10 @@
         }
       }
 
-      async function render(){ await.ensureTagData(state.tag); renderListAndPager(workingSet); }
+      // fixed: call ensureTagData correctly
+      async function render(){ await ensureTagData(state.tag); renderListAndPager(workingSet); }
 
       // ---- header/menu/back-to-top ----
-      if(mobileMenuButton && mobileMenu){
-        mobileMenuButton.addEventListener('click', () => {
-          mobileMenu.classList.toggle('mobile-menu-hidden');
-          mobileMenu.classList.toggle('mobile-menu-visible');
-        });
-      }
       if(backToTopBtn){
         window.addEventListener('scroll', () => {
           if (window.scrollY > 300) {
