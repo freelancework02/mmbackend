@@ -7,7 +7,7 @@
   <%
     // --------- SAFE INPUTS & FALLBACKS ----------
     const siteName        = "Maula Ali Research Center";
-    const defaultBase     = (typeof baseHref === "string" && baseHref.trim()) ? baseHref.trim() : "https://demo.minaramasjid.com/";
+    const defaultBase     = (typeof baseHref === "string" && baseHref.trim()) ? baseHref.trim() : "https://minaramasjid.com/";
     const BASE            = defaultBase.replace(/\/+$/,"");
     const bookObj         = (typeof book === "object" && book) ? book : {};
     const writerObj       = (typeof writer === "object" && writer) ? writer : null;
